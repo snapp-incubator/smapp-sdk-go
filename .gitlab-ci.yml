@@ -1,9 +1,18 @@
 stages:
+  - lint
   - test
+
+lint:
+  image: golangci/golangci-lint:v1.42.1
+  script:
+    - golangci-lint run ./...
+  only:
+    refs:
+      - master
+  allow_failure: false
 
 test:
   image: golang:1.17
-
   script:
     - export GOPROXY=https://repo.snapp.tech/repository/goproxy/
     - export GO111MODULE=on
