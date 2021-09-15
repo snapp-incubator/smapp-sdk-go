@@ -1,0 +1,17 @@
+stages:
+  - test
+
+test:
+  image: golang:1.17
+
+  script:
+    - export GOPROXY=https://repo.snapp.tech/repository/goproxy/
+    - export GO111MODULE=on
+    - go mod download
+    - go test -race $(go list ./... | grep -v /vendor/) -v -coverprofile=coverage.out
+    - go tool cover -func=coverage.out
+
+  only:
+    refs:
+      - pushes
+  allow_failure: false
