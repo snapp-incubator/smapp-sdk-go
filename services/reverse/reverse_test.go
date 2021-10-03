@@ -62,7 +62,7 @@ func TestClient_GetComponents(t *testing.T) {
 			t.Fatalf("could not get components: %s", err.Error())
 		}
 		if len(components) != 5 {
-			t.Fatalf("ther should be 5 components")
+			t.Fatalf("there should be 5 components")
 		}
 	})
 	t.Run("invalid_response", func(t *testing.T) {
@@ -150,7 +150,7 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create default config due to: %s", err.Error())
 		}
-		client, err := NewReverseClient(cfg, V1, time.Millisecond * 100, WithURL(sv.URL))
+		client, err := NewReverseClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
@@ -290,7 +290,7 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create default config due to: %s", err.Error())
 		}
-		client, err := NewReverseClient(cfg, V1, time.Millisecond * 100, WithURL(sv.URL))
+		client, err := NewReverseClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}

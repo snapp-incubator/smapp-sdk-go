@@ -4,7 +4,7 @@ import "strings"
 
 type Option func(config *Config)
 
-func WithRegion(region string) Option{
+func WithRegion(region string) Option {
 	return func(config *Config) {
 		config.Region = region
 	}
