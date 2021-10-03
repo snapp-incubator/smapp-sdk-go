@@ -82,6 +82,10 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 		return nil, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
 
+	defer func() {
+		_ = response.Body.Close()
+	}()
+
 	if response.StatusCode == http.StatusOK {
 		resp := struct {
 			Status string `json:"status"`
@@ -134,6 +138,10 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	if err != nil {
 		return "", fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
+
+	defer func() {
+		_ = response.Body.Close()
+	}()
 
 	if response.StatusCode == http.StatusOK {
 		resp := struct {
