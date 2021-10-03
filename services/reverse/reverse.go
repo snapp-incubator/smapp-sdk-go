@@ -8,6 +8,7 @@ import (
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -63,7 +64,7 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	params.Set(Lat, fmt.Sprintf("%f", lat))
 	params.Set(Lon, fmt.Sprintf("%f", lon))
 	params.Set(Lang, string(options.Language))
-	params.Set(ZoomLevel, string(rune(options.ZoomLevel)))
+	params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
 	params.Set(Type, string(options.ResponseType))
 	params.Set(Display, "false")
 
@@ -120,7 +121,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	params.Set(Lat, fmt.Sprintf("%f", lat))
 	params.Set(Lon, fmt.Sprintf("%f", lon))
 	params.Set(Lang, string(options.Language))
-	params.Set(ZoomLevel, string(rune(options.ZoomLevel)))
+	params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
 	params.Set(Type, string(options.ResponseType))
 	params.Set(Display, "true")
 
