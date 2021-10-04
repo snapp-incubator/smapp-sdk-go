@@ -15,17 +15,23 @@ const (
 	DefaultQueryParamAPIKeyName = "monshi_key"
 
 	InternalBaseURLPattern = "http://smapp-api.apps.inter-dc.{REGION}.snappcloud.io"
-	PublicBaseURLPattern   = "http://api.{REGION}.snappmaps.ir/"
+	PublicBaseURLPattern   = "http://api.{REGION}.snappmaps.ir"
 
 	DefaultBaseURL = "http://smapp-api.apps.inter-dc.teh-1.snappcloud.io"
 	DefaultRegion  = "teh-1"
 )
 
+// Config is the struct needed for constructing service clients. it consists of common needed settings for calling different services.
 type Config struct {
+	// Region is the region of service to be called
 	Region       string
+	// APIKey is the key required to authenticating to different services
 	APIKey       string
+	// APIKeySource is for defining the source of APIKey in each request. it can be header or query params.
 	APIKeySource APIKeySource
+	// APIKeyName is used as key of authentication in requests.
 	APIKeyName   string
+	// APIBaseURL is the base url of all smapp services.
 	APIBaseURL   string
 }
 
@@ -56,11 +62,16 @@ func (c *Config) setDefaults() error {
 	return nil
 }
 
+// ReadFromEnvironment helps reading a config from Environment variables. you can pass different options to override each field of config.
+// This function returns an error if no APIKey is defined
+// these Environment variables are used to fill a config:
+// 		`SMAPP_API_KEY` for APIKey
+// 		`SMAPP_API_KEY_SOURCE` for APIKeySource
+// 		`SMAPP_API_KEY_NAME` for APIKeyName
+// 		`SMAPP_API_REGION` for Region
+// 		`SMAPP_API_BASE_URL` for APIBaseURL
 func ReadFromEnvironment(opts ...Option) (*Config, error) {
 	apiKey := os.Getenv("SMAPP_API_KEY")
-	if apiKey == "" {
-		return nil, ErrEmptyAPIKey
-	}
 	apiKeySource := APIKeySource(os.Getenv("SMAPP_API_KEY_SOURCE"))
 	apiKeyName := os.Getenv("SMAPP_API_KEY_NAME")
 	region := os.Getenv("SMAPP_API_REGION")
@@ -77,6 +88,10 @@ func ReadFromEnvironment(opts ...Option) (*Config, error) {
 		opt(config)
 	}
 
+	if apiKey == "" {
+		return nil, ErrEmptyAPIKey
+	}
+
 	err := config.setDefaults()
 	if err != nil {
 		return nil, err
@@ -85,6 +100,13 @@ func ReadFromEnvironment(opts ...Option) (*Config, error) {
 	return config, nil
 }
 
+// NewDefaultConfig creates a default config. you can pass different options to override each field of config.
+// This function returns an error if no apiKey is defined
+// these are default values of each config field:
+// 		Region: teh-1
+// 		APIKeySource: header
+//		APIKeyName: X-Monshi-Key
+//		APIBaseURL: http://smapp-api.apps.inter-dc.teh-1.snappcloud.io
 func NewDefaultConfig(apiKey string, opts ...Option) (*Config, error) {
 	if apiKey == "" {
 		return nil, ErrEmptyAPIKey
