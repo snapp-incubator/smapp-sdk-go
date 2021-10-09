@@ -281,3 +281,22 @@ if err != nil {
 }
 ```
 
+
+
+# Testing (Mocking)
+There is a mock client for each service for usage of mocking. [mock](https://github.com/golang/mock) package is used for this purpose.
+
+an Example for mocking search client is:
+```go
+func TestFoo(t *testing.T) {
+    ctrl := gomock.NewController(t)
+    
+    // Assert that Bar() is invoked.
+    defer ctrl.Finish()
+    
+    mockSearch := search.NewMockSearchClient(ctrl)
+    
+}
+```
+
+you can use `mockSearch` to mock results of function calls of the client. for more information, see [here](https://github.com/golang/mock)
