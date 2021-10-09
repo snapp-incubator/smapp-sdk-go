@@ -11,7 +11,7 @@ const (
 	HeaderSource     APIKeySource = "header"
 	QueryParamSource APIKeySource = "query"
 
-	DefaultHeaderAPIKeyName     = "X-Monshi-Key"
+	DefaultHeaderAPIKeyName     = "X-Smapp-Key"
 	DefaultQueryParamAPIKeyName = "monshi_key"
 
 	InternalBaseURLPattern = "http://smapp-api.apps.inter-dc.{REGION}.snappcloud.io"
