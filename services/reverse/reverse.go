@@ -96,6 +96,10 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 		return nil, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	for key, val := range options.Headers {
+		req.Header.Set(key, val)
+	}
+
 	req.URL.RawQuery = params.Encode()
 
 	response, err := c.httpClient.Do(req)
@@ -163,6 +167,10 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
 		return "", fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
+	}
+
+	for key, val := range options.Headers {
+		req.Header.Set(key, val)
 	}
 
 	req.URL.RawQuery = params.Encode()

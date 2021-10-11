@@ -61,6 +61,9 @@ func TestClient_GetComponents(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err != nil {
 			t.Fatalf("could not get components: %s", err.Error())
@@ -86,6 +89,9 @@ func TestClient_GetComponents(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error when parsing request")
@@ -110,6 +116,9 @@ func TestClient_GetComponents(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error with api key source")
@@ -132,6 +141,9 @@ func TestClient_GetComponents(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is ERROR")
@@ -155,6 +167,9 @@ func TestClient_GetComponents(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is 500")
@@ -178,6 +193,9 @@ func TestClient_GetComponents(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an errordue to timeout")
@@ -204,6 +222,9 @@ func TestClient_GetComponentsWithContext(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error when creating request")
@@ -229,6 +250,9 @@ func TestClient_GetDisplayName(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err != nil {
 			t.Fatalf("could not get components: %s", err.Error())
@@ -254,6 +278,9 @@ func TestClient_GetDisplayName(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error when parsing request")
@@ -278,6 +305,9 @@ func TestClient_GetDisplayName(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error with apikey source")
@@ -300,6 +330,9 @@ func TestClient_GetDisplayName(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is ERROR")
@@ -323,6 +356,9 @@ func TestClient_GetDisplayName(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is 500")
@@ -346,6 +382,9 @@ func TestClient_GetDisplayName(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an errordue to timeout")
@@ -372,6 +411,9 @@ func TestClient_GetDisplayNameWithContext(t *testing.T) {
 			WithZoomLevel(17),
 			WithFarsiLanguage(),
 			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error when creating request")

@@ -16,12 +16,20 @@ const (
 
 // CallOptions is the type that specifies behaviour of a reverse geocode request.
 type CallOptions struct {
-	UseZoomLevel    bool
-	ZoomLevel       int
+	// UseZoomLevel specifies if `zoom_level` query param exists in request.
+	UseZoomLevel bool
+	// ZoomLevel of request
+	ZoomLevel int
+	// UseResponseType specifies if `type` query param exists in request.
 	UseResponseType bool
-	ResponseType    ResponseType
-	UseLanguage     bool
-	Language        Language
+	// ResponseType specifies the type of the response
+	ResponseType ResponseType
+	// UseLanguage specifies if `language` query param exists in request.
+	UseLanguage bool
+	// Language of the response
+	Language Language
+	// Headers is a map that contains all custom headers to be sent.
+	Headers map[string]string
 }
 
 // CallOptionSetter is a function for defining custom call options in a fluent way.
@@ -75,6 +83,15 @@ func WithZoomLevel(zoomLevel int) CallOptionSetter {
 	}
 }
 
+// WithHeaders will set given header map to extra headers to be sent in request
+func WithHeaders(headers map[string]string) CallOptionSetter {
+	return func(options *CallOptions) {
+		if headers != nil {
+			options.Headers = headers
+		}
+	}
+}
+
 // NewDefaultCallOptions is the constructor of a default CallOptions
 func NewDefaultCallOptions(opts ...CallOptionSetter) CallOptions {
 	callOptions := CallOptions{
@@ -84,6 +101,7 @@ func NewDefaultCallOptions(opts ...CallOptionSetter) CallOptions {
 		ZoomLevel:       16,
 		ResponseType:    Driver,
 		Language:        Farsi,
+		Headers:         make(map[string]string),
 	}
 
 	for _, opt := range opts {
