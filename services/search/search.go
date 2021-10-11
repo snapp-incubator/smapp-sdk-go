@@ -17,14 +17,24 @@ import (
 
 type Version string
 
+// Interface consists of functions of different functionalities of a search service. there are two implementation of this service.
+// one for mocking and one for production usage.
 type Interface interface {
+	// GetCities receives cCallOptions and returns list of popular City s.
 	GetCities(options CallOptions) ([]City, error)
+	// GetCitiesWithContext is like GetCities, but with context.Context support.
 	GetCitiesWithContext(ctx context.Context, options CallOptions) ([]City, error)
+	// SearchCity  receives an input string for search and CallOptions and returns list of City s according to input string.
 	SearchCity(input string, options CallOptions) ([]City, error)
+	// SearchCityWithContext is like SearchCity, but with context.Context support.
 	SearchCityWithContext(ctx context.Context, input string, options CallOptions) ([]City, error)
+	// AutoComplete receives an input string and CallOptions and returns all possible Result s according to input string.
 	AutoComplete(input string, options CallOptions) ([]Result, error)
+	// AutoCompleteWithContext is like AutoComplete, but with context.Context support.
 	AutoCompleteWithContext(ctx context.Context, input string, options CallOptions) ([]Result, error)
+	// Details receives a `placeId` string and CallOptions and returns Details on that place id.
 	Details(placeId string, options CallOptions) (Detail, error)
+	// DetailsWithContext is like Details, but with context.Context support.
 	DetailsWithContext(ctx context.Context, placeId string, options CallOptions) (Detail, error)
 }
 
@@ -43,6 +53,7 @@ const (
 	ErrorStatus = "ERROR"
 )
 
+// Client is the main implementation of Interface for search service
 type Client struct {
 	cfg        *config.Config
 	url        string
@@ -52,10 +63,12 @@ type Client struct {
 // Force Client to implement Interface at compile time
 var _ Interface = (*Client)(nil)
 
+// GetCities receives cCallOptions and returns list of popular City s.
 func (c *Client) GetCities(options CallOptions) ([]City, error) {
 	return c.GetCitiesWithContext(context.Background(), options)
 }
 
+// GetCitiesWithContext is like GetCities, but with context.Context support.
 func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) ([]City, error) {
 	reqURL := fmt.Sprintf("%s/place/cities", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
@@ -70,11 +83,11 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 		params.Set(Location, locationString)
 	}
 
-	if options.Language != "" {
+	if options.UseLanguage {
 		params.Set(Lang, string(options.Language))
 	}
 
-	if options.RequestContext != "" {
+	if options.UseRequestContext {
 		params.Set(ReqContext, string(options.RequestContext))
 	}
 
@@ -123,10 +136,12 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 	return nil, fmt.Errorf("smapp search get-cities: non 200 status: %d", response.StatusCode)
 }
 
+// SearchCity  receives an input string for search and CallOptions and returns list of City s according to input string.
 func (c *Client) SearchCity(input string, options CallOptions) ([]City, error) {
 	return c.SearchCityWithContext(context.Background(), input, options)
 }
 
+// SearchCityWithContext is like SearchCity, but with context.Context support.
 func (c *Client) SearchCityWithContext(ctx context.Context, input string, options CallOptions) ([]City, error) {
 	reqURL := fmt.Sprintf("%s/place/search/city", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
@@ -143,11 +158,11 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 		params.Set(Location, locationString)
 	}
 
-	if options.Language != "" {
+	if options.UseLanguage {
 		params.Set(Lang, string(options.Language))
 	}
 
-	if options.RequestContext != "" {
+	if options.UseRequestContext {
 		params.Set(ReqContext, string(options.RequestContext))
 	}
 
@@ -196,10 +211,12 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 	return nil, fmt.Errorf("smapp search search-cities: non 200 status: %d", response.StatusCode)
 }
 
+// AutoComplete receives an input string and CallOptions and returns all possible Result s according to input string.
 func (c *Client) AutoComplete(input string, options CallOptions) ([]Result, error) {
 	return c.AutoCompleteWithContext(context.Background(), input, options)
 }
 
+// AutoCompleteWithContext is like AutoComplete, but with context.Context support.
 func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, options CallOptions) ([]Result, error) {
 	reqURL := fmt.Sprintf("%s/place/autocomplete/json", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
@@ -216,7 +233,7 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 		params.Set(Location, locationString)
 	}
 
-	if options.Language != "" {
+	if options.UseLanguage {
 		params.Set(Lang, string(options.Language))
 	}
 
@@ -225,7 +242,7 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 		params.Set(UserLocation, locationString)
 	}
 
-	if options.RequestContext != "" {
+	if options.UseRequestContext {
 		params.Set(ReqContext, string(options.RequestContext))
 	}
 
@@ -278,10 +295,12 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 	return nil, fmt.Errorf("smapp search autocomplete: non 200 status: %d", response.StatusCode)
 }
 
+// Details receives a `placeId` string and CallOptions and returns Details on that place id.
 func (c *Client) Details(placeId string, options CallOptions) (Detail, error) {
 	return c.DetailsWithContext(context.Background(), placeId, options)
 }
 
+// DetailsWithContext is like Details, but with context.Context support.
 func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options CallOptions) (Detail, error) {
 	reqURL := fmt.Sprintf("%s/place/details/json", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
@@ -329,7 +348,7 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 		}
 
 		if resp.Status != OKStatus {
-			return Detail{}, errors.New("smapp search details: status of request is not OK")
+			return Detail{}, fmt.Errorf("smapp search details: request status is not OK")
 		}
 
 		return resp.Result, nil
@@ -338,6 +357,7 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 	return Detail{}, fmt.Errorf("smapp search details: non 200 status: %d", response.StatusCode)
 }
 
+// NewSearchClient is the constructor of search client.
 func NewSearchClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
 		cfg: cfg,

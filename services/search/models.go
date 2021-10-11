@@ -1,5 +1,6 @@
 package search
 
+// City is the struct for city candidate in city search
 type City struct {
 	ID      int    `json:"id"`
 	Name    string `json:"name"`
@@ -10,6 +11,7 @@ type City struct {
 	Description string `json:"description"`
 }
 
+// Result is the struct for search candidate of a place
 type Result struct {
 	PlaceID              string `json:"place_id"`
 	Name                 string `json:"name"`
@@ -28,6 +30,7 @@ type Result struct {
 	AllTags    []string `json:"all_tags"`
 }
 
+// Detail is the struct type that specifies details of a place id in search
 type Detail struct {
 	Name     string `json:"name"`
 	Geometry struct {

@@ -146,6 +146,8 @@ func TestClient_GetCities(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		cities, err := client.GetCities(NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -173,6 +175,8 @@ func TestClient_GetCities(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.GetCities(NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -198,6 +202,8 @@ func TestClient_GetCities(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.GetCities(NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -223,6 +229,8 @@ func TestClient_GetCities(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.GetCities(NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -247,6 +255,8 @@ func TestClient_GetCities(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.GetCities(NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -272,6 +282,8 @@ func TestClient_GetCities(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.GetCities(NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -299,6 +311,8 @@ func TestClient_SearchCity(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		cities, err := client.SearchCity("تهران", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -326,6 +340,8 @@ func TestClient_SearchCity(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.SearchCity("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -351,6 +367,8 @@ func TestClient_SearchCity(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.SearchCity("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -376,6 +394,8 @@ func TestClient_SearchCity(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.SearchCity("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -400,6 +420,8 @@ func TestClient_SearchCity(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.SearchCity("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -425,6 +447,8 @@ func TestClient_SearchCity(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.SearchCity("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -483,6 +507,8 @@ func TestClient_AutoComplete(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.AutoComplete("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -508,6 +534,8 @@ func TestClient_AutoComplete(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.AutoComplete("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -532,6 +560,8 @@ func TestClient_AutoComplete(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.AutoComplete("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -556,6 +586,8 @@ func TestClient_AutoComplete(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.AutoComplete("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -581,6 +613,8 @@ func TestClient_AutoComplete(t *testing.T) {
 			t.Fatalf("could not create search client due to: %s", err.Error())
 		}
 		_, err = client.AutoComplete("tehran", NewDefaultCallOptions(
+			WithFarsiLanguage(),
+			WithOriginRequestContext(),
 			WithLocation(50, 50),
 			WithHeaders(map[string]string{
 				"foo": "bar",
@@ -690,30 +724,6 @@ func TestClient_Details(t *testing.T) {
 			t.Fatalf("request should be timed out")
 		}
 	})
-	t.Run("error_status", func(t *testing.T) {
-		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(`{"status": "ERROR"}`))
-		}))
-
-		cfg, err := config.NewDefaultConfig("key")
-		if err != nil {
-			t.Fatalf("could not create default config due to: %s", err.Error())
-		}
-
-		client, err := NewSearchClient(cfg, V1, 10*time.Millisecond, WithURL(sv.URL))
-		if err != nil {
-			t.Fatalf("could not create search client due to: %s", err.Error())
-		}
-		_, err = client.Details("id", NewDefaultCallOptions(
-			WithLocation(50, 50),
-			WithHeaders(map[string]string{
-				"foo": "bar",
-			}),
-		))
-		if err == nil {
-			t.Fatalf("request status should not be ok")
-		}
-	})
 	t.Run("non_200_status", func(t *testing.T) {
 		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -736,6 +746,33 @@ func TestClient_Details(t *testing.T) {
 		))
 		if err == nil {
 			t.Fatalf("request status should not be 200")
+		}
+	})
+}
+
+func TestClient_Details_ErrorStatus(t *testing.T) {
+	t.Run("error_status", func(t *testing.T) {
+		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`{"status": "ERROR"}`))
+		}))
+
+		cfg, err := config.NewDefaultConfig("key")
+		if err != nil {
+			t.Fatalf("could not create default config due to: %s", err.Error())
+		}
+
+		client, err := NewSearchClient(cfg, V1, 10*time.Millisecond, WithURL(sv.URL))
+		if err != nil {
+			t.Fatalf("could not create search client due to: %s", err.Error())
+		}
+		_, err = client.Details("id", NewDefaultCallOptions(
+			WithLocation(50, 50),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
+		))
+		if err == nil {
+			t.Fatalf("request status should not be ok")
 		}
 	})
 }

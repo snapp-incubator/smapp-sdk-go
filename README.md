@@ -104,10 +104,6 @@ cfg2, err := NewDefaultConfig("api-key",
 ```
 
 
-
-
-
-
 ## Reverse Geocode
 After creating a config object, you can construct a reverse geo-code client for your services.
 
@@ -280,7 +276,6 @@ if err != nil {
     panic(err)
 }
 ```
-
 
 
 # Testing (Mocking)
