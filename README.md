@@ -25,11 +25,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.2.1
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.2.2
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.2.1
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.2.2
 ```
 
 you can download the library with `go mod download` command.
@@ -78,14 +78,14 @@ if err != nil {
 You may want to override some fields of the config object. you can pass multiple options to constructors for overriding config object.
 
 List of options are:
-+ [WithRegion(region string)]() : sets a region for the config.
-+ [WithAPIKey(apikey string)]() : sets the APIKey for the config. it is often used as an option in `ReadFromEnvironment`.
-+ [WithAPIBaseURL(baseURL string)]() : sets a custom base URL for services.
-+ [WithAPIBaseURL(baseURL string)]() : sets a custom base URL for services.
-+ [WithAPIKeySource(source APIKeySource)]() : sets an APIKeySource for the config.
-+ [WithAPIKeyName(name string)]() : sets an APIKeyName for the config
-+ [WithPublicURL()]() : sets the APIBaseURL to public routes of smapp. Notice: make sure you set region before using this option. if not set `teh-1` region would be used as default region.
-+ [WithInternalURL()]() : sets the APIBaseURL to internal routes of smapp. Notice: make sure you set region before using this option. if not set `teh-1` region would be used as default region.
++ [WithRegion(region string)](#) : sets a region for the config.
++ [WithAPIKey(apikey string)](#) : sets the APIKey for the config. it is often used as an option in `ReadFromEnvironment`.
++ [WithAPIBaseURL(baseURL string)](#) : sets a custom base URL for services.
++ [WithAPIBaseURL(baseURL string)](#) : sets a custom base URL for services.
++ [WithAPIKeySource(source APIKeySource)](#) : sets an APIKeySource for the config.
++ [WithAPIKeyName(name string)](#) : sets an APIKeyName for the config
++ [WithPublicURL()](#) : sets the APIBaseURL to public routes of smapp. Notice: make sure you set region before using this option. if not set `teh-1` region would be used as default region.
++ [WithInternalURL()](#) : sets the APIBaseURL to internal routes of smapp. Notice: make sure you set region before using this option. if not set `teh-1` region would be used as default region.
 
 Example:
 
@@ -160,12 +160,13 @@ List of operations on a reverse geocode client are:
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
 list of call options for reverse-geocode service are:
-+ [WithZoomLevel(zoomLevel int)](): sets the zoom level for the request. default value is `16`
-+ [WithEnglishLanguage()](): sets the language for response to English. default is `fa` (Farsi)
-+ [WithFarsiLanguage()](): sets the language for response to Farsi. default is `fa` (Farsi)
-+ [WithPassengerResponseType()](): sets the response type suitable for passengers. default is `driver`
-+ [WithDriverResponseType()](): sets the response type suitable for drivers. default is `driver`
-+ [WithVerboseResponseType()](): sets the response type to a verbose response. default is `driver`
++ [WithZoomLevel(zoomLevel int)](#): sets the zoom level for the request. default value is `16`
++ [WithEnglishLanguage()](#): sets the language for response to English. default is `fa` (Farsi)
++ [WithFarsiLanguage()](#): sets the language for response to Farsi. default is `fa` (Farsi)
++ [WithPassengerResponseType()](#): sets the response type suitable for passengers. default is `driver`
++ [WithDriverResponseType()](#): sets the response type suitable for drivers. default is `driver`
++ [WithVerboseResponseType()](#): sets the response type to a verbose response. default is `driver`
++ [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 This example will set zoom level of 17 with English response:
 
@@ -254,16 +255,16 @@ List of operations on a search client are:
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
 list of call options for reverse-geocode service are:
-+ [WithLocation(lat, lon float)](): The geographic point that search would be around it. May be user current location or center of the city that you want search in it. If location is empty, search boundary is whole of the country.
-+ [WithUserLocation(lat, lon float)](): The current location of user. If you set location as center of a city, then you must fill this parameter with current location of user.
-+ [WithEnglishLanguage()](): sets the language for response to English. default is `fa` (Farsi)
-+ [WithFarsiLanguage()](): sets the language for response to Farsi. default is `fa` (Farsi)
-+ [WithOriginRequestContext()](): sets the context of current request to `origin`.
-+ [WithFavouriteRequestContext()](): sets the context of current request to `favouritre`.
-+ [WithFirstDestinationRequestContext()](): sets the context of current request to `destination1`.
-+ [WithSecondDestinationRequestContext()](): sets the context of current request to `destination2`.
-+ [WithCityId(cityId int)](): sets the city id for better results in search.
-+ [WithHeaders(headers map[string]string)](): sets custom headers for request.
++ [WithLocation(lat, lon float)](#): The geographic point that search would be around it. May be user current location or center of the city that you want search in it. If location is empty, search boundary is whole of the country.
++ [WithUserLocation(lat, lon float)](#): The current location of user. If you set location as center of a city, then you must fill this parameter with current location of user.
++ [WithEnglishLanguage()](#): sets the language for response to English. default is `fa` (Farsi)
++ [WithFarsiLanguage()](#): sets the language for response to Farsi. default is `fa` (Farsi)
++ [WithOriginRequestContext()](#): sets the context of current request to `origin`.
++ [WithFavouriteRequestContext()](#): sets the context of current request to `favouritre`.
++ [WithFirstDestinationRequestContext()](#): sets the context of current request to `destination1`.
++ [WithSecondDestinationRequestContext()](#): sets the context of current request to `destination2`.
++ [WithCityId(cityId int)](#): sets the city id for better results in search.
++ [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 This example will search for places like `Azadi` with city id of 1000 (Tehran) and around the given location:
 
