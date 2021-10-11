@@ -23,7 +23,7 @@ func main() {
 	displayName, err := reverseClient.GetDisplayName(35.0123, 53.12312, reverse.NewDefaultCallOptions(
 		reverse.WithZoomLevel(17),
 		reverse.WithEnglishLanguage(),
-		))
+	))
 	if err != nil {
 		panic(err)
 	}

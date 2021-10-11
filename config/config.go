@@ -24,15 +24,15 @@ const (
 // Config is the struct needed for constructing service clients. it consists of common needed settings for calling different services.
 type Config struct {
 	// Region is the region of service to be called
-	Region       string
+	Region string
 	// APIKey is the key required to authenticating to different services
-	APIKey       string
+	APIKey string
 	// APIKeySource is for defining the source of APIKey in each request. it can be header or query params.
 	APIKeySource APIKeySource
 	// APIKeyName is used as key of authentication in requests.
-	APIKeyName   string
+	APIKeyName string
 	// APIBaseURL is the base url of all smapp services.
-	APIBaseURL   string
+	APIBaseURL string
 }
 
 func (c *Config) setDefaults() error {

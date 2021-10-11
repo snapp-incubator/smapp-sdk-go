@@ -15,10 +15,16 @@ import (
 	"time"
 )
 
+// Interface consists of functions of different functionalities of a reverse geocode service. there are two implementation of this service.
+// one for mocking and one for production usage.
 type Interface interface {
+	// GetComponents receives `lat`,`lon` as a location and CallOptions and returns Component s of address of location given.
 	GetComponents(lat, lon float64, options CallOptions) ([]Component, error)
+	// GetDisplayName receives `lat`,`lon`` as a location and CallOptions and returns a string as address of given location.
 	GetDisplayName(lat, lon float64, options CallOptions) (string, error)
+	// GetComponentsWithContext is like GetComponents, but with context.Context support.
 	GetComponentsWithContext(ctx context.Context, lat, lon float64, options CallOptions) ([]Component, error)
+	// GetDisplayNameWithContext is like GetDisplayName, but with context.Context support.
 	GetDisplayNameWithContext(ctx context.Context, lat, lon float64, options CallOptions) (string, error)
 }
 
@@ -38,6 +44,7 @@ const (
 	ErrorStatus = "ERROR"
 )
 
+// Client is the main implementation of Interface for search service
 type Client struct {
 	cfg        *config.Config
 	url        string
@@ -47,14 +54,17 @@ type Client struct {
 // Force Client to implement Interface at compile time
 var _ Interface = (*Client)(nil)
 
+// GetComponents receives `lat`,`lon` as a location and CallOptions and returns Component s of address of location given.
 func (c *Client) GetComponents(lat, lon float64, options CallOptions) ([]Component, error) {
 	return c.GetComponentsWithContext(context.Background(), lat, lon, options)
 }
 
+// GetDisplayName receives `lat`,`lon`` as a location and CallOptions and returns a string as address of given location.
 func (c *Client) GetDisplayName(lat, lon float64, options CallOptions) (string, error) {
 	return c.GetDisplayNameWithContext(context.Background(), lat, lon, options)
 }
 
+// GetComponentsWithContext is like GetComponents, but with context.Context support.
 func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64, options CallOptions) ([]Component, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
@@ -65,9 +75,17 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 
 	params.Set(Lat, fmt.Sprintf("%f", lat))
 	params.Set(Lon, fmt.Sprintf("%f", lon))
-	params.Set(Lang, string(options.Language))
-	params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
-	params.Set(Type, string(options.ResponseType))
+	if options.UseLanguage {
+		params.Set(Lang, string(options.Language))
+	}
+
+	if options.UseZoomLevel {
+		params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
+	}
+
+	if options.UseResponseType {
+		params.Set(Type, string(options.ResponseType))
+	}
 	params.Set(Display, "false")
 
 	if c.cfg.APIKeySource == config.HeaderSource {
@@ -113,6 +131,7 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	return nil, fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
+// GetDisplayNameWithContext is like GetDisplayName, but with context.Context support.
 func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64, options CallOptions) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
@@ -123,9 +142,19 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 
 	params.Set(Lat, fmt.Sprintf("%f", lat))
 	params.Set(Lon, fmt.Sprintf("%f", lon))
-	params.Set(Lang, string(options.Language))
-	params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
-	params.Set(Type, string(options.ResponseType))
+
+	if options.UseLanguage {
+		params.Set(Lang, string(options.Language))
+	}
+
+	if options.UseZoomLevel {
+		params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
+	}
+
+	if options.UseResponseType {
+		params.Set(Type, string(options.ResponseType))
+	}
+
 	params.Set(Display, "true")
 
 	if c.cfg.APIKeySource == config.HeaderSource {
@@ -171,6 +200,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	return "", fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
+// NewReverseClient is the constructor of reverse geocode client.
 func NewReverseClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
 		cfg: cfg,

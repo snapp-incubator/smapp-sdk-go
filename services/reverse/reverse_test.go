@@ -57,7 +57,11 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		components, err := client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		components, err := client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err != nil {
 			t.Fatalf("could not get components: %s", err.Error())
 		}
@@ -78,7 +82,11 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error when parsing request")
 		}
@@ -98,7 +106,11 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error with api key source")
 		}
@@ -116,7 +128,11 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is ERROR")
 		}
@@ -135,7 +151,11 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is 500")
 		}
@@ -154,7 +174,11 @@ func TestClient_GetComponents(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetComponents(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an errordue to timeout")
 		}
@@ -176,7 +200,11 @@ func TestClient_GetComponentsWithContext(t *testing.T) {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
 		var ctx context.Context = nil
-		_, err = client.GetComponentsWithContext(ctx, 35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetComponentsWithContext(ctx, 35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error when creating request")
 		}
@@ -197,7 +225,11 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		displayName, err := client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		displayName, err := client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err != nil {
 			t.Fatalf("could not get components: %s", err.Error())
 		}
@@ -218,7 +250,11 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error when parsing request")
 		}
@@ -238,7 +274,11 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error with apikey source")
 		}
@@ -256,7 +296,11 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is ERROR")
 		}
@@ -275,7 +319,11 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error. status is 500")
 		}
@@ -294,7 +342,11 @@ func TestClient_GetDisplayName(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
-		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetDisplayName(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an errordue to timeout")
 		}
@@ -316,7 +368,11 @@ func TestClient_GetDisplayNameWithContext(t *testing.T) {
 			t.Fatalf("could not create reverse client due to: %s", err.Error())
 		}
 		var ctx context.Context = nil
-		_, err = client.GetDisplayNameWithContext(ctx, 35.77331417156089, 51.41831696033478, NewDefaultCallOptions())
+		_, err = client.GetDisplayNameWithContext(ctx, 35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+		))
 		if err == nil {
 			t.Fatalf("there should be an error when creating request")
 		}

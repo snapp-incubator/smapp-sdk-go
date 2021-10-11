@@ -23,7 +23,7 @@ func main() {
 	results, err := searchClient.AutoComplete("example", search.NewDefaultCallOptions(
 		search.WithCityId(1000),
 		search.WithLocation(35.012, 53.1253),
-		))
+	))
 	if err != nil {
 		panic(err)
 	}
