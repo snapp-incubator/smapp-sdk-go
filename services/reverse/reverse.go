@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -84,6 +86,7 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	}
 
 	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -141,6 +144,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	}
 
 	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 

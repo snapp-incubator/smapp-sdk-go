@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -96,6 +98,7 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 	}
 
 	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -168,6 +171,7 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 	}
 
 	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -249,6 +253,7 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 	}
 
 	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -308,6 +313,7 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 	}
 
 	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
