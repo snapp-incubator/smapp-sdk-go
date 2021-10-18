@@ -20,12 +20,16 @@ import (
 type Interface interface {
 	// GetComponents receives `lat`,`lon` as a location and CallOptions and returns Component s of address of location given.
 	GetComponents(lat, lon float64, options CallOptions) ([]Component, error)
-	// GetDisplayName receives `lat`,`lon`` as a location and CallOptions and returns a string as address of given location.
+	// GetDisplayName receives `lat`,`lon` as a location and CallOptions and returns a string as address of given location.
 	GetDisplayName(lat, lon float64, options CallOptions) (string, error)
 	// GetComponentsWithContext is like GetComponents, but with context.Context support.
 	GetComponentsWithContext(ctx context.Context, lat, lon float64, options CallOptions) ([]Component, error)
 	// GetDisplayNameWithContext is like GetDisplayName, but with context.Context support.
 	GetDisplayNameWithContext(ctx context.Context, lat, lon float64, options CallOptions) (string, error)
+	// GetFrequent receives `lat`, `lon` as a location and CallOptions and returns FrequentAddress for the given location.
+	GetFrequent(lat, lon float64, options CallOptions) (FrequentAddress, error)
+	// GetFrequentWithContext is like GetFrequent, but with context.Context support
+	GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error)
 }
 
 type Version string
@@ -206,6 +210,67 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	}
 
 	return "", fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
+}
+
+// GetFrequent receives `lat`, `lon` as a location and CallOptions and returns FrequentAddress for the given location.
+func (c *Client) GetFrequent(lat, lon float64, options CallOptions) (FrequentAddress, error) {
+	return c.GetFrequentWithContext(context.Background(), lat, lon, options)
+}
+
+// GetFrequentWithContext is like GetFrequent, but with context.Context support
+func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
+	if err != nil {
+		return FrequentAddress{}, errors.New("smapp reverse geo-code: could not create request. err: " + err.Error())
+	}
+
+	params := url.Values{}
+
+	params.Set(Lat, fmt.Sprintf("%f", lat))
+	params.Set(Lon, fmt.Sprintf("%f", lon))
+
+	if options.UseZoomLevel {
+		params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
+	}
+
+	params.Set(Type, string(Frequent))
+
+	if c.cfg.APIKeySource == config.HeaderSource {
+		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
+	} else if c.cfg.APIKeySource == config.QueryParamSource {
+		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
+	} else {
+		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
+	}
+
+	for key, val := range options.Headers {
+		req.Header.Set(key, val)
+	}
+
+	req.URL.RawQuery = params.Encode()
+
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
+	}
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, response.Body)
+		_ = response.Body.Close()
+	}()
+
+	if response.StatusCode == http.StatusOK {
+		resp := FrequentAddress{}
+
+		err := json.NewDecoder(response.Body).Decode(&resp)
+		if err != nil {
+			return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
+		}
+
+		return resp, nil
+	}
+
+	return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
 // NewReverseClient is the constructor of reverse geocode client.

@@ -44,6 +44,48 @@ func TestWithVerboseResponseType(t *testing.T) {
 	}
 }
 
+func TestWithOriginResponseType(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver,
+		Language:     Farsi,
+	}
+
+	WithOriginResponseType()(&callOptions)
+
+	if callOptions.ResponseType != Origin {
+		t.Fatalf("ResponseType should be Origin")
+	}
+}
+
+func TestWithDestinationResponseType(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver,
+		Language:     Farsi,
+	}
+
+	WithDestinationResponseType()(&callOptions)
+
+	if callOptions.ResponseType != Destination {
+		t.Fatalf("ResponseType should be Destination")
+	}
+}
+
+func TestWithBikerResponseType(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver,
+		Language:     Farsi,
+	}
+
+	WithBikerResponseType()(&callOptions)
+
+	if callOptions.ResponseType != Biker {
+		t.Fatalf("ResponseType should be Biker")
+	}
+}
+
 func TestWithFarsiLanguage(t *testing.T) {
 	callOptions := CallOptions{
 		ZoomLevel:    16,

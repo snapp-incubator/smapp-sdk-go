@@ -4,9 +4,13 @@ type ResponseType string
 type Language string
 
 const (
-	Driver    ResponseType = "driver"
-	Passenger ResponseType = "passenger"
-	Verbose   ResponseType = "verbose"
+	Driver      ResponseType = "driver"
+	Passenger   ResponseType = "passenger"
+	Verbose     ResponseType = "verbose"
+	Biker       ResponseType = "biker"
+	Origin      ResponseType = "origin"
+	Destination ResponseType = "destination"
+	Frequent    ResponseType = "verbose"
 )
 
 const (
@@ -56,6 +60,30 @@ func WithVerboseResponseType() CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseResponseType = true
 		options.ResponseType = Verbose
+	}
+}
+
+// WithBikerResponseType will set `biker` type for the response
+func WithBikerResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Biker
+	}
+}
+
+// WithOriginResponseType will set `origin` type for the response
+func WithOriginResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Origin
+	}
+}
+
+// WithDestinationResponseType will set `destination` type for the response
+func WithDestinationResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Destination
 	}
 }
 

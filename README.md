@@ -153,6 +153,10 @@ List of operations on a reverse geocode client are:
   receives `lat`,`lon` and `CallOptions` and returns a string as address of given location.
 + **`GetDisplayNameWithContext(ctx context.Context, lat, lon float64, options CallOptions) (string, error)`**: 
   same as `GetDisplayName` but you can pass your own context for more control if needed.
++ **`GetFrequent(lat, lon float64, options CallOptions) (FrequentAddress, error)`**:
+  receives `lat`, `lon` as a location and CallOptions and returns FrequentAddress for the given location.
++ **`GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error)`**:
+  same as `GetFrequent` but you can pass your own context for more control if needed.
   
 
 ### CallOptions
@@ -166,6 +170,9 @@ list of call options for reverse-geocode service are:
 + [WithPassengerResponseType()](#): sets the response type suitable for passengers. default is `driver`
 + [WithDriverResponseType()](#): sets the response type suitable for drivers. default is `driver`
 + [WithVerboseResponseType()](#): sets the response type to a verbose response. default is `driver`
++ [WithBikerResponseType()](#): sets the response type to a verbose response. default is `biker`
++ [WithOriginResponseType()](#): sets the response type to a verbose response. default is `origin`
++ [WithDestinationResponseType()](#): sets the response type to a verbose response. default is `origin`
 + [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 This example will set zoom level of 17 with English response:

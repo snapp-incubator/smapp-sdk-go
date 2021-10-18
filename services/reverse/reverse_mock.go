@@ -93,3 +93,33 @@ func (mr *MockReverseClientMockRecorder) GetDisplayNameWithContext(ctx, lat, lon
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDisplayNameWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetDisplayNameWithContext), ctx, lat, lon, options)
 }
+
+// GetFrequent mocks base method.
+func (m *MockReverseClient) GetFrequent(lat, lon float64, options CallOptions) (FrequentAddress, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFrequent", lat, lon, options)
+	ret0, _ := ret[0].(FrequentAddress)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFrequent indicates an expected call of GetFrequent.
+func (mr *MockReverseClientMockRecorder) GetFrequent(lat, lon, options interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFrequent", reflect.TypeOf((*MockReverseClient)(nil).GetFrequent), lat, lon, options)
+}
+
+// GetFrequentWithContext mocks base method.
+func (m *MockReverseClient) GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFrequentWithContext", ctx, lat, lon, options)
+	ret0, _ := ret[0].(FrequentAddress)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFrequentWithContext indicates an expected call of GetFrequentWithContext.
+func (mr *MockReverseClientMockRecorder) GetFrequentWithContext(ctx, lat, lon, options interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFrequentWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetFrequentWithContext), ctx, lat, lon, options)
+}
