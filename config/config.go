@@ -15,7 +15,7 @@ const (
 	DefaultQueryParamAPIKeyName = "monshi_key"
 
 	InternalBaseURLPattern = "http://smapp-api.apps.inter-dc.{REGION}.snappcloud.io"
-	PublicBaseURLPattern   = "http://api.{REGION}.snappmaps.ir"
+	PublicBaseURLPattern   = "https://api.{REGION}.snappmaps.ir"
 
 	DefaultBaseURL = "http://smapp-api.apps.inter-dc.teh-1.snappcloud.io"
 	DefaultRegion  = "teh-1"
