@@ -25,11 +25,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.2.2
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.3.0
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.2.2
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.3.0
 ```
 
 you can download the library with `go mod download` command.
