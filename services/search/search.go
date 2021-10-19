@@ -126,7 +126,7 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 			return nil, fmt.Errorf("smapp search get-cities: could not serialize response due to: %s", err.Error())
 		}
 
-		if resp.Status != OKStatus {
+		if strings.ToUpper(resp.Status) != OKStatus {
 			return nil, errors.New("smapp search get-cities: status of request is not OK")
 		}
 
@@ -201,7 +201,7 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 			return nil, fmt.Errorf("smapp search search-cities: could not serialize response due to: %s", err.Error())
 		}
 
-		if resp.Status != OKStatus {
+		if strings.ToUpper(resp.Status) != OKStatus {
 			return nil, errors.New("smapp search search-cities: status of request is not OK")
 		}
 
@@ -285,7 +285,7 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 			return nil, fmt.Errorf("smapp search autocomplete: could not serialize response due to: %s", err.Error())
 		}
 
-		if resp.Status != OKStatus {
+		if strings.ToUpper(resp.Status) != OKStatus {
 			return nil, errors.New("smapp search autocomplete: status of request is not OK")
 		}
 
@@ -347,7 +347,7 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 			return Detail{}, fmt.Errorf("smapp search details: could not serialize response due to: %s", err.Error())
 		}
 
-		if resp.Status != OKStatus {
+		if strings.ToUpper(resp.Status) != OKStatus {
 			return Detail{}, fmt.Errorf("smapp search details: request status is not OK")
 		}
 

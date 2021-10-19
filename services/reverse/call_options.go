@@ -10,7 +10,7 @@ const (
 	Biker       ResponseType = "biker"
 	Origin      ResponseType = "origin"
 	Destination ResponseType = "destination"
-	Frequent    ResponseType = "verbose"
+	Frequent    ResponseType = "frequent"
 )
 
 const (

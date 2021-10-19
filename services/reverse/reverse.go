@@ -129,7 +129,7 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 			return nil, fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
 		}
 
-		if resp.Status != OKStatus {
+		if strings.ToUpper(resp.Status) != OKStatus {
 			return nil, errors.New("smapp reverse geo-code: status of request is not OK")
 		}
 
@@ -202,7 +202,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 			return "", fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
 		}
 
-		if resp.Status != OKStatus {
+		if strings.ToUpper(resp.Status) != OKStatus {
 			return "", errors.New("smapp reverse geo-code: status of request is not OK")
 		}
 
