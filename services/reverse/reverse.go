@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -100,6 +101,7 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 		return nil, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
@@ -173,6 +175,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 		return "", fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
@@ -243,6 +246,7 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}

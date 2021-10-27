@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -99,6 +100,7 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 		return nil, fmt.Errorf("smapp search get-cities: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
@@ -174,6 +176,7 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 		return nil, fmt.Errorf("smapp search search-cities: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
@@ -258,6 +261,7 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 		return nil, fmt.Errorf("smapp search autocomplete: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
@@ -320,6 +324,7 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 		return Detail{}, fmt.Errorf("smapp search details: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
