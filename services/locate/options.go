@@ -1,4 +1,4 @@
-package search
+package locate
 
 import "net/http"
 

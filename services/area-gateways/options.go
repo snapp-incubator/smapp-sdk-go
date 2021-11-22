@@ -18,4 +18,3 @@ func WithTransport(transport *http.Transport) ConstructorOption {
 		client.httpClient.Transport = transport
 	}
 }
-

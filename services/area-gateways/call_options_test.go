@@ -4,7 +4,7 @@ import "testing"
 
 func TestWithFarsiLanguage(t *testing.T) {
 	callOptions := CallOptions{
-		Language:     English,
+		Language: English,
 	}
 
 	WithFarsiLanguage()(&callOptions)
@@ -16,7 +16,7 @@ func TestWithFarsiLanguage(t *testing.T) {
 
 func TestWithEnglishLanguage(t *testing.T) {
 	callOptions := CallOptions{
-		Language:     Farsi,
+		Language: Farsi,
 	}
 
 	WithEnglishLanguage()(&callOptions)

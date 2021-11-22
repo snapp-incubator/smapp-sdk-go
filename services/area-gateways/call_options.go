@@ -17,7 +17,6 @@ type CallOptions struct {
 	Headers map[string]string
 }
 
-
 // CallOptionSetter is a function for defining custom call options in a fluent way.
 type CallOptionSetter func(options *CallOptions)
 
@@ -49,9 +48,9 @@ func WithHeaders(headers map[string]string) CallOptionSetter {
 // NewDefaultCallOptions is the constructor of a default CallOptions
 func NewDefaultCallOptions(opts ...CallOptionSetter) CallOptions {
 	callOptions := CallOptions{
-		UseLanguage:     false,
-		Language:        Farsi,
-		Headers:         make(map[string]string),
+		UseLanguage: false,
+		Language:    Farsi,
+		Headers:     make(map[string]string),
 	}
 
 	for _, opt := range opts {

@@ -12,6 +12,7 @@ List of supported services are:
 - [x] Reverse Geocode
 - [x] Search
 - [x] Area Gateways
+- [x] Locate
 - [ ] ETA
 - [ ] Routing
 
@@ -26,11 +27,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.4.0
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.5.0
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.4.0
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.5.0
 ```
 
 you can download the library with `go mod download` command.
@@ -190,9 +191,6 @@ if err != nil {
 ```
 
 
-
-
-
 ## Search
 After creating a config object, you can construct a search client for your services.
 
@@ -286,6 +284,7 @@ if err != nil {
 }
 ```
 
+
 ## Area Gateways
 After creating a config object, you can construct an area-gateways client for your services.
 
@@ -309,9 +308,7 @@ func main() {
     panic(err)
   }
 
-  areaGatewaysClient, err := area_gateways.NewAreaGatewaysClient(cfg, area_gateways.V1, time.Second,
-    area_gateways.WithURL("https://area-gateways.apps.private.teh-2.snappcloud.io/gateways"),
-  )
+  areaGatewaysClient, err := area_gateways.NewAreaGatewaysClient(cfg, area_gateways.V1, time.Second)
   if err != nil {
     panic(err)
   }
@@ -338,7 +335,7 @@ List of operations on a search client are:
   
 
 ### CallOptions
-`CallOptions` is a struct that defines the behaviour of the operation. you can create a new `CallOptions` with `search.NewDefaultCallOptions()`
+`CallOptions` is a struct that defines the behaviour of the operation. you can create a new `CallOptions` with `area_gateways.NewDefaultCallOptions()`
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
 list of call options for reverse-geocode service are:
@@ -352,6 +349,79 @@ This example will get gateways with farsi language with the given location:
 area, err := areaGatewaysClient.GetGateways(35.709374285391284, 51.40994310379028, area_gateways.NewDefaultCallOptions(
 	    area_gateways.WithFarsiLanguage()
 	))
+if err != nil {
+    panic(err)
+}
+```
+
+
+## Locate
+After creating a config object, you can construct a locate client for your services.
+
+The constructor of locate receives a config, version, timeout and multiple optional options.
+
+Example:
+
+```go
+package main
+
+import (
+  "fmt"
+  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/locate"
+  "time"
+)
+
+func main() {
+  cfg, err := config.NewDefaultConfig("api-key")
+  if err != nil {
+    panic(err)
+  }
+  client, err := locate.NewLocateClient(cfg, locate.V1, time.Second*10)
+  if err != nil {
+    panic(err)
+  }
+
+  results, err := client.LocatePoints([]locate.Point{{
+    Lat: 35.70973799747619,
+    Lon: 51.40869855880737,
+  }}, locate.NewDefaultCallOptions())
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Println(results)
+}
+
+```
+
+### Operations
+List of operations on a search client are:
+
++ **`LocatePoints(points []Point, options CallOptions) ([]Result, error)`**:
+  it receives a list of Point s and returns a list with same length with located Point s
++ **`LocatePointsWithContext(ctx context.Context, points []Point, options CallOptions) ([]Result, error)`**: 
+  same as `LocatePoints` but you can pass your context for more control.
+
+  
+
+### CallOptions
+`CallOptions` is a struct that defines the behaviour of the operation. you can create a new `CallOptions` with `locate.NewDefaultCallOptions()`
+function. you can customize the behaviour with passing multiple call options to the constructor.
+
+list of call options for reverse-geocode service are:
++ [WithHeaders(headers map[string]string)](#): sets custom headers for request.
+
+This example will get located points with given locations:
+
+```go
+results, err := client.LocatePoints([]locate.Point{{
+        Lat: 35.70973799747619,
+        Lon: 51.40869855880737,
+    }}, locate.NewDefaultCallOptions(
+        locate.WithHeaders(map[string]string{
+            "foo": "bar",
+        })))
 if err != nil {
     panic(err)
 }
