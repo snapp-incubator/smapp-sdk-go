@@ -49,7 +49,7 @@ const (
 	ErrorStatus = "ERROR"
 )
 
-// Client is the main implementation of Interface for search service
+// Client is the main implementation of Interface for reverse service
 type Client struct {
 	cfg        *config.Config
 	url        string

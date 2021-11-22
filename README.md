@@ -11,6 +11,7 @@ List of supported services are:
 
 - [x] Reverse Geocode
 - [x] Search
+- [x] Area Gateways
 - [ ] ETA
 - [ ] Routing
 
@@ -280,6 +281,77 @@ results, err := searchClient.AutoComplete("Azadi", search.NewDefaultCallOptions(
     search.WithCityId(1000),
     search.WithLocation(35.012, 53.1253),
 ))
+if err != nil {
+    panic(err)
+}
+```
+
+## Area Gateways
+After creating a config object, you can construct an area-gateways client for your services.
+
+The constructor of area-gateways receives a config, version, timeout and multiple optional options.
+
+Example:
+
+```go
+package main
+
+import (
+  "fmt"
+  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/area-gateways"
+  "time"
+)
+
+func main() {
+  cfg, err := config.NewDefaultConfig("api-key")
+  if err != nil {
+    panic(err)
+  }
+
+  areaGatewaysClient, err := area_gateways.NewAreaGatewaysClient(cfg, area_gateways.V1, time.Second,
+    area_gateways.WithURL("https://area-gateways.apps.private.teh-2.snappcloud.io/gateways"),
+  )
+  if err != nil {
+    panic(err)
+  }
+
+  area, err := areaGatewaysClient.GetGateways(35.709374285391284, 51.40994310379028, area_gateways.NewDefaultCallOptions())
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Println(area)
+}
+
+```
+
+### Operations
+List of operations on a search client are:
+
++ **`GetGateways(lat, lon float64, options CallOptions) (Area, error)`**:
+  it receives `lat`,`lon` as a location and CallOptions and returns a polygon and its Gateways.
+  It will return an Empty area if no area is found with given lat and lon.
++ **`GetGatewaysWithContext(ctx context.Context, lat, lon float64, options CallOptions) (Area, error)`**: 
+  same as `GetGateways` but you can pass your context for more control.
+
+  
+
+### CallOptions
+`CallOptions` is a struct that defines the behaviour of the operation. you can create a new `CallOptions` with `search.NewDefaultCallOptions()`
+function. you can customize the behaviour with passing multiple call options to the constructor.
+
+list of call options for reverse-geocode service are:
++ [WithEnglishLanguage()](#): sets the language for response to English. default is `fa` (Farsi)
++ [WithFarsiLanguage()](#): sets the language for response to Farsi. default is `fa` (Farsi)
++ [WithHeaders(headers map[string]string)](#): sets custom headers for request.
+
+This example will get gateways with farsi language with the given location:
+
+```go
+area, err := areaGatewaysClient.GetGateways(35.709374285391284, 51.40994310379028, area_gateways.NewDefaultCallOptions(
+	    area_gateways.WithFarsiLanguage()
+	))
 if err != nil {
     panic(err)
 }
