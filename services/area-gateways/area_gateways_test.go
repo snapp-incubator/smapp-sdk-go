@@ -17,7 +17,7 @@ func TestNewAreaGatewaysClient(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Second)
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		if client == nil {
 			t.Fatalf("client should not be nil")
@@ -30,7 +30,7 @@ func TestNewAreaGatewaysClient(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Second, WithURL("https://google.com"))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		if client == nil {
 			t.Fatalf("client should not be nil")
@@ -54,7 +54,7 @@ func TestClient_GetGateways(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		_, err = client.GetGateways(35.709374285391284, 51.40994310379028, NewDefaultCallOptions(
 			WithFarsiLanguage(),
@@ -77,7 +77,7 @@ func TestClient_GetGateways(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		_, err = client.GetGateways(35.709374285391284, 51.40994310379028, NewDefaultCallOptions(
 			WithFarsiLanguage(),
@@ -100,7 +100,7 @@ func TestClient_GetGateways(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		_, err = client.GetGateways(35.709374285391284, 51.40994310379028, NewDefaultCallOptions(
 			WithFarsiLanguage(),
@@ -123,7 +123,7 @@ func TestClient_GetGateways(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Second, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		_, err = client.GetGateways(5000, 5000, NewDefaultCallOptions())
 		if err == nil {
@@ -143,7 +143,7 @@ func TestClient_GetGateways(t *testing.T) {
 
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Second, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		_, err = client.GetGateways(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
 			WithFarsiLanguage(),
@@ -167,7 +167,7 @@ func TestClient_GetGateways(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		_, err = client.GetGateways(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
 			WithFarsiLanguage(),
@@ -193,7 +193,7 @@ func TestClient_GetGatewaysWithContext(t *testing.T) {
 		}
 		client, err := NewAreaGatewaysClient(cfg, V1, time.Second, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 		}
 		var ctx context.Context = nil
 		_, err = client.GetGatewaysWithContext(ctx, 35.77331417156089, 51.41831696033478, NewDefaultCallOptions(

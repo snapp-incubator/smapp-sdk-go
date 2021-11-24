@@ -21,7 +21,7 @@ func TestClient_LocatePoints(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		_, err = client.LocatePoints([]Point{{
 			Lat: 35.70973799747619,
@@ -46,7 +46,7 @@ func TestClient_LocatePoints(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		_, err = client.LocatePoints([]Point{{
 			Lat: 35.70973799747619,
@@ -71,7 +71,7 @@ func TestClient_LocatePoints(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		_, err = client.LocatePoints([]Point{{
 			Lat: 35.70973799747619,
@@ -98,7 +98,7 @@ func TestClient_LocatePoints(t *testing.T) {
 
 		client, err := NewLocateClient(cfg, V1, time.Second, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		_, err = client.LocatePoints([]Point{{
 			Lat: 35.70973799747619,
@@ -124,7 +124,7 @@ func TestClient_LocatePoints(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		_, err = client.LocatePoints([]Point{{
 			Lat: 35.70973799747619,
@@ -152,7 +152,7 @@ func TestClient_LocatePointsWithContext(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Second, WithURL(sv.URL))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		var ctx context.Context = nil
 		_, err = client.LocatePointsWithContext(ctx, []Point{{
@@ -178,7 +178,7 @@ func TestNewLocateClient(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Second)
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		if client == nil {
 			t.Fatalf("client should not be nil")
@@ -191,7 +191,7 @@ func TestNewLocateClient(t *testing.T) {
 		}
 		client, err := NewLocateClient(cfg, V1, time.Second, WithURL("https://google.com"))
 		if err != nil {
-			t.Fatalf("could not create reverse client due to: %s", err.Error())
+			t.Fatalf("could not create locate client due to: %s", err.Error())
 		}
 		if client == nil {
 			t.Fatalf("client should not be nil")

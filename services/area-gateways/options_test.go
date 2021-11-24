@@ -14,7 +14,7 @@ func TestWithURL(t *testing.T) {
 	}
 	client, err := NewAreaGatewaysClient(cfg, V1, time.Second, WithURL("https://google.com"))
 	if err != nil {
-		t.Fatalf("could not create reverse client due to: %s", err.Error())
+		t.Fatalf("could not create area-gateways client due to: %s", err.Error())
 	}
 
 	if client.url != "https://google.com" {

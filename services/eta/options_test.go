@@ -1,4 +1,4 @@
-package locate
+package eta
 
 import (
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
@@ -12,9 +12,9 @@ func TestWithURL(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not create default config due to: %s", err.Error())
 	}
-	client, err := NewLocateClient(cfg, V1, time.Second, WithURL("https://google.com"))
+	client, err := NewETAClient(cfg, V1, time.Second, WithURL("https://google.com"))
 	if err != nil {
-		t.Fatalf("could not create locate client due to: %s", err.Error())
+		t.Fatalf("could not create reverse client due to: %s", err.Error())
 	}
 
 	if client.url != "https://google.com" {
@@ -27,7 +27,7 @@ func TestWithTransport(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not create default config due to: %s", err.Error())
 	}
-	client, err := NewLocateClient(cfg, V1, time.Second, WithTransport(&http.Transport{
+	client, err := NewETAClient(cfg, V1, time.Second, WithTransport(&http.Transport{
 		MaxIdleConns: 2,
 	}))
 	if err != nil {
