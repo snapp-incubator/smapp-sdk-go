@@ -35,6 +35,28 @@ func TestClient_LocatePoints(t *testing.T) {
 			t.Fatalf("should be nil.")
 		}
 	})
+	t.Run("invalid_input", func(t *testing.T) {
+		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`{}`))
+		}))
+
+		cfg, err := config.NewDefaultConfig("key", config.WithAPIKeySource(config.HeaderSource))
+		if err != nil {
+			t.Fatalf("could not create default config due to: %s", err.Error())
+		}
+		client, err := NewLocateClient(cfg, V1, time.Millisecond*100, WithURL(sv.URL))
+		if err != nil {
+			t.Fatalf("could not create locate client due to: %s", err.Error())
+		}
+		_, err = client.LocatePoints(nil, NewDefaultCallOptions(
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
+		))
+		if err == nil {
+			t.Fatalf("there should be an error due to nil input array")
+		}
+	})
 	t.Run("non-200-status", func(t *testing.T) {
 		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)

@@ -48,6 +48,10 @@ func (c *Client) LocatePoints(points []Point, options CallOptions) ([]Result, er
 
 // LocatePointsWithContext is like LocatePoints, but with context.Context support
 func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, options CallOptions) ([]Result, error) {
+	if len(points) == 0 {
+		return nil, fmt.Errorf("smapp locate: at least on point should be passed")
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("smapp locate: could not create request. err: %s", err.Error())
