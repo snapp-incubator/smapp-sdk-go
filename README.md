@@ -32,11 +32,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.6.1
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.6.2
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.6.1
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.6.2
 ```
 
 you can download the library with `go mod download` command.
@@ -59,7 +59,7 @@ List of environment variables are:
 + **`SMAPP_API_KEY`**: specifies api key for using smapp services. this environment variable is **`required`**.
 + `SMAPP_API_KEY_SOURCE`: specifies the source of api key in a request. valid values are `header` and `query`. default
   value is `header`.
-+ `SMAPP_API_KEY_NAME`: specifies the name of api key in a request. default value is `X-Smapp-Key`.
++ `SMAPP_API_KEY_NAME`: specifies the name of api key parameter (header name of query param name) in a request. default value is `X-Smapp-Key`.
 + `SMAPP_API_REGION`: the region of smapp api should be specified here. valid values are `teh-1` and `teh-2`. default
   value is `teh-1`
 + `SMAPP_API_BASE_URL`: is the base url of smapp services. default value
@@ -70,7 +70,7 @@ a config from environment could be instantiated like code below:
 ```go
 config, err := config.ReadFromEnvironment()
 if err != nil {
-panic(err)
+  panic(err)
 }
 ```
 
@@ -88,7 +88,7 @@ a config could be instantiated like code below:
 ```go
 config, err := config.NewDefaultConfig("api-key")
 if err != nil {
-panic(err)
+  panic(err)
 }
 ```
 
@@ -115,15 +115,15 @@ Example:
 
 ```go
 cfg, err := config.ReadFromEnvironment(
-config.WithRegion("teh-2"),
-config.WithAPIKey("example-api-key"),
-config.WithPublicURL(),
+  config.WithRegion("teh-2"),
+  config.WithAPIKey("example-api-key"),
+  config.WithPublicURL(),
 )
 
 cfg2, err := NewDefaultConfig("api-key",
-config.WithRegion("teh-2"),
-config.WithAPIKeyName("X-Smapp-New-Key"),
-config.WithPublicURL(),
+  config.WithRegion("teh-2"),
+  config.WithAPIKeyName("X-Smapp-New-Key"),
+  config.WithPublicURL(),
 )
 ```
 
@@ -195,24 +195,25 @@ list of call options for reverse-geocode service are:
 + [WithZoomLevel(zoomLevel int)](#): sets the zoom level for the request. default value is `16`
 + [WithEnglishLanguage()](#): sets the language for response to English. default is `fa` (Farsi)
 + [WithFarsiLanguage()](#): sets the language for response to Farsi. default is `fa` (Farsi)
-+ [WithPassengerResponseType()](#): sets the response type suitable for passengers. default is `driver`
-+ [WithDriverResponseType()](#): sets the response type suitable for drivers. default is `driver`
-+ [WithVerboseResponseType()](#): sets the response type to a verbose response. default is `driver`
-+ [WithBikerResponseType()](#): sets the response type to a verbose response. default is `biker`
-+ [WithOriginResponseType()](#): sets the response type to a verbose response. default is `origin`
-+ [WithDestinationResponseType()](#): sets the response type to a verbose response. default is `origin`
++ [WithPassengerResponseType()](#): sets the response type suitable for passengers.
++ [WithDriverResponseType()](#): sets the response type suitable for drivers.
++ [WithVerboseResponseType()](#): sets the response type to a verbose response.
++ [WithBikerResponseType()](#): sets the response type suitable for bikers
++ [WithOriginResponseType()](#): sets the response type for origin points.
++ [WithDestinationResponseType()](#): sets the response type for destination points.
++ [WithIraqResponseType()](#): sets the response type suitable for iraq country. it should be used just for **Baly** product.
 + [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 This example will set zoom level of 17 with English response:
 
 ```go
 displayName, err := reverseClient.GetDisplayName(35.0123, 53.12312, reverse.NewDefaultCallOptions(
-reverse.WithZoomLevel(17),
-reverse.WithEnglishLanguage(),
+  reverse.WithZoomLevel(17),
+  reverse.WithEnglishLanguage(),
 ))
 
 if err != nil {
-panic(err)
+  panic(err)
 }
 ```
 
@@ -306,11 +307,11 @@ This example will search for places like `Azadi` with city id of 1000 (Tehran) a
 
 ```go
 results, err := searchClient.AutoComplete("Azadi", search.NewDefaultCallOptions(
-search.WithCityId(1000),
-search.WithLocation(35.012, 53.1253),
+  search.WithCityId(1000),
+  search.WithLocation(35.012, 53.1253),
 ))
 if err != nil {
-panic(err)
+  panic(err)
 }
 ```
 
@@ -379,10 +380,10 @@ This example will get gateways with farsi language with the given location:
 
 ```go
 area, err := areaGatewaysClient.GetGateways(35.709374285391284, 51.40994310379028, area_gateways.NewDefaultCallOptions(
-area_gateways.WithFarsiLanguage()
+  area_gateways.WithFarsiLanguage()
 ))
 if err != nil {
-panic(err)
+  panic(err)
 }
 ```
 
@@ -450,14 +451,17 @@ This example will get located points with given locations:
 
 ```go
 results, err := client.LocatePoints([]locate.Point{{
-Lat: 35.70973799747619,
-Lon: 51.40869855880737,
-}}, locate.NewDefaultCallOptions(
-locate.WithHeaders(map[string]string{
-"foo": "bar",
-})))
+  Lat: 35.70973799747619,
+  Lon: 51.40869855880737,
+  }}, locate.NewDefaultCallOptions(
+    locate.WithHeaders(map[string]string{
+    "foo": "bar",
+    }
+    )
+  )
+)
 if err != nil {
-panic(err)
+  panic(err)
 }
 ```
 

@@ -11,6 +11,7 @@ const (
 	Origin      ResponseType = "origin"
 	Destination ResponseType = "destination"
 	Frequent    ResponseType = "frequent"
+	Iraq        ResponseType = "iraq"
 )
 
 const (
@@ -84,6 +85,14 @@ func WithDestinationResponseType() CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseResponseType = true
 		options.ResponseType = Destination
+	}
+}
+
+// WithIraqResponseType will set `iraq` type for the response
+func WithIraqResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Iraq
 	}
 }
 
