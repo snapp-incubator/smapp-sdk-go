@@ -134,7 +134,9 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 		return nil, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
@@ -235,7 +237,9 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 		return "", fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
@@ -332,7 +336,9 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {

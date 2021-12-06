@@ -136,7 +136,9 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 		_ = response.Body.Close()
 	}()
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	if response.StatusCode == http.StatusOK {

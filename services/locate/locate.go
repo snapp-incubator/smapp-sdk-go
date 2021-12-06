@@ -113,7 +113,9 @@ func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, op
 		return nil, fmt.Errorf("smapp locate: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {

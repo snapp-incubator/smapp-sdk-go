@@ -118,7 +118,9 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		return ETA{}, fmt.Errorf("smapp eta: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {

@@ -134,7 +134,9 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 		return nil, fmt.Errorf("smapp search get-cities: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
@@ -237,7 +239,9 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 		return nil, fmt.Errorf("smapp search search-cities: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
@@ -350,7 +354,9 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 		return nil, fmt.Errorf("smapp search autocomplete: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 
@@ -442,7 +448,9 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 		return Detail{}, fmt.Errorf("smapp search details: could not make a request due to this error: %s", err.Error())
 	}
 
+	//nolint
 	var responseSpan trace.Span
+	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
