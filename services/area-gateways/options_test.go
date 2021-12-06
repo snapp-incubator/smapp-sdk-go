@@ -38,3 +38,23 @@ func TestWithTransport(t *testing.T) {
 		t.Fatalf("client.httpClient.Transport.MaxIdleConns should be %d but it is %d", 2, client.httpClient.Transport.(*http.Transport).MaxIdleConns)
 	}
 }
+
+func TestWithRequestOpenTelemetryTracing(t *testing.T) {
+	cfg, err := config.NewDefaultConfig("key")
+	if err != nil {
+		t.Fatalf("could not create default config due to: %s", err.Error())
+	}
+	client, err := NewAreaGatewaysClient(cfg, V1, time.Second,
+		WithTransport(&http.Transport{
+			MaxIdleConns: 2,
+		}),
+		WithRequestOpenTelemetryTracing("test"),
+	)
+	if err != nil {
+		t.Fatalf("could not create search client due to: %s", err.Error())
+	}
+
+	if client.tracerName != "test" {
+		t.Fatalf("client.tracerName should be %s but it is %s", "test", client.tracerName)
+	}
+}

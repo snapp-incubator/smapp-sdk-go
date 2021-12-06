@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -54,6 +57,7 @@ type Client struct {
 	cfg        *config.Config
 	url        string
 	httpClient http.Client
+	tracerName string
 }
 
 // Force Client to implement Interface at compile time
@@ -71,8 +75,21 @@ func (c *Client) GetDisplayName(lat, lon float64, options CallOptions) (string, 
 
 // GetComponentsWithContext is like GetComponents, but with context.Context support.
 func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64, options CallOptions) ([]Component, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-address-components")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return nil, errors.New("smapp reverse geo-code: could not create request. err: " + err.Error())
 	}
 
@@ -98,6 +115,8 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -108,10 +127,15 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -128,23 +152,43 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return nil, fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
 		}
 
 		if strings.ToUpper(resp.Status) != OKStatus {
+			responseSpan.SetStatus(codes.Error, "status not OK")
+			responseSpan.End()
 			return nil, errors.New("smapp reverse geo-code: status of request is not OK")
 		}
 
+		responseSpan.End()
 		return resp.Result.Components, nil
 	}
 
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.End()
 	return nil, fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
 // GetDisplayNameWithContext is like GetDisplayName, but with context.Context support.
 func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64, options CallOptions) (string, error) {
+	if ctx == nil {
+		return "", fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-display-name-address")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return "", errors.New("smapp reverse geo-code: could not create request. err: " + err.Error())
 	}
 
@@ -172,6 +216,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.End()
 		return "", fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -182,10 +227,16 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -202,16 +253,23 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return "", fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
 		}
 
 		if strings.ToUpper(resp.Status) != OKStatus {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return "", errors.New("smapp reverse geo-code: status of request is not OK")
 		}
 
+		responseSpan.End()
 		return resp.Result.DisplayName, nil
 	}
 
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.End()
 	return "", fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
@@ -222,8 +280,21 @@ func (c *Client) GetFrequent(lat, lon float64, options CallOptions) (FrequentAdd
 
 // GetFrequentWithContext is like GetFrequent, but with context.Context support
 func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error) {
+	if ctx == nil {
+		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-frequent-address")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return FrequentAddress{}, errors.New("smapp reverse geo-code: could not create request. err: " + err.Error())
 	}
 
@@ -243,6 +314,7 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.End()
 		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -253,10 +325,15 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -268,12 +345,16 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
 		}
 
+		responseSpan.End()
 		return resp, nil
 	}
-
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.End()
 	return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
@@ -283,7 +364,8 @@ func NewReverseClient(cfg *config.Config, version Version, timeout time.Duration
 		cfg: cfg,
 		url: getReverseDefaultURL(cfg, version),
 		httpClient: http.Client{
-			Timeout: timeout,
+			Timeout:   timeout,
+			Transport: http.DefaultTransport,
 		},
 	}
 

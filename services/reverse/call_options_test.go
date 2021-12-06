@@ -72,20 +72,6 @@ func TestWithDestinationResponseType(t *testing.T) {
 	}
 }
 
-func TestWithIraqResponseType(t *testing.T) {
-	callOptions := CallOptions{
-		ZoomLevel:    16,
-		ResponseType: Driver,
-		Language:     Farsi,
-	}
-
-	WithIraqResponseType()(&callOptions)
-
-	if callOptions.ResponseType != Iraq {
-		t.Fatalf("ResponseType should be Iraq")
-	}
-}
-
 func TestWithBikerResponseType(t *testing.T) {
 	callOptions := CallOptions{
 		ZoomLevel:    16,

@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -37,6 +40,7 @@ type Client struct {
 	cfg        *config.Config
 	url        string
 	httpClient http.Client
+	tracerName string
 }
 
 // Force Client to implement Interface at compile time
@@ -50,12 +54,21 @@ func (c *Client) GetETA(points []Point, options CallOptions) (ETA, error) {
 
 // GetETAWithContext s like GetETA, but with context.Context support
 func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error) {
-	if len(points) < 2 {
-		return ETA{}, fmt.Errorf("smapp eta: at least 2 points should be passed to get ETA")
+	if ctx == nil {
+		return ETA{}, fmt.Errorf("smapp eta: nil context")
 	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-eta")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return ETA{}, fmt.Errorf("smapp eta: could not create request. err: %s", err.Error())
 	}
 
@@ -76,6 +89,8 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return ETA{}, fmt.Errorf("smapp eta: could not marshal input data")
 	}
 
@@ -86,6 +101,8 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return ETA{}, fmt.Errorf("smapp eta: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -94,11 +111,15 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 	}
 
 	req.URL.RawQuery = params.Encode()
+	reqInitSpan.End()
 
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return ETA{}, fmt.Errorf("smapp eta: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -109,12 +130,15 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		var result ETA
 		err := json.NewDecoder(response.Body).Decode(&result)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return ETA{}, fmt.Errorf("smapp eta: could not serialize response due to: %s", err.Error())
 		}
-
+		responseSpan.End()
 		return result, nil
 	}
-
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.End()
 	return ETA{}, fmt.Errorf("smapp eta: non 200 status: %d", response.StatusCode)
 }
 
@@ -124,7 +148,8 @@ func NewETAClient(cfg *config.Config, version Version, timeout time.Duration, op
 		cfg: cfg,
 		url: getETADefaultURL(cfg, version),
 		httpClient: http.Client{
-			Timeout: timeout,
+			Timeout:   timeout,
+			Transport: http.DefaultTransport,
 		},
 	}
 

@@ -32,11 +32,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.6.3
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.7.0
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.6.3
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.7.0
 ```
 
 you can download the library with `go mod download` command.
@@ -62,7 +62,7 @@ List of environment variables are:
 + `SMAPP_API_KEY_NAME`: specifies the name of api key parameter (header name of query param name) in a request. default value is `X-Smapp-Key`.
 + `SMAPP_API_REGION`: the region of smapp api should be specified here. valid values are `teh-1` and `teh-2`. default
   value is `teh-1`
-+ `SMAPP_API_BASE_URL`: is the base url of smapp services. default value
++ `SMAPP_API_BASE_URL`: is the base url of smapp services (API Gateway). default value
   is `http://smapp-api.apps.inter-dc.teh-1.snappcloud.io`
 
 a config from environment could be instantiated like code below:
@@ -102,8 +102,7 @@ List of options are:
 + [WithRegion(region string)](#) : sets a region for the config.
 + [WithAPIKey(apikey string)](#) : sets the APIKey for the config. it is often used as an option
   in `ReadFromEnvironment`.
-+ [WithAPIBaseURL(baseURL string)](#) : sets a custom base URL for services.
-+ [WithAPIBaseURL(baseURL string)](#) : sets a custom base URL for services.
++ [WithAPIBaseURL(baseURL string)](#) : sets a custom base URL for API Gateway of smapp services.
 + [WithAPIKeySource(source APIKeySource)](#) : sets an APIKeySource for the config.
 + [WithAPIKeyName(name string)](#) : sets an APIKeyName for the config
 + [WithPublicURL()](#) : sets the APIBaseURL to public routes of smapp. Notice: make sure you set region before using
@@ -132,6 +131,11 @@ cfg2, err := NewDefaultConfig("api-key",
 After creating a config object, you can construct a reverse geo-code client for your services.
 
 The constructor of Reverse Geocode receives a config, version, timeout and multiple optional options.
+
+some constructor options are:
++ [WithURL(url string)](#): could be used to override url of the service.
++ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
 
@@ -223,6 +227,11 @@ if err != nil {
 After creating a config object, you can construct a search client for your services.
 
 The constructor of Search receives a config, version, timeout and multiple optional options.
+
+some constructor options are:
++ [WithURL(url string)](#): could be used to override url of the service.
++ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
 
@@ -322,6 +331,11 @@ After creating a config object, you can construct an area-gateways client for yo
 
 The constructor of area-gateways receives a config, version, timeout and multiple optional options.
 
+some constructor options are:
++ [WithURL(url string)](#): could be used to override url of the service.
++ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
+
 Example:
 
 ```go
@@ -393,6 +407,11 @@ if err != nil {
 After creating a config object, you can construct a locate client for your services.
 
 The constructor of locate receives a config, version, timeout and multiple optional options.
+
+some constructor options are:
++ [WithURL(url string)](#): could be used to override url of the service.
++ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
 
@@ -471,6 +490,11 @@ if err != nil {
 After creating a config object, you can construct an ETA client for your services.
 
 The constructor of ETA client receives a config, version, timeout and multiple optional options.
+
+some constructor options are:
++ [WithURL(url string)](#): could be used to override url of the service.
++ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
 
@@ -586,3 +610,80 @@ mockSearch := search.NewMockSearchClient(ctrl)
 
 you can use `mockSearch` to mock results of function calls of the client. for more information,
 see [here](https://github.com/golang/mock)
+
+# OpenTelemetry Tracing
+`WithRequestOpenTelemetryTracing` could be used to enable [opentelemetry](https://opentelemetry.io/) on the sdk.
+
+you should use functions with `WithContext` postfix of clients and pass a valid context of parent `Span`s for proper tracing. it will act unexpected if configurations of opentelemetry are not valid. 
+
+> **Note** make sure you have declared a global tracer (with `SetTracerProvider` function existing in opentelemtry library) and proper propagator (`SetTextMapPropagator` function rxisting in opentelemetry library)
+
+## Example
+in this example we will configure a jaeger opentelemetry client with `area-gateways` client.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/area-gateways"
+	jaeger_propagator "go.opentelemetry.io/contrib/propagators/jaeger"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+	traceSpan "go.opentelemetry.io/otel/trace"
+	"time"
+)
+
+func main() {
+	exp, err := jaeger.New(jaeger.WithAgentEndpoint(
+			jaeger.WithAgentHost("localhost"),
+			jaeger.WithAgentPort("6831"),
+		),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	tp := trace.NewTracerProvider(
+		trace.WithBatcher(exp),
+		trace.WithSampler(trace.ParentBased(trace.TraceIDRatioBased(0.5))),
+		trace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceNameKey.String("sample-tracer"),
+		),
+		),
+	)
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(jaeger_propagator.Jaeger{})
+
+	cfg, err := config.NewDefaultConfig("api-key")
+	if err != nil {
+		panic(err)
+	}
+
+	areaGatewaysClient, err := area_gateways.NewAreaGatewaysClient(cfg, area_gateways.V1, time.Second,
+		area_gateways.WithRequestOpenTelemetryTracing("sample-tracer"),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	var sp traceSpan.Span
+	ctx, sp := otel.Tracer("test-test").Start(context.Background(), "start")
+	area, err := areaGatewaysClient.GetGatewaysWithContext(ctx, 35.709374285391284, 51.40994310379028, area_gateways.NewDefaultCallOptions())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(area)
+	sp.End()
+	time.Sleep(10 * time.Second)
+}
+
+```

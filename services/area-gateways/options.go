@@ -1,6 +1,9 @@
 package area_gateways
 
-import "net/http"
+import (
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"net/http"
+)
 
 // ConstructorOption is a function type for customizing constructor behaviour in a fluent way.
 type ConstructorOption func(client *Client)
@@ -16,5 +19,13 @@ func WithURL(url string) ConstructorOption {
 func WithTransport(transport *http.Transport) ConstructorOption {
 	return func(client *Client) {
 		client.httpClient.Transport = transport
+	}
+}
+
+// WithRequestOpenTelemetryTracing will enable opentelemetry tracing the request
+func WithRequestOpenTelemetryTracing(tracerName string) ConstructorOption {
+	return func(client *Client) {
+		client.tracerName = tracerName
+		client.httpClient.Transport = otelhttp.NewTransport(client.httpClient.Transport)
 	}
 }

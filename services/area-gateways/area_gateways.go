@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -38,6 +42,7 @@ type Client struct {
 	cfg        *config.Config
 	url        string
 	httpClient http.Client
+	tracerName string
 }
 
 // Force Client to implement Interface at compile time
@@ -51,8 +56,23 @@ func (c *Client) GetGateways(lat, lon float64, options CallOptions) (Area, error
 
 // GetGatewaysWithContext is like GetGateways, but with context.Context support
 func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, options CallOptions) (Area, error) {
-	params := url.Values{}
+	if ctx == nil {
+		return Area{}, fmt.Errorf("smapp area-gateways: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-gateways")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Float64("lat", lat),
+		attribute.Float64("lon", lon),
+	)
 
+	// Request initialization span start
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
+	params := url.Values{}
 	point := Point{
 		Lat: lat,
 		Lon: lon,
@@ -60,16 +80,25 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 
 	err := point.Validate()
 	if err != nil {
+		reqInitSpan.RecordError(err, trace.WithAttributes(
+			attribute.Float64("lat", point.Lat),
+			attribute.Float64("lon", point.Lon),
+		))
+		reqInitSpan.End()
 		return Area{}, fmt.Errorf("smapp area-gateways: input lat and lon are invalid due to: %s", err.Error())
 	}
 
 	body, err := json.Marshal(&point)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return Area{}, fmt.Errorf("smapp area-gateways: could not marshal request body due to: %s", err.Error())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, bytes.NewBuffer(body))
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return Area{}, fmt.Errorf("smapp area-gateways: could not create request. err: %s", err.Error())
 	}
 
@@ -82,6 +111,8 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return Area{}, fmt.Errorf("smapp area-gateways: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -92,6 +123,8 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 	}
 
 	req.URL.RawQuery = params.Encode()
+	// End of request initialization
+	reqInitSpan.End()
 
 	response, err := c.httpClient.Do(req)
 	if err != nil {
@@ -103,17 +136,24 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 		_ = response.Body.Close()
 	}()
 
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
+
 	if response.StatusCode == http.StatusOK {
 		resp := Area{}
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return Area{}, fmt.Errorf("smapp area-gateways: could not serialize response due to: %s", err.Error())
 		}
 
+		responseSpan.End()
 		return resp, nil
 	}
-
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.End()
 	return Area{}, fmt.Errorf("smapp area-gateways: non 200 status: %d", response.StatusCode)
 }
 
@@ -123,7 +163,8 @@ func NewAreaGatewaysClient(cfg *config.Config, version Version, timeout time.Dur
 		cfg: cfg,
 		url: getAreaGatewaysDefaultURL(cfg, version),
 		httpClient: http.Client{
-			Timeout: timeout,
+			Timeout:   timeout,
+			Transport: http.DefaultTransport,
 		},
 	}
 

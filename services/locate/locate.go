@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -36,6 +39,7 @@ type Client struct {
 	cfg        *config.Config
 	url        string
 	httpClient http.Client
+	tracerName string
 }
 
 // Force Client to implement Interface at compile time
@@ -48,12 +52,25 @@ func (c *Client) LocatePoints(points []Point, options CallOptions) ([]Result, er
 
 // LocatePointsWithContext is like LocatePoints, but with context.Context support
 func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, options CallOptions) ([]Result, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("smapp locate: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "locate-points")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	if len(points) == 0 {
 		return nil, fmt.Errorf("smapp locate: at least on point should be passed")
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp locate: could not create request. err: %s", err.Error())
 	}
 
@@ -64,6 +81,8 @@ func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, op
 	data := ReqData{Locations: points}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp locate: could not marshal input data")
 	}
 
@@ -74,6 +93,8 @@ func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, op
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp locate: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -85,10 +106,15 @@ func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, op
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("smapp locate: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -99,12 +125,16 @@ func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, op
 		var result []Result
 		err := json.NewDecoder(response.Body).Decode(&result)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return nil, fmt.Errorf("smapp locate: could not serialize response due to: %s", err.Error())
 		}
 
+		responseSpan.End()
 		return result, nil
 	}
-
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.End()
 	return nil, fmt.Errorf("smapp locate: non 200 status: %d", response.StatusCode)
 }
 
@@ -115,6 +145,7 @@ func NewLocateClient(cfg *config.Config, version Version, timeout time.Duration,
 		url: getLocateDefaultURL(cfg, version),
 		httpClient: http.Client{
 			Timeout: timeout,
+			Transport: http.DefaultTransport,
 		},
 	}
 

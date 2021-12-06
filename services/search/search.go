@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
 	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -59,6 +63,7 @@ type Client struct {
 	cfg        *config.Config
 	url        string
 	httpClient http.Client
+	tracerName string
 }
 
 // Force Client to implement Interface at compile time
@@ -71,9 +76,22 @@ func (c *Client) GetCities(options CallOptions) ([]City, error) {
 
 // GetCitiesWithContext is like GetCities, but with context.Context support.
 func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) ([]City, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-cities")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	reqURL := fmt.Sprintf("%s/place/cities", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return nil, errors.New("smapp search get-cities: could not create request. err: " + err.Error())
 	}
 
@@ -97,6 +115,8 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp search get-cities: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -107,10 +127,15 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("smapp search get-cities: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -125,16 +150,24 @@ func (c *Client) GetCitiesWithContext(ctx context.Context, options CallOptions) 
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return nil, fmt.Errorf("smapp search get-cities: could not serialize response due to: %s", err.Error())
 		}
 
 		if strings.ToUpper(resp.Status) != OKStatus {
+			responseSpan.SetStatus(codes.Error, "status not OK")
+			responseSpan.End()
 			return nil, errors.New("smapp search get-cities: status of request is not OK")
 		}
 
+		responseSpan.End()
 		return resp.Predictions, nil
 	}
 
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.SetAttributes(attribute.Int("status_code", response.StatusCode))
+	responseSpan.End()
 	return nil, fmt.Errorf("smapp search get-cities: non 200 status: %d", response.StatusCode)
 }
 
@@ -145,9 +178,22 @@ func (c *Client) SearchCity(input string, options CallOptions) ([]City, error) {
 
 // SearchCityWithContext is like SearchCity, but with context.Context support.
 func (c *Client) SearchCityWithContext(ctx context.Context, input string, options CallOptions) ([]City, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "search-cities")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	reqURL := fmt.Sprintf("%s/place/search/city", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return nil, errors.New("smapp search search-cities: could not create request. err: " + err.Error())
 	}
 
@@ -173,6 +219,8 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp search search-cities: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -182,11 +230,15 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 	}
 
 	req.URL.RawQuery = params.Encode()
+	reqInitSpan.End()
 
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("smapp search search-cities: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -201,16 +253,24 @@ func (c *Client) SearchCityWithContext(ctx context.Context, input string, option
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return nil, fmt.Errorf("smapp search search-cities: could not serialize response due to: %s", err.Error())
 		}
 
 		if strings.ToUpper(resp.Status) != OKStatus {
+			responseSpan.SetStatus(codes.Error, "status not OK")
+			responseSpan.End()
 			return nil, errors.New("smapp search search-cities: status of request is not OK")
 		}
 
+		responseSpan.End()
 		return resp.Predictions, nil
 	}
 
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.SetAttributes(attribute.Int("status_code", response.StatusCode))
+	responseSpan.End()
 	return nil, fmt.Errorf("smapp search search-cities: non 200 status: %d", response.StatusCode)
 }
 
@@ -221,9 +281,22 @@ func (c *Client) AutoComplete(input string, options CallOptions) ([]Result, erro
 
 // AutoCompleteWithContext is like AutoComplete, but with context.Context support.
 func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, options CallOptions) ([]Result, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "autocomplete")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	reqURL := fmt.Sprintf("%s/place/autocomplete/json", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return nil, errors.New("smapp search autocomplete: could not create request. err: " + err.Error())
 	}
 
@@ -258,6 +331,8 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp search autocomplete: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -268,10 +343,16 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("smapp search autocomplete: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
+
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -286,16 +367,24 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return nil, fmt.Errorf("smapp search autocomplete: could not serialize response due to: %s", err.Error())
 		}
 
 		if strings.ToUpper(resp.Status) != OKStatus {
+			responseSpan.SetStatus(codes.Error, "status not OK")
+			responseSpan.End()
 			return nil, errors.New("smapp search autocomplete: status of request is not OK")
 		}
 
+		responseSpan.End()
 		return resp.Predictions, nil
 	}
 
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.SetAttributes(attribute.Int("status_code", response.StatusCode))
+	responseSpan.End()
 	return nil, fmt.Errorf("smapp search autocomplete: non 200 status: %d", response.StatusCode)
 }
 
@@ -306,9 +395,22 @@ func (c *Client) Details(placeId string, options CallOptions) (Detail, error) {
 
 // DetailsWithContext is like Details, but with context.Context support.
 func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options CallOptions) (Detail, error) {
+	if ctx == nil {
+		return Detail{}, fmt.Errorf("smapp reverse geo-code: nil context")
+	}
+	// Start of parent span
+	var span trace.Span
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "details")
+	defer span.End()
+
+	var reqInitSpan trace.Span
+	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
+
 	reqURL := fmt.Sprintf("%s/place/details/json", c.url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
+		reqInitSpan.RecordError(err)
+		reqInitSpan.End()
 		return Detail{}, errors.New("smapp search details: could not create request. err: " + err.Error())
 	}
 
@@ -321,6 +423,8 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 	} else if c.cfg.APIKeySource == config.QueryParamSource {
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
+		reqInitSpan.End()
 		return Detail{}, fmt.Errorf("smapp search details: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
@@ -331,10 +435,15 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 
 	req.URL.RawQuery = params.Encode()
 
+	reqInitSpan.End()
+
 	response, err := c.httpClient.Do(req)
 	if err != nil {
 		return Detail{}, fmt.Errorf("smapp search details: could not make a request due to this error: %s", err.Error())
 	}
+
+	var responseSpan trace.Span
+	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
@@ -349,16 +458,24 @@ func (c *Client) DetailsWithContext(ctx context.Context, placeId string, options
 
 		err := json.NewDecoder(response.Body).Decode(&resp)
 		if err != nil {
+			responseSpan.RecordError(err)
+			responseSpan.End()
 			return Detail{}, fmt.Errorf("smapp search details: could not serialize response due to: %s", err.Error())
 		}
 
 		if strings.ToUpper(resp.Status) != OKStatus {
+			responseSpan.SetStatus(codes.Error, "status not OK")
+			responseSpan.End()
 			return Detail{}, fmt.Errorf("smapp search details: request status is not OK")
 		}
 
+		responseSpan.End()
 		return resp.Result, nil
 	}
 
+	responseSpan.SetStatus(codes.Error, "non 200 status code")
+	responseSpan.SetAttributes(attribute.Int("status_code", response.StatusCode))
+	responseSpan.End()
 	return Detail{}, fmt.Errorf("smapp search details: non 200 status: %d", response.StatusCode)
 }
 
@@ -369,6 +486,7 @@ func NewSearchClient(cfg *config.Config, version Version, timeout time.Duration,
 		url: getSearchDefaultURL(cfg, version),
 		httpClient: http.Client{
 			Timeout: timeout,
+			Transport: http.DefaultTransport,
 		},
 	}
 
