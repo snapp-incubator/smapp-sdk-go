@@ -128,6 +128,20 @@ func TestWithEnglishLanguage(t *testing.T) {
 	}
 }
 
+func TestWithArabicLanguage(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver,
+		Language:     Farsi,
+	}
+
+	WithArabicLanguage()(&callOptions)
+
+	if callOptions.Language != Arabic {
+		t.Fatalf("Language should be Arabic")
+	}
+}
+
 func TestWithZoomLevel(t *testing.T) {
 	callOptions := CallOptions{
 		ZoomLevel:    16,

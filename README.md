@@ -194,7 +194,8 @@ list of call options for reverse-geocode service are:
 
 + [WithZoomLevel(zoomLevel int)](#): sets the zoom level for the request. default value is `16`
 + [WithEnglishLanguage()](#): sets the language for response to English. default is `fa` (Farsi)
-+ [WithFarsiLanguage()](#): sets the language for response to Farsi. default is `fa` (Farsi)
++ [WithFarsiLanguage()](#): sets the language for response to Farsi.
++ [WithArabicLanguage()](#): sets the language for response to Arabic. 
 + [WithPassengerResponseType()](#): sets the response type suitable for passengers.
 + [WithDriverResponseType()](#): sets the response type suitable for drivers.
 + [WithVerboseResponseType()](#): sets the response type to a verbose response.
