@@ -98,11 +98,11 @@ func (c *Client) LocatePointsWithContext(ctx context.Context, points []Point, op
 		return nil, fmt.Errorf("smapp locate: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
-	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
-
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
+
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 
 	req.URL.RawQuery = params.Encode()
 

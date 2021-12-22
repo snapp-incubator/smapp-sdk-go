@@ -116,11 +116,11 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 		return Area{}, fmt.Errorf("smapp area-gateways: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
 
-	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
-
 	for key, val := range options.Headers {
 		req.Header.Set(key, val)
 	}
+
+	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 
 	req.URL.RawQuery = params.Encode()
 	// End of request initialization

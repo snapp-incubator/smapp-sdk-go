@@ -1,6 +1,6 @@
 package eta
 
-// CallOptions is the type that specifies behaviour of a locate request.
+// CallOptions is the type that specifies behaviour of a eta request.
 type CallOptions struct {
 	// UseNoTraffic specifies if `no_traffic` query param exists in request.
 	UseNoTraffic bool

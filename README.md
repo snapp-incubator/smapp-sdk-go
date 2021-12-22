@@ -16,6 +16,7 @@ List of supported services are:
 - [x] Area Gateways
 - [x] Locate
 - [x] ETA
+- [x] Matrix
 - [ ] Routing
 
 # How to Install
@@ -32,11 +33,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.7.0
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.8.0
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.7.0
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.8.0
 ```
 
 you can download the library with `go mod download` command.
@@ -298,7 +299,7 @@ List of operations on a search client are:
 with `search.NewDefaultCallOptions()`
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
-list of call options for reverse-geocode service are:
+list of call options for search service are:
 
 + [WithLocation(lat, lon float)](#): The geographic point that search would be around it. May be user current location
   or center of the city that you want search in it. If location is empty, search boundary is whole of the country.
@@ -371,7 +372,7 @@ func main() {
 
 ### Operations
 
-List of operations on a search client are:
+List of operations on a area-gateways client are:
 
 + **`GetGateways(lat, lon float64, options CallOptions) (Area, error)`**:
   it receives `lat`,`lon` as a location and CallOptions and returns a polygon and its Gateways. It will return an Empty
@@ -385,7 +386,7 @@ List of operations on a search client are:
 with `area_gateways.NewDefaultCallOptions()`
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
-list of call options for reverse-geocode service are:
+list of call options for area-gateways service are:
 
 + [WithEnglishLanguage()](#): sets the language for response to English. default is `fa` (Farsi)
 + [WithFarsiLanguage()](#): sets the language for response to Farsi. default is `fa` (Farsi)
@@ -450,7 +451,7 @@ func main() {
 
 ### Operations
 
-List of operations on a search client are:
+List of operations on a locate client are:
 
 + **`LocatePoints(points []Point, options CallOptions) ([]Result, error)`**:
   it receives a list of Point s and returns a list with same length with located Point s
@@ -463,7 +464,7 @@ List of operations on a search client are:
 with `locate.NewDefaultCallOptions()`
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
-list of call options for reverse-geocode service are:
+list of call options for locate service are:
 
 + [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
@@ -546,7 +547,7 @@ func main() {
 
 ### Operations
 
-List of operations on a search client are:
+List of operations on a eta client are:
 
 + **`GetETA(points []Point, options CallOptions) (ETA, error)`**:
   It will receive a list of point with minimum length of 2 and returns ETA. Will return error if less than 2 points are
@@ -560,7 +561,7 @@ List of operations on a search client are:
 with `eta.NewDefaultCallOptions()`
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
-list of call options for reverse-geocode service are:
+list of call options for eta service are:
 
 + [WithNoTraffic()](#): sets `no_traffic` query param ro true. with this option eta requests does not involve traffic
   data in response
@@ -588,6 +589,92 @@ if err != nil {
     panic(err)
 }
 ```
+
+## Matrix
+
+After creating a config object, you can construct an Matrix client for your services.
+
+The constructor of Matrix client receives a config, version, timeout and multiple optional options.
+
+some constructor options are:
++ [WithURL(url string)](#): could be used to override url of the service.
++ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
+
+Example:
+
+```go
+package main
+
+import (
+  "fmt"
+  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/matrix"
+  "time"
+)
+
+func main() {
+  cfg, err := config.NewDefaultConfig("api-key")
+  if err != nil {
+    panic(err)
+  }
+  
+  client, err := matrix.NewMatrixClient(cfg, matrix.V1, time.Second*10)
+  if err != nil {
+    panic(err)
+  }
+
+  result, err := client.GetMatrix([]matrix.Point{
+    {
+      Lat: 35.7733304928583,
+      Lon: 51.418322660028934,
+    },
+    {
+      Lat: 35.72895575080859,
+      Lon: 51.37228488922119,
+    },
+  }, []matrix.Point{
+    {
+      Lat: 35.70033104179786,
+      Lon: 51.351492404937744,
+    },
+    {
+      Lat: 35.73933685292328,
+      Lon: 51.50890588760376,
+    },
+  }, matrix.NewDefaultCallOptions(
+    matrix.WithHeaders(map[string]string{
+      "foo": "bar",
+    }),
+  ))
+
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Println(result)
+}
+```
+
+### Operations
+
+List of operations on a matrix client are:
+
++ **`GetMatrix(sources []Point, targets []Point, options CallOptions) (Output, error)`**:
+  It will receive a list of points as sources and a list of points as targets and returns a matrix of eta predictions from all sources to all targets.
+  Will return error if sources or targets are empty.
++ **`GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error)`**:
+  same as `GetMatrix` but you can pass your context for more control.
+
+### CallOptions
+
+`CallOptions` is a struct that defines the behaviour of the operation. you can create a new `CallOptions`
+with `eta.NewDefaultCallOptions()`
+function. you can customize the behaviour with passing multiple call options to the constructor.
+
+list of call options for matrix service are:
+
++ [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 # Testing (Mocking)
 
