@@ -670,11 +670,13 @@ List of operations on a matrix client are:
 ### CallOptions
 
 `CallOptions` is a struct that defines the behaviour of the operation. you can create a new `CallOptions`
-with `eta.NewDefaultCallOptions()`
+with `matrix.NewDefaultCallOptions()`
 function. you can customize the behaviour with passing multiple call options to the constructor.
 
 list of call options for matrix service are:
 
++ [WithNoTraffic()](#): sets `no_traffic` query param ro true. with this option eta requests does not involve traffic
+  data in response
 + [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 # Testing (Mocking)
