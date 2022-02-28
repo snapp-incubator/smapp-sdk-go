@@ -18,6 +18,19 @@ func TestWithHeaders(t *testing.T) {
 	}
 }
 
+func TestWithNoTraffic(t *testing.T) {
+	callOptions := CallOptions{}
+
+	WithNoTraffic()(&callOptions)
+
+	if callOptions.UseNoTraffic == false {
+		t.Fatalf("UseNoTraffic should not be false")
+	}
+
+	if callOptions.NoTraffic == false {
+		t.Fatalf("NoTraffic should not be false")
+	}
+}
 
 func TestNewDefaultCallOptions(t *testing.T) {
 	callOptions := NewDefaultCallOptions(WithHeaders(map[string]string{
@@ -28,4 +41,3 @@ func TestNewDefaultCallOptions(t *testing.T) {
 		t.Fatalf("Language should be Farsi")
 	}
 }
-

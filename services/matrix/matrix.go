@@ -4,17 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Interface consists of functions of different functionalities of Matrix service. there are two implementation of this service.
@@ -32,6 +33,7 @@ type Version string
 const (
 	V1 Version = "v1"
 
+	NoTrafficQueryParameter = "no_traffic"
 	JSONInputQueryParam     = "json"
 )
 
@@ -77,7 +79,9 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 	}
 
 	params := url.Values{}
-
+	if options.UseNoTraffic {
+		params.Set(NoTrafficQueryParameter, "true")
+	}
 
 	data := Input{
 		Sources: sources,
@@ -165,4 +169,3 @@ func getMatrixDefaultURL(cfg *config.Config, version Version) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
 	return fmt.Sprintf("%s/matrix/%s", baseURL, version)
 }
-

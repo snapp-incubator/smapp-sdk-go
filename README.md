@@ -643,6 +643,7 @@ func main() {
       Lon: 51.50890588760376,
     },
   }, matrix.NewDefaultCallOptions(
+	matrix.WithNoTraffic(),
     matrix.WithHeaders(map[string]string{
       "foo": "bar",
     }),
