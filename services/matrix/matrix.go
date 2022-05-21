@@ -34,6 +34,7 @@ const (
 	V1 Version = "v1"
 
 	NoTrafficQueryParameter = "no_traffic"
+	EngineQueryParameter    = "engine"
 	JSONInputQueryParam     = "json"
 )
 
@@ -82,6 +83,7 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 	if options.UseNoTraffic {
 		params.Set(NoTrafficQueryParameter, "true")
 	}
+	params.Set(EngineQueryParameter, options.Engine.String())
 
 	data := Input{
 		Sources: sources,

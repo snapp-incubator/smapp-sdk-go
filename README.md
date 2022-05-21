@@ -33,11 +33,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.8.1
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.9.0
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.8.1
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.9.0
 ```
 
 you can download the library with `go mod download` command.
@@ -644,6 +644,7 @@ func main() {
     },
   }, matrix.NewDefaultCallOptions(
 	matrix.WithNoTraffic(),
+	matrix.WithEngine(MatrixEngineV1),
     matrix.WithHeaders(map[string]string{
       "foo": "bar",
     }),
@@ -675,8 +676,10 @@ function. you can customize the behaviour with passing multiple call options to 
 
 list of call options for matrix service are:
 
-+ [WithNoTraffic()](#): sets `no_traffic` query param ro true. with this option eta requests does not involve traffic
-  data in response
++ [WithNoTraffic()](#): sets `no_traffic` query param ro true. with this option eta requests does not involve traffic data in response
+
++ [WithEngine(MatrixEngine)](#): sets the engine to be used in calculating the eta matrix.
+
 + [WithHeaders(headers map[string]string)](#): sets custom headers for request.
 
 # Testing (Mocking)

@@ -1,11 +1,33 @@
 package matrix
 
+// MatrixEngine type is for defining different engines
+// that can be used in calculating the matrix eta.
+type MatrixEngine int
+
+const (
+	MatrixEngineV1 MatrixEngine = iota
+	MatrixEngineV2
+)
+
+// String casts the engine enum to its string value.
+func (engine MatrixEngine) String() string {
+	switch engine {
+	case MatrixEngineV1:
+		return "v1"
+	case MatrixEngineV2:
+		return "v2"
+	}
+	return "v1"
+}
+
 // CallOptions is the type that specifies behaviour of a eta request.
 type CallOptions struct {
 	// UseNoTraffic specifies if `no_traffic` query param exists in request.
 	UseNoTraffic bool
 	// NoTraffic is the value of `no_traffic` query param.
 	NoTraffic bool
+	// Engine is the value of `engine` query param.
+	Engine MatrixEngine
 	// Headers is a map that contains all custom headers to be sent.
 	Headers map[string]string
 }
@@ -27,6 +49,13 @@ func WithNoTraffic() CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseNoTraffic = true
 		options.NoTraffic = true
+	}
+}
+
+// WithEngine will set `engine` query param to passed value.
+func WithEngine(engine MatrixEngine) CallOptionSetter {
+	return func(options *CallOptions) {
+		options.Engine = engine
 	}
 }
 
