@@ -14,10 +14,10 @@ const (
 	DefaultHeaderAPIKeyName     = "X-Smapp-Key"
 	DefaultQueryParamAPIKeyName = "monshi_key"
 
-	InternalBaseURLPattern = "http://smapp-api.apps.inter-dc.{REGION}.snappcloud.io"
+	InternalBaseURLPattern = "http://smapp-api.apps.inter-dc.okd4.{REGION}.snappcloud.io"
 	PublicBaseURLPattern   = "https://api.{REGION}.snappmaps.ir"
 
-	DefaultBaseURL = "http://smapp-api.apps.inter-dc.teh-1.snappcloud.io"
+	DefaultBaseURL = "http://smapp-api.apps.inter-dc.okd4.teh-1.snappcloud.io"
 	DefaultRegion  = "teh-1"
 )
 

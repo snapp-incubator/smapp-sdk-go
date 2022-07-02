@@ -33,14 +33,16 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.9.0
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.9.1
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.9.0
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.9.1
 ```
 
 you can download the library with `go mod download` command.
+
+> **Note**: Versions before `v0.9.1` will be deprecated soon.
 
 # Usage
 
@@ -64,7 +66,7 @@ List of environment variables are:
 + `SMAPP_API_REGION`: the region of smapp api should be specified here. valid values are `teh-1` and `teh-2`. default
   value is `teh-1`
 + `SMAPP_API_BASE_URL`: is the base url of smapp services (API Gateway). default value
-  is `http://smapp-api.apps.inter-dc.teh-1.snappcloud.io`
+  is `http://smapp-api.apps.inter-dc.okd4.teh-1.snappcloud.io`
 
 a config from environment could be instantiated like code below:
 
@@ -82,7 +84,7 @@ these are default values of each config field:
 + Region: `teh-1`
 + APIKeySource: `header`
 + APIKeyName: `X-Smapp-Key`
-+ APIBaseURL: `http://smapp-api.apps.inter-dc.teh-1.snappcloud.io`
++ APIBaseURL: `http://smapp-api.apps.inter-dc.okd4.teh-1.snappcloud.io`
 
 a config could be instantiated like code below:
 
