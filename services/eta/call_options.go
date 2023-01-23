@@ -1,5 +1,27 @@
 package eta
 
+
+
+// EtaEngine type is for defining different engines
+// that can be used in calculating the eta.
+type EtaEngine int
+
+const (
+	EtaEngineV1 EtaEngine = iota
+	EtaEngineV2
+)
+
+// String casts the engine enum to its string value.
+func (engine EtaEngine) String() string {
+	switch engine {
+	case EtaEngineV1:
+		return "v1"
+	case EtaEngineV2:
+		return "v2"
+	}
+	return "v1"
+}
+
 // CallOptions is the type that specifies behaviour of a eta request.
 type CallOptions struct {
 	// UseNoTraffic specifies if `no_traffic` query param exists in request.
@@ -12,6 +34,8 @@ type CallOptions struct {
 	DepartureDateTime string
 	// Headers is a map that contains all custom headers to be sent.
 	Headers map[string]string
+	// Engine is the value of `engine` query param.
+	Engine EtaEngine
 }
 
 // CallOptionSetter is a function for defining custom call options in a fluent way.
@@ -39,6 +63,13 @@ func WithDepartureDateTime(dateTime string) CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseDepartureDateTime = true
 		options.DepartureDateTime = dateTime
+	}
+}
+
+// WithEngine will set `engine` query param to passed value.
+func WithEngine(engine EtaEngine) CallOptionSetter {
+	return func(options *CallOptions) {
+		options.Engine = engine
 	}
 }
 

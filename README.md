@@ -535,6 +535,7 @@ func main() {
 			"foo": "bar",
 		}),
 		eta.WithNoTraffic(),
+		WithEngine(EtaEngineV2),
 	),
 	)
 	if err != nil {

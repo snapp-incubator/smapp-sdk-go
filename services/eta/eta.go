@@ -34,6 +34,7 @@ const (
 
 	NoTrafficQueryParameter = "no_traffic"
 	JSONInputQueryParam     = "json"
+	EngineQueryParameter    = "engine"
 )
 
 // Client is the main implementation of Interface for area-gateways service
@@ -87,6 +88,8 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 	if options.UseDepartureDateTime {
 		data.DepartureDateTime = options.DepartureDateTime
 	}
+
+	params.Set(EngineQueryParameter, options.Engine.String())
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
