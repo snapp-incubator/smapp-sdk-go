@@ -646,7 +646,12 @@ func main() {
       Lon: 51.50890588760376,
     },
   }, matrix.NewDefaultCallOptions(
+	
+	// if you want response with no traffic involved
 	matrix.WithNoTraffic(),
+
+	// if you want response with traffic involved
+	// matrix.WithTraffic(),
 	matrix.WithEngine(MatrixEngineV1),
     matrix.WithHeaders(map[string]string{
       "foo": "bar",
