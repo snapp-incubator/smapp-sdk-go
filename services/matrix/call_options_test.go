@@ -45,6 +45,20 @@ func TestWithNoTraffic(t *testing.T) {
 	}
 }
 
+func TestWithTraffic(t *testing.T) {
+	callOptions := CallOptions{}
+
+	WithTraffic()(&callOptions)
+
+	if callOptions.UseNoTraffic == false {
+		t.Fatalf("UseTraffic should not be false")
+	}
+
+	if callOptions.NoTraffic == true {
+		t.Fatalf("NoTraffic should not be true")
+	}
+}
+
 func TestWithEngine(t *testing.T) {
 	callOptions := CallOptions{}
 

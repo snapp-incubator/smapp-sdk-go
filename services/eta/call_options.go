@@ -58,6 +58,14 @@ func WithNoTraffic() CallOptionSetter {
 	}
 }
 
+// WithTraffic will set `no_traffic` query param ro false. with this option eta requests does involve traffic data in response.
+func WithTraffic() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseNoTraffic = true
+		options.NoTraffic = false
+	}
+}
+
 // WithDepartureDateTime will set the departure date time of the eta request.
 func WithDepartureDateTime(dateTime string) CallOptionSetter {
 	return func(options *CallOptions) {
