@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -76,7 +77,7 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 
 	params := url.Values{}
 	if options.UseNoTraffic {
-		params.Set(NoTrafficQueryParameter, "true")
+		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
 
 	type ReqData struct {

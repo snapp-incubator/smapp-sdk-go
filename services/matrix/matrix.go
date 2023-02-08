@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -81,7 +82,7 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 
 	params := url.Values{}
 	if options.UseNoTraffic {
-		params.Set(NoTrafficQueryParameter, "true")
+		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
 	params.Set(EngineQueryParameter, options.Engine.String())
 
