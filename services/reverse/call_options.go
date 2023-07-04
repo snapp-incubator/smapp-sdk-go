@@ -17,6 +17,7 @@ const (
 	Farsi   Language = "fa"
 	English Language = "en"
 	Arabic  Language = "ar"
+	Kurdish Language = "ckb"
 )
 
 // CallOptions is the type that specifies behaviour of a reverse geocode request.
@@ -109,6 +110,14 @@ func WithArabicLanguage() CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseLanguage = true
 		options.Language = Arabic
+	}
+}
+
+// WithKurdishLanguage will set the response language to Kurdish
+func WithKurdishLanguage() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseLanguage = true
+		options.Language = Kurdish
 	}
 }
 
