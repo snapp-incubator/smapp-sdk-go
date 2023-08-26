@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 	client, err := matrix.NewMatrixClient(cfg, matrix.V1, time.Second*10,
-		matrix.WithURL("https://bifrost.apps.private.teh-1.snappcloud.io/api/v1/matrix"))
+		matrix.WithURL("https://bifrost.apps.private.okd4.teh-1.snappcloud.io/api/v1/matrix"))
 	if err != nil {
 		panic(err)
 	}
