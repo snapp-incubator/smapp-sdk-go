@@ -61,24 +61,6 @@ type Client struct {
 	tracerName string
 }
 
-type ReverseRequest struct {
-	Lat     float64
-	Lon     float64
-	Options CallOptions
-}
-
-type BatchReverseRequest struct {
-	Requests []struct {
-		ReqType  string  `json:"type"`
-		Display  string  `json:"display"`
-		Language string  `json:"language"`
-		Zoom     float64 `json:"zoom"`
-		Lat      float64 `json:"lat"`
-		Lon      float64 `json:"lon"`
-		ID       int32   `json:"id"`
-	} `json:"requests"`
-}
-
 // Force Client to implement Interface at compile time
 var _ Interface = (*Client)(nil)
 
@@ -383,95 +365,6 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 	responseSpan.SetStatus(codes.Error, "non 200 status code")
 	responseSpan.End()
 	return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
-}
-
-// GetBatchReverseWithContext is like GetBatchReverse, but with context.Context support.
-func (c *Client) GetBatchReverseWithContext(ctx context.Context, requests []ReverseRequest) ([]Component, error) {
-	if ctx == nil {
-		return nil, fmt.Errorf("smapp reverse geo-code: nil context")
-	}
-	// Start of parent span
-	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-batch-reverse")
-	defer span.End()
-
-	var reqInitSpan trace.Span
-	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
-	if err != nil {
-		reqInitSpan.RecordError(err)
-		reqInitSpan.End()
-		return nil, errors.New("smapp reverse geo-code: could not create request. err: " + err.Error())
-	}
-
-	params := url.Values{}
-
-	params.Set(Display, "false")
-
-	if c.cfg.APIKeySource == config.HeaderSource {
-		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
-		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
-		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
-		reqInitSpan.End()
-		return nil, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
-	}
-
-	for key, val := range options.Headers {
-		req.Header.Set(key, val)
-	}
-
-	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
-
-	req.URL.RawQuery = params.Encode()
-
-	reqInitSpan.End()
-
-	response, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("smapp reverse geo-code: could not make a request due to this error: %s", err.Error())
-	}
-
-	//nolint
-	var responseSpan trace.Span
-	//nolint
-	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
-
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, response.Body)
-		_ = response.Body.Close()
-	}()
-
-	if response.StatusCode == http.StatusOK {
-		resp := struct {
-			Status string `json:"status"`
-			Result struct {
-				Components []Component `json:"components"`
-			} `json:"result"`
-		}{}
-
-		err := json.NewDecoder(response.Body).Decode(&resp)
-		if err != nil {
-			responseSpan.RecordError(err)
-			responseSpan.End()
-			return nil, fmt.Errorf("smapp reverse geo-code: could not serialize response due to: %s", err.Error())
-		}
-
-		if strings.ToUpper(resp.Status) != OKStatus {
-			responseSpan.SetStatus(codes.Error, "status not OK")
-			responseSpan.End()
-			return nil, errors.New("smapp reverse geo-code: status of request is not OK")
-		}
-
-		responseSpan.End()
-		return resp.Result.Components, nil
-	}
-
-	responseSpan.SetStatus(codes.Error, "non 200 status code")
-	responseSpan.End()
-	return nil, fmt.Errorf("smapp reverse geo-code: non 200 status: %d", response.StatusCode)
 }
 
 // NewReverseClient is the constructor of reverse geocode client.
