@@ -190,6 +190,17 @@ List of operations on a reverse geocode client are:
   receives `lat`, `lon` as a location and CallOptions and returns FrequentAddress for the given location.
 + **`GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error)`**:
   same as `GetFrequent` but you can pass your own context for more control if needed.
++ **`GetBatch(request BatchReverseRequest) ([]Result, error)`**
+  receives a slice of  Request s and returns Component s of address of location given.
+  Does not support type 'frequent' in requests and Does not support type Display option as True
++ **`GetBatchWithContext(ctx context.Context, request BatchReverseRequest) ([]Result, error)`**
+  same as `GetBatch` but you can pass your own context for more control if needed.
++ **`GetBatchDisplayName(request BatchReverseRequest) ([]Result, error)`**
+  receives a slice of  Request s and returns Component s of address of location given, with only the DisplayName
+  Only works when Display is true
++ **`GetBatchDisplayNameWithContext(ctx context.Context, request BatchReverseRequest) ([]Result, error)`**
+  same as `GetBatchDisplayName` but you can pass your own context for more control if needed.
+
 
 ### CallOptions
 
