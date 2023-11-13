@@ -35,6 +35,10 @@ type Interface interface {
 	GetFrequent(lat, lon float64, options CallOptions) (FrequentAddress, error)
 	// GetFrequentWithContext is like GetFrequent, but with context.Context support
 	GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error)
+	GetBatch(request BatchReverseRequest) ([]Result, error)
+	GetBatchWithContext(ctx context.Context, request BatchReverseRequest) ([]Result, error)
+	GetBatchDisplayName(request BatchReverseRequest) ([]ResultWithDisplayName, error)
+	GetBatchDisplayNameWithContext(ctx context.Context, request BatchReverseRequest) ([]ResultWithDisplayName, error)
 }
 
 type Version string
