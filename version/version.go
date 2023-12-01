@@ -3,7 +3,7 @@ package version
 import "fmt"
 
 const (
-	Version         = "v0.9.1"
+	Version         = "v0.9.6"
 	UserAgentHeader = "User-Agent"
 )
 

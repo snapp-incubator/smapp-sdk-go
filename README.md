@@ -28,20 +28,20 @@ Then add this dependency in the format below to `go.mod` file.
 ```
 module YOUR_MODULE
 
-go 1.17
+go 1.21
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.9.2
+	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.9.6
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.9.2
+replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.9.6
 ```
 
 you can download the library with `go mod download` command.
 
-> **Note**: Versions before `v0.9.1` will be deprecated soon.
+> **Note**: Versions before `v0.9.5` will be deprecated soon.
 
 # Usage
 
