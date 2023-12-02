@@ -1,7 +1,5 @@
 package eta
 
-
-
 // EtaEngine type is for defining different engines
 // that can be used in calculating the eta.
 type EtaEngine int
