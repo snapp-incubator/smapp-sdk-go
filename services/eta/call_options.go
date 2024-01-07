@@ -1,7 +1,5 @@
 package eta
 
-
-
 // EtaEngine type is for defining different engines
 // that can be used in calculating the eta.
 type EtaEngine int
@@ -9,6 +7,7 @@ type EtaEngine int
 const (
 	EtaEngineV1 EtaEngine = iota
 	EtaEngineV2
+	EtaEngineNostradamus
 )
 
 // String casts the engine enum to its string value.
@@ -18,6 +17,9 @@ func (engine EtaEngine) String() string {
 		return "v1"
 	case EtaEngineV2:
 		return "v2"
+
+	case EtaEngineNostradamus:
+		return "nostradamus"
 	}
 	return "v1"
 }
