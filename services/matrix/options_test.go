@@ -1,11 +1,10 @@
 package matrix
 
 import (
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"testing"
 	"time"
-
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
 )
 
 func TestWithURL(t *testing.T) {

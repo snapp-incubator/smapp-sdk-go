@@ -2,7 +2,7 @@ package area_gateways
 
 import (
 	"context"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"

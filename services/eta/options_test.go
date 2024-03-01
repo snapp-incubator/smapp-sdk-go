@@ -1,7 +1,7 @@
 package eta
 
 import (
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"testing"
 	"time"
@@ -58,4 +58,3 @@ func TestWithRequestOpenTelemetryTracing(t *testing.T) {
 		t.Fatalf("client.tracerName should be %s but it is %s", "test", client.tracerName)
 	}
 }
-

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/matrix"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/services/matrix"
 	"time"
 )
 

@@ -1,0 +1,44 @@
+name: Lint and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Gitleaks
+        uses: zricethezav/gitleaks-action@v1.6.0
+
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: golangci/golangci-lint:v1.42.1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint
+        run: golangci-lint run ./...
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.17
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up GOPROXY
+        run: echo "GOPROXY=https://repo.snapp.tech/repository/goproxy/" >> $GITHUB_ENV
+      - name: Enable Go modules
+        run: echo "GO111MODULE=on" >> $GITHUB_ENV
+      - name: Download dependencies
+        run: go mod download
+      - name: Run tests
+        run: |
+          go test -race $(go list ./... | grep -v /vendor/) -v -coverprofile=coverage.out
+          grep -v "mock.go" coverage.out > cover.out
+      - name: Generate coverage report
+        run: go tool cover -func=cover.out

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -362,7 +362,6 @@ func (c *Client) AutoCompleteWithContext(ctx context.Context, input string, opti
 	//nolint
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
-
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
 		_ = response.Body.Close()
@@ -497,7 +496,7 @@ func NewSearchClient(cfg *config.Config, version Version, timeout time.Duration,
 		cfg: cfg,
 		url: getSearchDefaultURL(cfg, version),
 		httpClient: http.Client{
-			Timeout: timeout,
+			Timeout:   timeout,
 			Transport: http.DefaultTransport,
 		},
 	}

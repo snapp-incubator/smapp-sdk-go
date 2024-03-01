@@ -1,7 +1,7 @@
 package reverse
 
 import (
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"testing"
 	"time"

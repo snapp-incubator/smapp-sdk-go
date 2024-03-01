@@ -2,7 +2,7 @@ package matrix
 
 import (
 	"context"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -149,18 +149,18 @@ func TestClient_GetMatrix(t *testing.T) {
 			t.Fatalf("should not be nil because input points are invalid")
 		}
 	})
-	
+
 	t.Run("invalid_apikey_source", func(t *testing.T) {
 		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte(`{}`))
 		}))
-	
+
 		cfg, err := config.NewDefaultConfig("key", config.WithAPIKeySource(config.QueryParamSource))
 		if err != nil {
 			t.Fatalf("could not create default config due to: %s", err.Error())
 		}
 		cfg.APIKeySource = "foo"
-	
+
 		client, err := NewMatrixClient(cfg, V1, time.Second, WithURL(sv.URL))
 		if err != nil {
 			t.Fatalf("could not create matrix client due to: %s", err.Error())

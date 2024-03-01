@@ -2,7 +2,6 @@ package eta
 
 import "testing"
 
-
 func TestMartixEngineString(t *testing.T) {
 	t.Run("test enginev1", func(t *testing.T) {
 		if EtaEngineV1.String() != "v1" {
@@ -61,7 +60,6 @@ func TestWithNoTraffic(t *testing.T) {
 		t.Fatalf("NoTraffic should not be false")
 	}
 }
-
 
 func TestWithTraffic(t *testing.T) {
 	callOptions := CallOptions{}

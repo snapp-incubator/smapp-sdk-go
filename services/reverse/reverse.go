@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
