@@ -30,8 +30,6 @@ jobs:
       image: golang:1.17
     steps:
       - uses: actions/checkout@v2
-      - name: Set up GOPROXY
-        run: echo "GOPROXY=https://repo.snapp.tech/repository/goproxy/" >> $GITHUB_ENV
       - name: Enable Go modules
         run: echo "GO111MODULE=on" >> $GITHUB_ENV
       - name: Download dependencies
