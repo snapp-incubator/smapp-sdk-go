@@ -1,10 +1,5 @@
 # Smapp Golang SDK
 
-[![pipeline status](https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go/badges/master/pipeline.svg)](https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go/-/commits/master)
-[![coverage report](https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go/badges/master/coverage.svg)](https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go/-/commits/master)
-
-[[_TOC_]]
-
 # Overview
 
 `smapp-sdk-go` is a golang sdk for using different Smapp services.
@@ -20,8 +15,7 @@ List of supported services are:
 
 # How to Install
 
-First set up your device to be able to use private golang packages from `gitlab.snapp.ir`. for more information, check
-this [wiki](https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go/-/wikis/Private-Golang-Modules)
+First set up your device to be able to use private golang packages from `github.com/snapp-incubator`.
 
 Then add this dependency in the format below to `go.mod` file.
 
@@ -32,11 +26,11 @@ go 1.17
 
 require (
     ...
-	gitlab.snapp.ir/Map/sdk/smapp-sdk-go v0.9.2
+	github.com/snapp-incubator/smapp-sdk-go v0.9.2
     ...
 )
 
-replace gitlab.snapp.ir/Map/sdk/smapp-sdk-go => gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git v0.9.2
+replace github.com/snapp-incubator/smapp-sdk-go => github.com/snapp-incubator/smapp-sdk-go.git v0.9.2
 ```
 
 you can download the library with `go mod download` command.
@@ -52,7 +46,7 @@ using in different services.
 
 configs can be instantiated with code or with environment variables.
 
-import package `gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config` for using it.
+import package `github.com/snapp-incubator/smapp-sdk-go/config` for using it.
 
 ### Environment variables
 
@@ -146,8 +140,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/reverse"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/services/reverse"
 	"time"
 )
 
@@ -253,8 +247,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/search"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/services/search"
 	"time"
 )
 
@@ -356,8 +350,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/area-gateways"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/services/area-gateways"
 	"time"
 )
 
@@ -433,8 +427,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/eta"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/services/eta"
 	"time"
 )
 
@@ -538,8 +532,8 @@ package main
 
 import (
   "fmt"
-  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-  "gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/matrix"
+  "github.com/snapp-incubator/smapp-sdk-go/config"
+  "github.com/snapp-incubator/smapp-sdk-go/services/matrix"
   "time"
 )
 
@@ -655,8 +649,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/services/area-gateways"
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/services/area-gateways"
 	jaeger_propagator "go.opentelemetry.io/contrib/propagators/jaeger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
