@@ -11,7 +11,12 @@ func TestMartixEngineString(t *testing.T) {
 	})
 	t.Run("test enginev2", func(t *testing.T) {
 		if EtaEngineV2.String() != "v2" {
-			t.Fatal("EtaEngineV1 is not stringified correctly")
+			t.Fatal("EtaEngineV2 is not stringified correctly")
+		}
+	})
+	t.Run("test engine ocelot", func(t *testing.T) {
+		if EtaEngineOcelot.String() != "ocelot" {
+			t.Fatal("EtaEngineOcelot is not stringified correctly")
 		}
 	})
 }

@@ -10,7 +10,12 @@ func TestMartixEngineString(t *testing.T) {
 	})
 	t.Run("test enginev2", func(t *testing.T) {
 		if MatrixEngineV2.String() != "v2" {
-			t.Fatal("MatrixEngineV1 is not stringified correctly")
+			t.Fatal("MatrixEngineV2 is not stringified correctly")
+		}
+	})
+	t.Run("test engineOcelot", func(t *testing.T) {
+		if MatrixEngineOcelot.String() != "ocelot" {
+			t.Fatal("MatrixEngineOcelot is not stringified correctly")
 		}
 	})
 }

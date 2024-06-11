@@ -7,6 +7,7 @@ type MatrixEngine int
 const (
 	MatrixEngineV1 MatrixEngine = iota
 	MatrixEngineV2
+	MatrixEngineOcelot
 )
 
 // String casts the engine enum to its string value.
@@ -16,6 +17,8 @@ func (engine MatrixEngine) String() string {
 		return "v1"
 	case MatrixEngineV2:
 		return "v2"
+	case MatrixEngineOcelot:
+		return "ocelot"
 	}
 	return "v1"
 }

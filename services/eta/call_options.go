@@ -8,6 +8,7 @@ const (
 	EtaEngineV1 EtaEngine = iota
 	EtaEngineV2
 	EtaEngineNostradamus
+	EtaEngineOcelot
 )
 
 // String casts the engine enum to its string value.
@@ -20,6 +21,8 @@ func (engine EtaEngine) String() string {
 
 	case EtaEngineNostradamus:
 		return "nostradamus"
+	case EtaEngineOcelot:
+		return "ocelot"
 	}
 	return "v1"
 }
