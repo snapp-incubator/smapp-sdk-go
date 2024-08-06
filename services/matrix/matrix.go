@@ -12,11 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
-	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/config"
+	"gitlab.snapp.ir/Map/sdk/smapp-sdk-go/version"
 )
 
 // Interface consists of functions of different functionalities of Matrix service. there are two implementation of this service.

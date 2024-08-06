@@ -1,8 +1,9 @@
 package matrix
 
 import (
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"net/http"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 // ConstructorOption is a function type for customizing constructor behaviour in a fluent way.
@@ -19,6 +20,13 @@ func WithURL(url string) ConstructorOption {
 func WithTransport(transport *http.Transport) ConstructorOption {
 	return func(client *Client) {
 		client.httpClient.Transport = transport
+	}
+}
+
+// WithClient will override the default http client
+func WithClient(newClient *http.Client) ConstructorOption {
+	return func(client *Client) {
+		client.httpClient = *newClient
 	}
 }
 
