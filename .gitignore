@@ -120,3 +120,4 @@ fabric.properties
 
 # Test Postgres Data
 pkg/database/pg-data
+.DS_Store
