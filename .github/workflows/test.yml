@@ -3,40 +3,24 @@ name: Lint and Test
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - auto-push
+
 jobs:
-  gitleaks:
+  push-to-gitlab:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Gitleaks
-        uses: zricethezav/gitleaks-action@v1.6.0
 
-  lint:
-    runs-on: ubuntu-latest
-    container:
-      image: golangci/golangci-lint:v1.42.1
     steps:
-      - uses: actions/checkout@v2
-      - name: Lint
-        run: golangci-lint run ./...
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-  test:
-    runs-on: ubuntu-latest
-    container:
-      image: golang:1.17
-    steps:
-      - uses: actions/checkout@v2
-      - name: Enable Go modules
-        run: echo "GO111MODULE=on" >> $GITHUB_ENV
-      - name: Download dependencies
-        run: go mod download
-      - name: Run tests
-        run: |
-          go test -race $(go list ./... | grep -v /vendor/) -v -coverprofile=coverage.out
-          grep -v "mock.go" coverage.out > cover.out
-      - name: Generate coverage report
-        run: go tool cover -func=cover.out
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.GITLAB_SSH_KEY }}" | base64 --decode > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+
+    - name: Push to GitLab
+      run: |
+        git remote add gitlab git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
+        git push -u gitlab main  # Adjust the branch if necessary
