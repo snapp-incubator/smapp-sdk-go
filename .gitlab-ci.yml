@@ -1,0 +1,27 @@
+stages:
+  - lint
+  - test
+
+lint:
+  image: golangci/golangci-lint:v1.42.1
+  stage: lint
+  script:
+    - golangci-lint run ./...
+  only:
+    refs:
+      - master
+  allow_failure: false
+
+test:
+  image: golang:1.17
+  script:
+    - export GOPROXY=https://repo.snapp.tech/repository/goproxy/
+    - export GO111MODULE=on
+    - go mod download
+    - go test -race $(go list ./... | grep -v /vendor/) -v -coverprofile=coverage.out && grep -v "mock.go" coverage.out  > cover.out
+    - go tool cover -func=cover.out
+
+  only:
+    refs:
+      - pushes
+  allow_failure: false
