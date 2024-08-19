@@ -23,4 +23,4 @@ jobs:
     - name: Push to GitLab
       run: |
         git remote add gitlab git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
-        git push -u gitlab main  # Adjust the branch if necessary
+        git push -u gitlab master  # Adjust the branch if necessary
