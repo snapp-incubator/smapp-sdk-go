@@ -17,7 +17,7 @@ List of supported services are:
 
 First set up your device to be able to use private golang packages from `github.com/snapp-incubator`.
 
-Then add this dependency in the format below to `go.mod` file.
+Then add this dependency in the format below to `go.mod` file..
 
 ```
 module YOUR_MODULE
