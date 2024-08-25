@@ -22,10 +22,9 @@ sync_job:
     - git clone git@github.com:snapp-incubator/smapp-sdk-go.git
     - cd smapp-sdk-go
     - git remote add gitlab git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
-    - git fetch origin $GIT_BRANCH
+    - git fetch origin main
     - git fetch gitlab $GIT_BRANCH
-    - git checkout gitlab/$GIT_BRANCH
     - git merge gitlab/$GIT_BRANCH
-    - git push gitlab $GIT_BRANCH
+    - git push gitlab HEAD:$GIT_BRANCH
   only:
     - schedules
