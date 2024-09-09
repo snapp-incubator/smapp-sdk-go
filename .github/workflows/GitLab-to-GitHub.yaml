@@ -1,0 +1,51 @@
+name: Sync GitLab to GitHub
+
+on:
+  workflow_dispatch:  # Allows the action to be manually triggered
+
+jobs:
+  sync-repos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Setup SSH access to GitLab
+      - name: Setup SSH for GitLab
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITLAB_SSH_KEY }}" | base64 --decode > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+      
+      # Configure Git
+      - name: Configure Git user
+        run: |
+          git config --global user.email "platform@snapp.cab"
+          git config --global user.name "Platform"
+
+      # Clone the GitLab repository
+      - name: Clone GitLab repo
+        run: git clone git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
+        working-directory: ${{ github.workspace }}
+
+      # Add GitHub remote repository
+      - name: Add GitHub remote
+        run: |
+          cd smapp-sdk-go
+          git remote add gitHub git@github.com:snapp-incubator/smapp-sdk-go.git
+          git fetch origin master
+          git fetch github main
+
+      # Merge GitHub main branch with GitLab master
+      - name: Merge GitHub main into GitLab master
+        run: |
+          cd smapp-sdk-go
+          git merge github/main
+
+      # Push the changes to GitHub main branch
+      - name: Push changes to GitHub main
+        run: |
+          cd smapp-sdk-go
+          git push github HEAD:main
