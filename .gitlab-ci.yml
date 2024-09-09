@@ -42,11 +42,11 @@ sync_to_github_job:
     - echo "Starting sync-to-github job"
     - git config --global user.email "platform@snapp.cab"
     - git config --global user.name "Platform"
-    - git clone git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
+    - git clone git@github.com:snapp-incubator/smapp-sdk-go.git
     - cd smapp-sdk-go
-    - git remote add github git@github.com:snapp-incubator/smapp-sdk-go.git
-    - git fetch origin $GIT_BRANCH
-    - git fetch github main
-    - git merge github/main
-    - git push github HEAD:main
+    - git remote add gitlab git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
+    - git fetch origin main
+    - git fetch gitlab $GIT_BRANCH
+    - git merge gitlab/$GIT_BRANCH
+    - git push origin HEAD:main
   when: manual
