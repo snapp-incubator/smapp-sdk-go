@@ -3,7 +3,8 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
-  - sync
+  - sync-from-github
+  - sync-to-github
 
 before_script:
   - apk add --no-cache git openssh-client
@@ -13,10 +14,10 @@ before_script:
   - ssh-keyscan gitlab.snapp.ir >> ~/.ssh/known_hosts
   - ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-sync_job:
-  stage: sync
+sync_from_github_job:
+  stage: sync-from-github
   script:
-    - echo "Starting sync job"
+    - echo "Starting sync-from-github job"
     - git config --global user.email "platform@snapp.cab"
     - git config --global user.name "Platform"
     - git clone git@github.com:snapp-incubator/smapp-sdk-go.git
@@ -28,3 +29,18 @@ sync_job:
     - git push gitlab HEAD:$GIT_BRANCH
   only:
     - schedules
+
+sync_to_github_job:
+  stage: sync-to-github
+  script:
+    - echo "Starting sync-to-github job"
+    - git config --global user.email "platform@snapp.cab"
+    - git config --global user.name "Platform"
+    - git clone git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
+    - cd smapp-sdk-go
+    - git remote add github git@github.com:snapp-incubator/smapp-sdk-go.git
+    - git fetch origin $GIT_BRANCH
+    - git fetch github main
+    - git merge github/main
+    - git push github HEAD:main
+  when: manual
