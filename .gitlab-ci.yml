@@ -32,6 +32,10 @@ sync_from_github_job:
 
 sync_to_github_job:
   stage: sync-to-github
+  before_script:
+    - echo "Removing GitHub SSH key"
+    - rm -f ~/.ssh/id_rsa
+    - sed -i '/github.com/d' ~/.ssh/known_hosts
   script:
     - echo "Starting sync-to-github job"
     - git config --global user.email "platform@snapp.cab"
