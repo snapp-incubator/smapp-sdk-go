@@ -40,7 +40,7 @@ sync_to_github_job:
     - echo "Starting sync-to-github job"
     - git config --global user.email "platform@snapp.cab"
     - git config --global user.name "Platform"
-    - git clone git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
+    - git clone https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git
     - cd smapp-sdk-go
     - git remote add github git@github.com:snapp-incubator/smapp-sdk-go.git
     - git fetch origin $GIT_BRANCH
