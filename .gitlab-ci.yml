@@ -6,16 +6,15 @@ stages:
   - sync-from-github
   - sync-to-github
 
-before_script:
-  - apk add --no-cache git openssh-client
-  - mkdir -p ~/.ssh
-  - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - ssh-keyscan gitlab.snapp.ir >> ~/.ssh/known_hosts
-  - ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 sync_from_github_job:
   stage: sync-from-github
+  before_script:
+    - apk add --no-cache git openssh-client
+    - mkdir -p ~/.ssh
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan gitlab.snapp.ir >> ~/.ssh/known_hosts
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
   script:
     - echo "Starting sync-from-github job"
     - git config --global user.email "platform@snapp.cab"
@@ -32,11 +31,18 @@ sync_from_github_job:
 
 sync_to_github_job:
   stage: sync-to-github
+  before_script:
+    - apk add --no-cache git openssh-client
+    - mkdir -p ~/.ssh
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan gitlab.snapp.ir >> ~/.ssh/known_hosts
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
   script:
     - echo "Starting sync-to-github job"
     - git config --global user.email "platform@snapp.cab"
     - git config --global user.name "Platform"
-    - git clone https://gitlab.snapp.ir/Map/sdk/smapp-sdk-go.git
+    - git clone git@gitlab.snapp.ir:Map/sdk/smapp-sdk-go.git
     - cd smapp-sdk-go
     - git remote add github git@github.com:snapp-incubator/smapp-sdk-go.git
     - git fetch origin $GIT_BRANCH
