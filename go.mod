@@ -3,10 +3,10 @@ module github.com/snapp-incubator/smapp-sdk-go
 go 1.22
 
 require (
-	github.com/golang/mock v1.6.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0
 	go.opentelemetry.io/otel v1.29.0
 	go.opentelemetry.io/otel/trace v1.29.0
+	go.uber.org/mock v0.4.0
 )
 
 require (
