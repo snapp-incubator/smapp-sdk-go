@@ -124,10 +124,8 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 		return Output{}, fmt.Errorf("smapp matrix: could not make a request due to this error: %s", err.Error())
 	}
 
-	//nolint
 	var responseSpan trace.Span
-	//nolint
-	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
+	_, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, response.Body)
