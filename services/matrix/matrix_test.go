@@ -2,11 +2,12 @@ package matrix
 
 import (
 	"context"
-	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 )
 
 func TestNewMatrixClient(t *testing.T) {
