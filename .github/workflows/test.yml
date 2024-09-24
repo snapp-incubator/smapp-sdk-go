@@ -30,13 +30,15 @@ jobs:
       image: golang:1.23
     steps:
       - uses: actions/checkout@v2
+      - name: Set GOFLAGS to disable VCS
+        run: echo "GOFLAGS=-buildvcs=false" >> $GITHUB_ENV
       - name: Enable Go modules
         run: echo "GO111MODULE=on" >> $GITHUB_ENV
       - name: Download dependencies
         run: go mod download
       - name: Run tests
         run: |
-          go test -race $(go list ./... | grep -v /vendor/) -v -coverprofile=coverage.out -buildvcs=false
+          go test -race $(go list ./... | grep -v /vendor/) -v -coverprofile=coverage.out
           grep -v "mock.go" coverage.out > cover.out
       - name: Generate coverage report
         run: go tool cover -func=cover.out
