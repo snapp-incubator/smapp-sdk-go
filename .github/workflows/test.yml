@@ -27,7 +27,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: golang:1.17
+      image: golang:1.21
     steps:
       - uses: actions/checkout@v2
       - name: Enable Go modules
