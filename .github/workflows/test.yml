@@ -27,9 +27,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: golang:1.17
+      image: golang:1.23
     steps:
       - uses: actions/checkout@v2
+      - name: Set GOFLAGS to disable VCS
+        run: echo "GOFLAGS=-buildvcs=false" >> $GITHUB_ENV
       - name: Enable Go modules
         run: echo "GO111MODULE=on" >> $GITHUB_ENV
       - name: Download dependencies

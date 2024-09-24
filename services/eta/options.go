@@ -1,8 +1,9 @@
 package eta
 
 import (
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"net/http"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 // ConstructorOption is a function type for customizing constructor behaviour in a fluent way.

@@ -49,7 +49,7 @@ func (m *MockMatrixClient) GetMatrix(sources, targets []Point, options CallOptio
 }
 
 // GetMatrix indicates an expected call of GetMatrix.
-func (mr *MockMatrixClientMockRecorder) GetMatrix(sources, targets, options any) *gomock.Call {
+func (mr *MockMatrixClientMockRecorder) GetMatrix(sources, targets, options interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatrix", reflect.TypeOf((*MockMatrixClient)(nil).GetMatrix), sources, targets, options)
 }
@@ -64,7 +64,7 @@ func (m *MockMatrixClient) GetMatrixWithContext(ctx context.Context, sources, ta
 }
 
 // GetMatrixWithContext indicates an expected call of GetMatrixWithContext.
-func (mr *MockMatrixClientMockRecorder) GetMatrixWithContext(ctx, sources, targets, options any) *gomock.Call {
+func (mr *MockMatrixClientMockRecorder) GetMatrixWithContext(ctx, sources, targets, options interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatrixWithContext", reflect.TypeOf((*MockMatrixClient)(nil).GetMatrixWithContext), ctx, sources, targets, options)
 }

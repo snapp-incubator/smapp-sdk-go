@@ -4,18 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/snapp-incubator/smapp-sdk-go/config"
-	"github.com/snapp-incubator/smapp-sdk-go/version"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/version"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Interface consists of functions of different functionalities of ETA service. there are two implementation of this service.
@@ -125,13 +125,11 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		return ETA{}, fmt.Errorf("smapp eta: could not make a request due to this error: %s", err.Error())
 	}
 
-	//nolint
 	var responseSpan trace.Span
-	//nolint
-	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
+	_, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, response.Body)
+		_, _ = io.Copy(io.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 

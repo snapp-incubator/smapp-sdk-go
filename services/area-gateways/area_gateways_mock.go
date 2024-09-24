@@ -49,7 +49,7 @@ func (m *MockAreaGatewaysClient) GetGateways(lat, lon float64, options CallOptio
 }
 
 // GetGateways indicates an expected call of GetGateways.
-func (mr *MockAreaGatewaysClientMockRecorder) GetGateways(lat, lon, options any) *gomock.Call {
+func (mr *MockAreaGatewaysClientMockRecorder) GetGateways(lat, lon, options interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGateways", reflect.TypeOf((*MockAreaGatewaysClient)(nil).GetGateways), lat, lon, options)
 }
@@ -64,7 +64,7 @@ func (m *MockAreaGatewaysClient) GetGatewaysWithContext(ctx context.Context, lat
 }
 
 // GetGatewaysWithContext indicates an expected call of GetGatewaysWithContext.
-func (mr *MockAreaGatewaysClientMockRecorder) GetGatewaysWithContext(ctx, lat, lon, options any) *gomock.Call {
+func (mr *MockAreaGatewaysClientMockRecorder) GetGatewaysWithContext(ctx, lat, lon, options interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGatewaysWithContext", reflect.TypeOf((*MockAreaGatewaysClient)(nil).GetGatewaysWithContext), ctx, lat, lon, options)
 }

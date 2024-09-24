@@ -1,10 +1,11 @@
 package eta
 
 import (
-	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 )
 
 func TestWithURL(t *testing.T) {
