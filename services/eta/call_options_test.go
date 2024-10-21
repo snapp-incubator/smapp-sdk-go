@@ -3,19 +3,29 @@ package eta
 import "testing"
 
 func TestMartixEngineString(t *testing.T) {
-	t.Run("test enginev1", func(t *testing.T) {
+	t.Run("test engine v1", func(t *testing.T) {
 		if EtaEngineV1.String() != "v1" {
 			t.Fatal("EtaEngineV1 is not stringified correctly")
 		}
 	})
-	t.Run("test enginev2", func(t *testing.T) {
+	t.Run("test engine v2", func(t *testing.T) {
 		if EtaEngineV2.String() != "v2" {
 			t.Fatal("EtaEngineV2 is not stringified correctly")
+		}
+	})
+	t.Run("test engine nostradamus", func(t *testing.T) {
+		if EtaEngineNostradamus.String() != "nostradamus" {
+			t.Fatal("EtaEngineNostradamus is not stringified correctly")
 		}
 	})
 	t.Run("test engine ocelot", func(t *testing.T) {
 		if EtaEngineOcelot.String() != "ocelot" {
 			t.Fatal("EtaEngineOcelot is not stringified correctly")
+		}
+	})
+	t.Run("test engine orca", func(t *testing.T) {
+		if EtaEngineOrca.String() != "orca" {
+			t.Fatal("EtaEngineOrca is not stringified correctly")
 		}
 	})
 }

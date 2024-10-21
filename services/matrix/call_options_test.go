@@ -3,19 +3,24 @@ package matrix
 import "testing"
 
 func TestMartixEngineString(t *testing.T) {
-	t.Run("test enginev1", func(t *testing.T) {
+	t.Run("test engine v1", func(t *testing.T) {
 		if MatrixEngineV1.String() != "v1" {
 			t.Fatal("MatrixEngineV1 is not stringified correctly")
 		}
 	})
-	t.Run("test enginev2", func(t *testing.T) {
+	t.Run("test engine v2", func(t *testing.T) {
 		if MatrixEngineV2.String() != "v2" {
 			t.Fatal("MatrixEngineV2 is not stringified correctly")
 		}
 	})
-	t.Run("test engineOcelot", func(t *testing.T) {
+	t.Run("test engine ocelot", func(t *testing.T) {
 		if MatrixEngineOcelot.String() != "ocelot" {
 			t.Fatal("MatrixEngineOcelot is not stringified correctly")
+		}
+	})
+	t.Run("test engine orca", func(t *testing.T) {
+		if MatrixEngineOrca.String() != "orca" {
+			t.Fatal("MatrixEngineOrca is not stringified correctly")
 		}
 	})
 }

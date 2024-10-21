@@ -2,11 +2,12 @@ package eta
 
 import (
 	"context"
-	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 )
 
 func TestNewETAClient(t *testing.T) {
