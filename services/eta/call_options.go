@@ -7,9 +7,19 @@ type EtaEngine int
 const (
 	EtaEngineV1 EtaEngine = iota
 	EtaEngineV2
+
 	EtaEngineNostradamus
 	EtaEngineOcelot
 	EtaEngineOrca
+
+	EtaEngineAnt
+	EtaEngineHive
+	EtaEngineOlympus
+	EtaEngineCrew
+	EtaEnginePluck
+	EtaEngineTick
+	EtaEngineFork
+	EtaEnginePulse
 )
 
 // String casts the engine enum to its string value.
@@ -26,6 +36,23 @@ func (engine EtaEngine) String() string {
 		return "ocelot"
 	case EtaEngineOrca:
 		return "orca"
+
+	case EtaEngineAnt:
+		return "ant"
+	case EtaEngineHive:
+		return "hive"
+	case EtaEngineOlympus:
+		return "olympus"
+	case EtaEngineCrew:
+		return "crew"
+	case EtaEnginePluck:
+		return "pluck"
+	case EtaEngineTick:
+		return "tick"
+	case EtaEngineFork:
+		return "fork"
+	case EtaEnginePulse:
+		return "pulse"
 	}
 	return "v1"
 }
