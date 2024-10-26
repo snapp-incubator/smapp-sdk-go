@@ -17,7 +17,7 @@ const (
 	EtaEngineOlympus
 	EtaEngineCrew
 	EtaEnginePluck
-	EtaEngineTick
+	EtaEngineGiraffe
 	EtaEngineFork
 	EtaEnginePulse
 )
@@ -47,8 +47,8 @@ func (engine EtaEngine) String() string {
 		return "crew"
 	case EtaEnginePluck:
 		return "pluck"
-	case EtaEngineTick:
-		return "tick"
+	case EtaEngineGiraffe:
+		return "giraffe"
 	case EtaEngineFork:
 		return "fork"
 	case EtaEnginePulse:

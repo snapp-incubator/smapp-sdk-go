@@ -16,7 +16,7 @@ const (
 	MatrixEngineOlympus
 	MatrixEngineCrew
 	MatrixEnginePluck
-	MatrixEngineTick
+	MatrixEngineGiraffe
 	MatrixEngineFork
 	MatrixEnginePulse
 )
@@ -44,8 +44,8 @@ func (engine MatrixEngine) String() string {
 		return "crew"
 	case MatrixEnginePluck:
 		return "pluck"
-	case MatrixEngineTick:
-		return "tick"
+	case MatrixEngineGiraffe:
+		return "giraffe"
 	case MatrixEngineFork:
 		return "fork"
 	case MatrixEnginePulse:
