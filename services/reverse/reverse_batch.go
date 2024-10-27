@@ -6,17 +6,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+
 	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"github.com/snapp-incubator/smapp-sdk-go/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
-	"io"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"net/http/httputil"
-	"net/url"
 )
 
 // GetBatch , receives a slice of  Request s and returns Component s of address of location given.
@@ -41,7 +41,7 @@ func (c *Client) GetBatchWithContext(ctx context.Context, request BatchReverseRe
 
 	jsonBody, err := json.Marshal(request)
 	if err != nil {
-		log.Fatal(err)
+		return nil, errors.New("smapp batch reverse geo-code: could not mar request. err: " + err.Error())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, bytes.NewBuffer(jsonBody))
@@ -125,7 +125,7 @@ func (c *Client) GetBatchDisplayNameWithContext(ctx context.Context, request Bat
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(jsonBody))
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, bytes.NewBuffer(jsonBody))
 	if err != nil {
 		reqInitSpan.RecordError(err)
@@ -168,15 +168,8 @@ func (c *Client) GetBatchDisplayNameWithContext(ctx context.Context, request Bat
 
 	var results ResultsWithDisplayName
 
-	respDump, err := httputil.DumpResponse(response, true)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(respDump))
-
 	if response.StatusCode == http.StatusOK {
-		err := json.NewDecoder(response.Body).Decode(&results)
+		err = json.NewDecoder(response.Body).Decode(&results)
 		if err != nil {
 			responseSpan.RecordError(err)
 			responseSpan.End()
