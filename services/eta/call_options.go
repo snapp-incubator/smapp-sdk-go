@@ -12,14 +12,14 @@ const (
 	EtaEngineOcelot
 	EtaEngineOrca
 
-	EtaEngineAnt
-	EtaEngineHive
-	EtaEngineOlympus
-	EtaEngineCrew
-	EtaEnginePluck
+	EtaEngineMurche
+	EtaEngineKandoo
+	EtaEngineZeus
+	EtaEngineCarPooling
+	EtaEngineGolchin
 	EtaEngineGiraffe
-	EtaEngineFork
-	EtaEnginePulse
+	EtaEngineFood
+	EtaEngineIntercity
 )
 
 // String casts the engine enum to its string value.
@@ -37,22 +37,22 @@ func (engine EtaEngine) String() string {
 	case EtaEngineOrca:
 		return "orca"
 
-	case EtaEngineAnt:
-		return "ant"
-	case EtaEngineHive:
-		return "hive"
-	case EtaEngineOlympus:
-		return "olympus"
-	case EtaEngineCrew:
-		return "crew"
-	case EtaEnginePluck:
-		return "pluck"
+	case EtaEngineMurche:
+		return "murche"
+	case EtaEngineKandoo:
+		return "kandoo"
+	case EtaEngineZeus:
+		return "zeus"
+	case EtaEngineCarPooling:
+		return "carpooling"
+	case EtaEngineGolchin:
+		return "golchin"
 	case EtaEngineGiraffe:
 		return "giraffe"
-	case EtaEngineFork:
-		return "fork"
-	case EtaEnginePulse:
-		return "pulse"
+	case EtaEngineFood:
+		return "food"
+	case EtaEngineIntercity:
+		return "intercity"
 	}
 	return "v1"
 }
