@@ -11,6 +11,7 @@ const (
 	EtaEngineNostradamus
 	EtaEngineOcelot
 	EtaEngineOrca
+	EtaEngineOrcaCh
 
 	EtaEngineMurche
 	EtaEngineKandoo
@@ -36,6 +37,8 @@ func (engine EtaEngine) String() string {
 		return "ocelot"
 	case EtaEngineOrca:
 		return "orca"
+	case EtaEngineOrcaCh:
+		return "orca_ch"
 
 	case EtaEngineMurche:
 		return "murche"

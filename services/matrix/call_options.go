@@ -10,6 +10,7 @@ const (
 
 	MatrixEngineOcelot
 	MatrixEngineOrca
+	MatrixEngineOrcaCh
 
 	MatrixEngineMurche
 	MatrixEngineKandoo
@@ -33,6 +34,8 @@ func (engine MatrixEngine) String() string {
 		return "ocelot"
 	case MatrixEngineOrca:
 		return "orca"
+	case MatrixEngineOrcaCh:
+		return "orca_ch"
 
 	case MatrixEngineMurche:
 		return "murche"
