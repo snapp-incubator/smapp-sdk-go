@@ -38,7 +38,7 @@ func (engine EtaEngine) String() string {
 	case EtaEngineOrca:
 		return "orca"
 	case EtaEngineOrcaCh:
-		return "orca_ch"
+		return "orca-ch"
 
 	case EtaEngineMurche:
 		return "murche"

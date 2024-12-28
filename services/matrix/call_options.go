@@ -35,7 +35,7 @@ func (engine MatrixEngine) String() string {
 	case MatrixEngineOrca:
 		return "orca"
 	case MatrixEngineOrcaCh:
-		return "orca_ch"
+		return "orca-ch"
 
 	case MatrixEngineMurche:
 		return "murche"
