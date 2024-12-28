@@ -23,6 +23,11 @@ func TestMartixEngineString(t *testing.T) {
 			t.Fatal("MatrixEngineOrca is not stringified correctly")
 		}
 	})
+	t.Run("test engine orca-ch", func(t *testing.T) {
+		if MatrixEngineOrcaCh.String() != "orca-ch" {
+			t.Fatal("MatrixEngineOrcaCh is not stringified correctly")
+		}
+	})
 }
 
 func TestWithHeaders(t *testing.T) {
