@@ -10,15 +10,16 @@ const (
 
 	MatrixEngineOcelot
 	MatrixEngineOrca
+	MatrixEngineOrcaCh
 
-	MatrixEngineAnt
-	MatrixEngineHive
-	MatrixEngineOlympus
-	MatrixEngineCrew
-	MatrixEnginePluck
+	MatrixEngineMurche
+	MatrixEngineKandoo
+	MatrixEngineZeus
+	MatrixEngineCarPooling
+	MatrixEngineGolchin
 	MatrixEngineGiraffe
-	MatrixEngineFork
-	MatrixEnginePulse
+	MatrixEngineFood
+	MatrixEngineIntercity
 )
 
 // String casts the engine enum to its string value.
@@ -33,23 +34,25 @@ func (engine MatrixEngine) String() string {
 		return "ocelot"
 	case MatrixEngineOrca:
 		return "orca"
+	case MatrixEngineOrcaCh:
+		return "orca-ch"
 
-	case MatrixEngineAnt:
-		return "ant"
-	case MatrixEngineHive:
-		return "hive"
-	case MatrixEngineOlympus:
-		return "olympus"
-	case MatrixEngineCrew:
-		return "crew"
-	case MatrixEnginePluck:
-		return "pluck"
+	case MatrixEngineMurche:
+		return "murche"
+	case MatrixEngineKandoo:
+		return "kandoo"
+	case MatrixEngineZeus:
+		return "zeus"
+	case MatrixEngineCarPooling:
+		return "carpooling"
+	case MatrixEngineGolchin:
+		return "golchin"
 	case MatrixEngineGiraffe:
 		return "giraffe"
-	case MatrixEngineFork:
-		return "fork"
-	case MatrixEnginePulse:
-		return "pulse"
+	case MatrixEngineFood:
+		return "food"
+	case MatrixEngineIntercity:
+		return "intercity"
 	}
 	return "v1"
 }
