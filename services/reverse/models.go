@@ -1,5 +1,7 @@
 package reverse
 
+import "reflect"
+
 // Component is the struct containing data about a single component of an address.
 type Component struct {
 	Name string `json:"name"`
@@ -53,4 +55,82 @@ type Results struct {
 
 type ResultsWithDisplayName struct {
 	Results []ResultWithDisplayName `json:"results"`
+}
+
+type StructuralComponent struct {
+	Province      string
+	City          string
+	County        string
+	Town          string
+	Village       string
+	Neighbourhood string
+	Suburb        string
+	Locality      string
+	Primary       string
+	Secondary     string
+	Residential   string
+	ClosedWay     string
+	POI           string
+}
+
+func (s StructuralComponent) NewIterator() *StructuralComponentItr {
+	var components []string
+	v := reflect.ValueOf(s)
+
+	for i := 0; i < v.NumField(); i++ {
+		fieldValue := v.Field(i).String()
+		if fieldValue != "" { // Only include non-empty fields
+			components = append(components, fieldValue)
+		}
+	}
+	return &StructuralComponentItr{Components: components, index: 0}
+}
+
+type StructuralComponentItr struct {
+	index      int
+	Components []string
+}
+
+func (s *StructuralComponentItr) Next() (string, bool) {
+	if s.index >= len(s.Components) { // Corrected condition for stopping iteration
+		return "", false
+	}
+	component := s.Components[s.index]
+	s.index++
+	return component, true
+}
+
+type StructuralResult struct {
+	Result *StructuralComponent
+	ID     int
+}
+
+const (
+	province      = "province"
+	city          = "city"
+	county        = "county"
+	town          = "town"
+	village       = "village"
+	neighbourhood = "neighbourhood"
+	suburb        = "suburb"
+	locality      = "locality"
+	primary       = "primary"
+	secondary     = "secondary"
+	residential   = "residential"
+	poi           = "poi"
+)
+
+var convertReverseTypes = map[string]struct{}{
+	province:      {},
+	city:          {},
+	county:        {},
+	town:          {},
+	village:       {},
+	neighbourhood: {},
+	suburb:        {},
+	locality:      {},
+	primary:       {},
+	secondary:     {},
+	residential:   {},
+	poi:           {},
 }
