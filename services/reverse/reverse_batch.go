@@ -183,3 +183,21 @@ func (c *Client) GetBatchDisplayNameWithContext(ctx context.Context, request Bat
 	responseSpan.End()
 	return nil, fmt.Errorf("smapp batch reverse geo-code: non 200 status: %d", response.StatusCode)
 }
+
+func (c *Client) GetBatchStructuralResultsWithContext(ctx context.Context, request BatchReverseRequest) ([]StructuralResult, error) {
+	results, err := c.GetBatchWithContext(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	structuralResults := make([]StructuralResult, 0)
+	for _, result := range results {
+		structuralResult := c.convertComponentIntoStructureModel(result.Result.Components)
+		structuralResults = append(structuralResults,
+			StructuralResult{Result: structuralResult, ID: result.ID})
+	}
+	return structuralResults, nil
+}
+
+func (c *Client) GetBatchStructuralResults(request BatchReverseRequest) ([]StructuralResult, error) {
+	return c.GetBatchStructuralResultsWithContext(context.Background(), request)
+}

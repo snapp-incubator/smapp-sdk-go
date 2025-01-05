@@ -39,6 +39,11 @@ type Interface interface {
 	GetBatchWithContext(ctx context.Context, request BatchReverseRequest) ([]Result, error)
 	GetBatchDisplayName(request BatchReverseRequest) ([]ResultWithDisplayName, error)
 	GetBatchDisplayNameWithContext(ctx context.Context, request BatchReverseRequest) ([]ResultWithDisplayName, error)
+
+	GetStructuralResult(lat, lon float64, options CallOptions) (*StructuralComponent, error)
+	GetStructuralResultWithContext(ctx context.Context, lat, lon float64, options CallOptions) (*StructuralComponent, error)
+	GetBatchStructuralResults(request BatchReverseRequest) ([]StructuralResult, error)
+	GetBatchStructuralResultsWithContext(ctx context.Context, request BatchReverseRequest) ([]StructuralResult, error)
 }
 
 type Version string
@@ -392,4 +397,66 @@ func NewReverseClient(cfg *config.Config, version Version, timeout time.Duration
 func getReverseDefaultURL(cfg *config.Config, version Version) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
 	return fmt.Sprintf("%s/reverse/%s", baseURL, version)
+}
+
+func (c *Client) GetStructuralResult(lat, lon float64, options CallOptions) (*StructuralComponent, error) {
+	return c.GetStructuralResultWithContext(context.Background(), lat, lon, options)
+}
+
+func (c *Client) GetStructuralResultWithContext(ctx context.Context, lat, lon float64, options CallOptions) (*StructuralComponent, error) {
+	components, err := c.GetComponentsWithContext(ctx, lat, lon, options)
+	if err != nil {
+		return nil, err
+	}
+	response := c.convertComponentIntoStructureModel(components)
+	return response, nil
+}
+
+func (c *Client) convertComponentIntoStructureModel(components []Component) *StructuralComponent {
+	response := &StructuralComponent{}
+	for _, component := range components {
+		if _, ok := convertReverseTypes[component.Type]; ok {
+			switch component.Type {
+			case province:
+				response.Province = component.Name
+				break
+			case city:
+				response.City = component.Name
+				break
+			case county:
+				response.County = component.Name
+				break
+			case town:
+				response.Town = component.Name
+				break
+			case village:
+				response.Village = component.Name
+				break
+			case neighbourhood:
+				response.Neighbourhood = component.Name
+				break
+			case suburb:
+				response.Suburb = component.Name
+				break
+			case locality:
+				response.Locality = component.Name
+				break
+			case primary:
+				response.Primary = component.Name
+				break
+			case secondary:
+				response.Secondary = component.Name
+				break
+			case residential:
+				response.Residential = component.Name
+				break
+			case poi:
+				response.POI = component.Name
+				break
+			}
+		} else {
+			response.ClosedWay = component.Name
+		}
+	}
+	return response
 }
