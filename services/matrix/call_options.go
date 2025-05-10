@@ -17,7 +17,7 @@ const (
 	MatrixEngineZeus
 	MatrixEngineCarPooling
 	MatrixEngineGolchin
-	MatrixEngineGiraffe
+	MatrixEngineZarrafe
 	MatrixEngineFood
 	MatrixEngineIntercity
 )
@@ -47,8 +47,8 @@ func (engine MatrixEngine) String() string {
 		return "carpooling"
 	case MatrixEngineGolchin:
 		return "golchin"
-	case MatrixEngineGiraffe:
-		return "giraffe"
+	case MatrixEngineZarrafe:
+		return "zarrafe"
 	case MatrixEngineFood:
 		return "food"
 	case MatrixEngineIntercity:
