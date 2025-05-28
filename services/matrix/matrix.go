@@ -1,6 +1,7 @@
 package matrix
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -72,79 +73,110 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 		return Output{}, fmt.Errorf("smapp matrix: both sources and targets should not be empty")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
-	if err != nil {
-		reqInitSpan.RecordError(err)
-		reqInitSpan.End()
-		return Output{}, fmt.Errorf("smapp matrix: could not create request. err: %s", err.Error())
-	}
-
 	params := url.Values{}
 	if options.UseNoTraffic {
 		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
 	params.Set(EngineQueryParameter, options.Engine.String())
 
-	data := Input{
-		Sources: sources,
-		Targets: targets,
-	}
+	input := Input{Sources: sources, Targets: targets}
+	var (
+		req *http.Request
+		err error
+	)
 
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		reqInitSpan.RecordError(err)
-		reqInitSpan.End()
-		return Output{}, fmt.Errorf("smapp matrix: could not marshal input data")
-	}
+	if options.UsePost {
+		postInput := PostInput{input}
+		// ---------- HTTP POST ----------
+		body, err := json.Marshal(postInput)
+		if err != nil {
+			reqInitSpan.RecordError(err)
+			reqInitSpan.End()
+			return Output{}, fmt.Errorf("smapp matrix: could not marshal input data: %w", err)
+		}
 
-	params.Set(JSONInputQueryParam, string(jsonData))
+		req, err = http.NewRequestWithContext(
+			ctx,
+			http.MethodPost,
+			c.url,
+			bytes.NewReader(body),
+		)
+		if err != nil {
+			reqInitSpan.RecordError(err)
+			reqInitSpan.End()
+			return Output{}, fmt.Errorf("smapp matrix: could not create POST request: %w", err)
+		}
+		req.Header.Set("Content-Type", "application/json")
 
-	if c.cfg.APIKeySource == config.HeaderSource {
-		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
-		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
 	} else {
+		// ---------- HTTP GET (legacy) ----------
+		jsonData, err := json.Marshal(input)
+		if err != nil {
+			reqInitSpan.RecordError(err)
+			reqInitSpan.End()
+			return Output{}, fmt.Errorf("smapp matrix: could not marshal input data: %w", err)
+		}
+		params.Set(JSONInputQueryParam, string(jsonData))
+
+		req, err = http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
+		if err != nil {
+			reqInitSpan.RecordError(err)
+			reqInitSpan.End()
+			return Output{}, fmt.Errorf("smapp matrix: could not create GET request: %w", err)
+		}
+	}
+
+	// ---- API-key handling ----
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
+		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
+	case config.QueryParamSource:
+		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
+	default:
 		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
 		reqInitSpan.End()
-		return Output{}, fmt.Errorf("smapp matrix: invalid api key source: %s", string(c.cfg.APIKeySource))
+		return Output{}, fmt.Errorf("smapp matrix: invalid api key source: %s", c.cfg.APIKeySource)
 	}
 
-	for key, val := range options.Headers {
-		req.Header.Set(key, val)
-	}
+	// apply query string (for both GET and POST paths)
+	req.URL.RawQuery = params.Encode()
 
+	// extra headers
+	for k, v := range options.Headers {
+		req.Header.Set(k, v)
+	}
 	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
 
-	req.URL.RawQuery = params.Encode()
 	reqInitSpan.End()
 
-	response, err := c.httpClient.Do(req)
+	// ---- perform request ----
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return Output{}, fmt.Errorf("smapp matrix: could not make a request due to this error: %s", err.Error())
+		return Output{}, fmt.Errorf("smapp matrix: request failed: %w", err)
 	}
 
-	var responseSpan trace.Span
-	_, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
-
+	var respSpan trace.Span
+	_, respSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 	defer func() {
-		_, _ = io.Copy(io.Discard, response.Body)
-		_ = response.Body.Close()
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}()
 
-	if response.StatusCode == http.StatusOK {
-		var result Output
-		err := json.NewDecoder(response.Body).Decode(&result)
-		if err != nil {
-			responseSpan.RecordError(err)
-			responseSpan.End()
-			return Output{}, fmt.Errorf("smapp matrix: could not serialize response due to: %s", err.Error())
-		}
-		responseSpan.End()
-		return result, nil
+	if resp.StatusCode != http.StatusOK {
+		respSpan.SetStatus(codes.Error, "non 200 status code")
+		respSpan.End()
+		return Output{}, fmt.Errorf("smapp matrix: non 200 status: %d", resp.StatusCode)
 	}
-	responseSpan.SetStatus(codes.Error, "non 200 status code")
-	responseSpan.End()
-	return Output{}, fmt.Errorf("smapp matrix: non 200 status: %d", response.StatusCode)
+
+	var out Output
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		respSpan.RecordError(err)
+		respSpan.End()
+		return Output{}, fmt.Errorf("smapp matrix: could not decode response: %w", err)
+	}
+
+	respSpan.End()
+	return out, nil
 }
 
 // NewMatrixClient is the constructor of Matrix client.
