@@ -67,6 +67,8 @@ type CallOptions struct {
 	Engine MatrixEngine
 	// Headers is a map that contains all custom headers to be sent.
 	Headers map[string]string
+	// UsePost to use post http call for bigger matrix calls
+	UsePost bool
 }
 
 // CallOptionSetter is a function for defining custom call options in a fluent way.
@@ -78,6 +80,13 @@ func WithHeaders(headers map[string]string) CallOptionSetter {
 		if headers != nil {
 			options.Headers = headers
 		}
+	}
+}
+
+// WithUsePost will use post http call for bigger matrix calls
+func WithUsePost() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UsePost = true
 	}
 }
 

@@ -74,6 +74,16 @@ func TestWithTraffic(t *testing.T) {
 	}
 }
 
+func TestWithUsePost(t *testing.T) {
+	callOptions := CallOptions{}
+
+	WithUsePost()(&callOptions)
+
+	if callOptions.UsePost == false {
+		t.Fatalf("UsePost should not be false")
+	}
+}
+
 func TestWithEngine(t *testing.T) {
 	callOptions := CallOptions{}
 
