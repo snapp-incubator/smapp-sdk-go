@@ -18,7 +18,7 @@ const (
 	EtaEngineZeus
 	EtaEngineCarPooling
 	EtaEngineGolchin
-	EtaEngineGiraffe
+	EtaEngineZarrafe
 	EtaEngineFood
 	EtaEngineIntercity
 )
@@ -50,8 +50,8 @@ func (engine EtaEngine) String() string {
 		return "carpooling"
 	case EtaEngineGolchin:
 		return "golchin"
-	case EtaEngineGiraffe:
-		return "giraffe"
+	case EtaEngineZarrafe:
+		return "zarrafe"
 	case EtaEngineFood:
 		return "food"
 	case EtaEngineIntercity:
