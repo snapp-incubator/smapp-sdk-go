@@ -57,6 +57,7 @@ const (
 	ZoomLevel = "zoom"
 	Type      = "type"
 	Display   = "display"
+	Normalize = "normalize"
 
 	OKStatus    = "OK"
 	ErrorStatus = "ERROR"
@@ -118,6 +119,11 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	if options.UseResponseType {
 		params.Set(Type, string(options.ResponseType))
 	}
+
+	if options.UseNormalize {
+		params.Set(Normalize, options.Normalize)
+	}
+
 	params.Set(Display, "false")
 
 	if c.cfg.APIKeySource == config.HeaderSource {
@@ -222,6 +228,10 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 		params.Set(Type, string(options.ResponseType))
 	}
 
+	if options.UseNormalize {
+		params.Set(Normalize, options.Normalize)
+	}
+
 	params.Set(Display, "true")
 
 	if c.cfg.APIKeySource == config.HeaderSource {
@@ -320,6 +330,10 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 
 	if options.UseZoomLevel {
 		params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
+	}
+	
+	if options.UseNormalize {
+		params.Set(Normalize, options.Normalize)
 	}
 
 	params.Set(Type, string(Frequent))
