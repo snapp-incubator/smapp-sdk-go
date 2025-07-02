@@ -18,13 +18,14 @@ type FrequentAddress struct {
 
 // Request is the struct containing data on reverse request params
 type Request struct {
-	Type     ResponseType `json:"type"`
-	Display  string       `json:"display"`
-	Language Language     `json:"language"`
-	Zoom     float64      `json:"zoom"`
-	Lat      float64      `json:"lat"`
-	Lon      float64      `json:"lon"`
-	ID       int32        `json:"id"`
+	Type      ResponseType `json:"type"`
+	Display   string       `json:"display"`
+	Language  Language     `json:"language"`
+	Zoom      float64      `json:"zoom"`
+	Lat       float64      `json:"lat"`
+	Lon       float64      `json:"lon"`
+	ID        int32        `json:"id"`
+	Normalize string       `json:"normalize"`
 }
 
 type BatchReverseRequest struct {

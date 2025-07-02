@@ -178,3 +178,18 @@ func TestNewDefaultCallOptions(t *testing.T) {
 		t.Fatalf("ZoomLevel should be 10")
 	}
 }
+
+func TestWithNormalize(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver,
+		Language:     Farsi,
+		Normalize:    true,
+	}
+
+	WithNormalize()(&callOptions)
+
+	if callOptions.Normalize {
+		t.Fatalf("Normalize should be true")
+	}
+}
