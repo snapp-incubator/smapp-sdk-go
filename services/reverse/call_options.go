@@ -34,10 +34,8 @@ type CallOptions struct {
 	UseLanguage bool
 	// Language of the response
 	Language Language
-	// UseNormalize specifies if `normalized` query param exists in request.
-	UseNormalize bool
-	// Normalize indicates whether to normalize the text of the response data.
-	Normalize string
+	// Normalize specifies if `normalize` query param exists in request.
+	Normalize bool
 	// Headers is a map that contains all custom headers to be sent.
 	Headers map[string]string
 }
@@ -126,10 +124,9 @@ func WithKurdishLanguage() CallOptionSetter {
 }
 
 // WithNormalize sets the normalize option for the response.
-func WithNormalize(normalize string) CallOptionSetter {
+func WithNormalize() CallOptionSetter {
 	return func(options *CallOptions) {
-		options.UseNormalize = true
-		options.Normalize = normalize
+		options.Normalize = true
 	}
 }
 
@@ -156,11 +153,10 @@ func NewDefaultCallOptions(opts ...CallOptionSetter) CallOptions {
 		UseZoomLevel:    false,
 		UseResponseType: false,
 		UseLanguage:     false,
-		UseNormalize:    false,
+		Normalize:       false,
 		ZoomLevel:       16,
 		ResponseType:    Driver,
 		Language:        Farsi,
-		Normalize:       "false",
 		Headers:         make(map[string]string),
 	}
 

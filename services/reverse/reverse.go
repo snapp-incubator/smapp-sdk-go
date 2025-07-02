@@ -120,8 +120,8 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 		params.Set(Type, string(options.ResponseType))
 	}
 
-	if options.UseNormalize {
-		params.Set(Normalize, options.Normalize)
+	if options.Normalize {
+		params.Set(Normalize, "true")
 	}
 
 	params.Set(Display, "false")
@@ -228,8 +228,8 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 		params.Set(Type, string(options.ResponseType))
 	}
 
-	if options.UseNormalize {
-		params.Set(Normalize, options.Normalize)
+	if options.Normalize {
+		params.Set(Normalize, "true")
 	}
 
 	params.Set(Display, "true")
@@ -331,9 +331,9 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 	if options.UseZoomLevel {
 		params.Set(ZoomLevel, strconv.Itoa(options.ZoomLevel))
 	}
-	
-	if options.UseNormalize {
-		params.Set(Normalize, options.Normalize)
+
+	if options.Normalize {
+		params.Set(Normalize, "true")
 	}
 
 	params.Set(Type, string(Frequent))
