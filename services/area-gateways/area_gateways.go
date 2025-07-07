@@ -12,7 +12,6 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -106,11 +105,12 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 		req.Header.Set(AcceptLanguageHeader, string(options.Language))
 	}
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
 		reqInitSpan.End()
 		return Area{}, fmt.Errorf("smapp area-gateways: invalid api key source: %s", string(c.cfg.APIKeySource))
@@ -132,7 +132,7 @@ func (c *Client) GetGatewaysWithContext(ctx context.Context, lat, lon float64, o
 	}
 
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, response.Body)
+		_, _ = io.Copy(io.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 

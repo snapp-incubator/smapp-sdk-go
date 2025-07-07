@@ -20,6 +20,7 @@ import (
 type MockETAClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockETAClientMockRecorder
+	isgomock struct{}
 }
 
 // MockETAClientMockRecorder is the mock recorder for MockETAClient.
@@ -49,7 +50,7 @@ func (m *MockETAClient) GetETA(points []Point, options CallOptions) (ETA, error)
 }
 
 // GetETA indicates an expected call of GetETA.
-func (mr *MockETAClientMockRecorder) GetETA(points, options interface{}) *gomock.Call {
+func (mr *MockETAClientMockRecorder) GetETA(points, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetETA", reflect.TypeOf((*MockETAClient)(nil).GetETA), points, options)
 }
@@ -64,7 +65,7 @@ func (m *MockETAClient) GetETAWithContext(ctx context.Context, points []Point, o
 }
 
 // GetETAWithContext indicates an expected call of GetETAWithContext.
-func (mr *MockETAClientMockRecorder) GetETAWithContext(ctx, points, options interface{}) *gomock.Call {
+func (mr *MockETAClientMockRecorder) GetETAWithContext(ctx, points, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetETAWithContext", reflect.TypeOf((*MockETAClient)(nil).GetETAWithContext), ctx, points, options)
 }

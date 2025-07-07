@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -120,11 +119,12 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	}
 	params.Set(Display, "false")
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
 		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
@@ -151,7 +151,7 @@ func (c *Client) GetComponentsWithContext(ctx context.Context, lat, lon float64,
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, response.Body)
+		_, _ = io.Copy(io.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -224,11 +224,12 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 
 	params.Set(Display, "true")
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.End()
 		return "", fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
@@ -254,7 +255,7 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, response.Body)
+		_, _ = io.Copy(io.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -324,11 +325,12 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 
 	params.Set(Type, string(Frequent))
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.End()
 		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
@@ -354,7 +356,7 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 	ctx, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
 
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, response.Body)
+		_, _ = io.Copy(io.Discard, response.Body)
 		_ = response.Body.Close()
 	}()
 
@@ -419,40 +421,28 @@ func (c *Client) convertComponentIntoStructureModel(components []Component) *Str
 			switch component.Type {
 			case province:
 				response.Province = component.Name
-				break
 			case city:
 				response.City = component.Name
-				break
 			case county:
 				response.County = component.Name
-				break
 			case town:
 				response.Town = component.Name
-				break
 			case village:
 				response.Village = component.Name
-				break
 			case neighbourhood:
 				response.Neighbourhood = component.Name
-				break
 			case suburb:
 				response.Suburb = component.Name
-				break
 			case locality:
 				response.Locality = component.Name
-				break
 			case primary:
 				response.Primary = component.Name
-				break
 			case secondary:
 				response.Secondary = component.Name
-				break
 			case residential:
 				response.Residential = component.Name
-				break
 			case poi:
 				response.POI = component.Name
-				break
 			}
 		} else {
 			response.ClosedWay = component.Name
