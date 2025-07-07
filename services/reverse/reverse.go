@@ -421,40 +421,28 @@ func (c *Client) convertComponentIntoStructureModel(components []Component) *Str
 			switch component.Type {
 			case province:
 				response.Province = component.Name
-				break
 			case city:
 				response.City = component.Name
-				break
 			case county:
 				response.County = component.Name
-				break
 			case town:
 				response.Town = component.Name
-				break
 			case village:
 				response.Village = component.Name
-				break
 			case neighbourhood:
 				response.Neighbourhood = component.Name
-				break
 			case suburb:
 				response.Suburb = component.Name
-				break
 			case locality:
 				response.Locality = component.Name
-				break
 			case primary:
 				response.Primary = component.Name
-				break
 			case secondary:
 				response.Secondary = component.Name
-				break
 			case residential:
 				response.Residential = component.Name
-				break
 			case poi:
 				response.POI = component.Name
-				break
 			}
 		} else {
 			response.ClosedWay = component.Name
