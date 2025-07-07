@@ -224,11 +224,12 @@ func (c *Client) GetDisplayNameWithContext(ctx context.Context, lat, lon float64
 
 	params.Set(Display, "true")
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.End()
 		return "", fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}
@@ -324,11 +325,12 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 
 	params.Set(Type, string(Frequent))
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.End()
 		return FrequentAddress{}, fmt.Errorf("smapp reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
 	}

@@ -52,11 +52,12 @@ func (c *Client) GetBatchWithContext(ctx context.Context, request BatchReverseRe
 
 	params := url.Values{}
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
 		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp batch reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
@@ -134,11 +135,12 @@ func (c *Client) GetBatchDisplayNameWithContext(ctx context.Context, request Bat
 
 	params := url.Values{}
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
 		reqInitSpan.End()
 		return nil, fmt.Errorf("smapp batch reverse geo-code: invalid api key source: %s", string(c.cfg.APIKeySource))
