@@ -1,6 +1,6 @@
 module github.com/snapp-incubator/smapp-sdk-go
 
-go 1.24.4
+go 1.24
 
 require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.62.0
