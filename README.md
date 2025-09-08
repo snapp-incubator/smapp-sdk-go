@@ -193,7 +193,17 @@ List of operations on a reverse geocode client are:
   Only works when Display is true
 + **`GetBatchDisplayNameWithContext(ctx context.Context, request BatchReverseRequest) ([]Result, error)`**
   same as `GetBatchDisplayName` but you can pass your own context for more control if needed.
++ **`GetStructuralResult(lat, lon float64, options CallOptions) ([]StructuralComponent, error)`**:
+  receives `lat`,`lon` and `CallOptions` and returns a structure of address components of location given.
++ **`GetStructuralResultWithContext(ctx context.Context, lat, lon float64, options CallOptions) (*StructuralComponent, error)`**:
+  same as `GetStructuralResult` but you can pass your own context for more control if needed.
++ **`GetBatchStructuralResults(request BatchReverseRequest) ([]StructuralResult, error)`**:
+  receives a slice of Request s and returns slice of structure of address components of location given.
+  Does not support type 'frequent' in requests and Does not support type Display option as True
++ **`GetBatchStructuralResultsWithContext(request BatchReverseRequest) ([]StructuralResult, error)`**:
+  same as `GetBatchStructural` but you can pass your own context for more control if needed.
 
+>*Note*: you can iterate over `StructuralComponent` fields with generate new Iterator with `NewIterator()` method.
 
 ### CallOptions
 

@@ -15,6 +15,13 @@ func WithURL(url string) ConstructorOption {
 	}
 }
 
+// WithHttpClient will override request httpclient.
+func WithHttpClient(httpClient http.Client) ConstructorOption {
+	return func(client *Client) {
+		client.httpClient = httpClient
+	}
+}
+
 // WithTransport will override request http client transport object
 func WithTransport(transport *http.Transport) ConstructorOption {
 	return func(client *Client) {

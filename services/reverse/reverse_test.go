@@ -572,3 +572,53 @@ func TestClient_GetFrequentWithContext(t *testing.T) {
 		}
 	})
 }
+
+func TestClient_GetStructuralResultWithContext(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`{"status":"OK","result":{"components":[{"name": "تهران","type": "city"},{"name": "حسینیه ارشاد - قبا","type": "neighbourhood"},{"name": "دکتر علی شریعتی قبل از ارشاد","type": "primary"},{"name": "حسینیه ارشاد","type": "place_of_worship"}]}}`))
+		}))
+
+		cfg, err := config.NewDefaultConfig("key")
+		if err != nil {
+			t.Fatalf("could not create default config due to: %s", err.Error())
+		}
+		client, err := NewReverseClient(cfg, V1, time.Second, WithURL(sv.URL))
+		if err != nil {
+			t.Fatalf("could not create reverse client due to: %s", err.Error())
+		}
+		result, err := client.GetStructuralResult(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(17),
+			WithFarsiLanguage(),
+			WithPassengerResponseType(),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
+		))
+		if err != nil {
+			t.Fatalf("could not get components: %s", err.Error())
+		}
+		if result.Primary != "دکتر علی شریعتی قبل از ارشاد" {
+			t.Fatalf("invalid_address")
+		}
+		if result.POI != "" {
+			t.Fatalf("invalid_address")
+		}
+		if result.Neighbourhood != "حسینیه ارشاد - قبا" {
+			t.Fatalf("invalid_address")
+		}
+		if result.ClosedWay != "حسینیه ارشاد" {
+			t.Fatalf("invalid_address")
+		}
+		itr := result.NewIterator()
+		for {
+			value, hasEnd := itr.Next()
+			if !hasEnd {
+				break
+			}
+			if value == "" {
+				t.Fatalf("invalid_address")
+			}
+		}
+	})
+}
