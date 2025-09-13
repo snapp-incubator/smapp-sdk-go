@@ -90,7 +90,11 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		data.DepartureDateTime = options.DepartureDateTime
 	}
 
-	params.Set(EngineQueryParameter, options.Engine.String())
+	if options.EngineStr != "" {
+		params.Set(EngineQueryParameter, options.EngineStr)
+	} else {
+		params.Set(EngineQueryParameter, options.Engine.String())
+	}
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
