@@ -77,7 +77,12 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 	if options.UseNoTraffic {
 		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
-	params.Set(EngineQueryParameter, options.Engine.String())
+
+	if options.EngineStr != "" {
+		params.Set(EngineQueryParameter, options.EngineStr)
+	} else {
+		params.Set(EngineQueryParameter, options.Engine.String())
+	}
 
 	input := Input{Sources: sources, Targets: targets}
 	var (
