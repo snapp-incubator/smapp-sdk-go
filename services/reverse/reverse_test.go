@@ -2,11 +2,12 @@ package reverse
 
 import (
 	"context"
-	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/snapp-incubator/smapp-sdk-go/config"
 )
 
 func TestNewReverseClient(t *testing.T) {
@@ -424,7 +425,7 @@ func TestClient_GetDisplayNameWithContext(t *testing.T) {
 func TestClient_GetFrequent(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(`{"address":"استان تهران، شهرستان تهران، تهران","address_en":"Tehran Province, Tehran County, Tehran","shortname":"تهران","shortname_en":"Tehran"}`))
+			_, _ = w.Write([]byte(`{"address":"استان تهران، شهرستان تهران، تهران","address_en":"Tehran Province, Tehran County, Tehran","shortname":"تهران","shortname_en":"Tehran","address_ckb":"استان کردستان، شهرستان سنندج","shortname_ckb":"سنندج"}`))
 		}))
 
 		cfg, err := config.NewDefaultConfig("key")
@@ -446,6 +447,12 @@ func TestClient_GetFrequent(t *testing.T) {
 		}
 		if result.Shortname != "تهران" {
 			t.Fatalf("invalid_address")
+		}
+		if result.KurdishShortname != "سنندج" {
+			t.Fatalf("invalid_kurdish_shortname")
+		}
+		if result.KurdishAddress != "استان کردستان، شهرستان سنندج" {
+			t.Fatalf("invalid_kurdish_address")
 		}
 	})
 	t.Run("invalid_response", func(t *testing.T) {
