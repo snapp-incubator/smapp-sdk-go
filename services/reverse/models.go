@@ -14,6 +14,8 @@ type FrequentAddress struct {
 	EnglishAddress   string `json:"address_en"`
 	Shortname        string `json:"shortname"`
 	EnglishShortname string `json:"shortname_en"`
+	KurdishAddress   string `json:"address_ckb"`
+	KurdishShortname string `json:"shortname_ckb"`
 }
 
 // Request is the struct containing data on reverse request params
