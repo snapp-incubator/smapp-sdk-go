@@ -20,6 +20,7 @@ import (
 type MockSearchClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockSearchClientMockRecorder
+	isgomock struct{}
 }
 
 // MockSearchClientMockRecorder is the mock recorder for MockSearchClient.
@@ -49,7 +50,7 @@ func (m *MockSearchClient) AutoComplete(input string, options CallOptions) ([]Re
 }
 
 // AutoComplete indicates an expected call of AutoComplete.
-func (mr *MockSearchClientMockRecorder) AutoComplete(input, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) AutoComplete(input, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AutoComplete", reflect.TypeOf((*MockSearchClient)(nil).AutoComplete), input, options)
 }
@@ -64,7 +65,7 @@ func (m *MockSearchClient) AutoCompleteWithContext(ctx context.Context, input st
 }
 
 // AutoCompleteWithContext indicates an expected call of AutoCompleteWithContext.
-func (mr *MockSearchClientMockRecorder) AutoCompleteWithContext(ctx, input, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) AutoCompleteWithContext(ctx, input, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AutoCompleteWithContext", reflect.TypeOf((*MockSearchClient)(nil).AutoCompleteWithContext), ctx, input, options)
 }
@@ -79,7 +80,7 @@ func (m *MockSearchClient) Details(placeId string, options CallOptions) (Detail,
 }
 
 // Details indicates an expected call of Details.
-func (mr *MockSearchClientMockRecorder) Details(placeId, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) Details(placeId, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Details", reflect.TypeOf((*MockSearchClient)(nil).Details), placeId, options)
 }
@@ -94,7 +95,7 @@ func (m *MockSearchClient) DetailsWithContext(ctx context.Context, placeId strin
 }
 
 // DetailsWithContext indicates an expected call of DetailsWithContext.
-func (mr *MockSearchClientMockRecorder) DetailsWithContext(ctx, placeId, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) DetailsWithContext(ctx, placeId, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetailsWithContext", reflect.TypeOf((*MockSearchClient)(nil).DetailsWithContext), ctx, placeId, options)
 }
@@ -109,7 +110,7 @@ func (m *MockSearchClient) GetCities(options CallOptions) ([]City, error) {
 }
 
 // GetCities indicates an expected call of GetCities.
-func (mr *MockSearchClientMockRecorder) GetCities(options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) GetCities(options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCities", reflect.TypeOf((*MockSearchClient)(nil).GetCities), options)
 }
@@ -124,7 +125,7 @@ func (m *MockSearchClient) GetCitiesWithContext(ctx context.Context, options Cal
 }
 
 // GetCitiesWithContext indicates an expected call of GetCitiesWithContext.
-func (mr *MockSearchClientMockRecorder) GetCitiesWithContext(ctx, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) GetCitiesWithContext(ctx, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCitiesWithContext", reflect.TypeOf((*MockSearchClient)(nil).GetCitiesWithContext), ctx, options)
 }
@@ -139,7 +140,7 @@ func (m *MockSearchClient) SearchCity(input string, options CallOptions) ([]City
 }
 
 // SearchCity indicates an expected call of SearchCity.
-func (mr *MockSearchClientMockRecorder) SearchCity(input, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) SearchCity(input, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCity", reflect.TypeOf((*MockSearchClient)(nil).SearchCity), input, options)
 }
@@ -154,7 +155,7 @@ func (m *MockSearchClient) SearchCityWithContext(ctx context.Context, input stri
 }
 
 // SearchCityWithContext indicates an expected call of SearchCityWithContext.
-func (mr *MockSearchClientMockRecorder) SearchCityWithContext(ctx, input, options interface{}) *gomock.Call {
+func (mr *MockSearchClientMockRecorder) SearchCityWithContext(ctx, input, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCityWithContext", reflect.TypeOf((*MockSearchClient)(nil).SearchCityWithContext), ctx, input, options)
 }

@@ -20,6 +20,7 @@ import (
 type MockReverseClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockReverseClientMockRecorder
+	isgomock struct{}
 }
 
 // MockReverseClientMockRecorder is the mock recorder for MockReverseClient.
@@ -49,7 +50,7 @@ func (m *MockReverseClient) GetBatch(request BatchReverseRequest) ([]Result, err
 }
 
 // GetBatch indicates an expected call of GetBatch.
-func (mr *MockReverseClientMockRecorder) GetBatch(request interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetBatch(request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBatch", reflect.TypeOf((*MockReverseClient)(nil).GetBatch), request)
 }
@@ -64,7 +65,7 @@ func (m *MockReverseClient) GetBatchDisplayName(request BatchReverseRequest) ([]
 }
 
 // GetBatchDisplayName indicates an expected call of GetBatchDisplayName.
-func (mr *MockReverseClientMockRecorder) GetBatchDisplayName(request interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetBatchDisplayName(request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBatchDisplayName", reflect.TypeOf((*MockReverseClient)(nil).GetBatchDisplayName), request)
 }
@@ -79,9 +80,39 @@ func (m *MockReverseClient) GetBatchDisplayNameWithContext(ctx context.Context, 
 }
 
 // GetBatchDisplayNameWithContext indicates an expected call of GetBatchDisplayNameWithContext.
-func (mr *MockReverseClientMockRecorder) GetBatchDisplayNameWithContext(ctx, request interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetBatchDisplayNameWithContext(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBatchDisplayNameWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetBatchDisplayNameWithContext), ctx, request)
+}
+
+// GetBatchStructuralResults mocks base method.
+func (m *MockReverseClient) GetBatchStructuralResults(request BatchReverseRequest) ([]StructuralResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBatchStructuralResults", request)
+	ret0, _ := ret[0].([]StructuralResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBatchStructuralResults indicates an expected call of GetBatchStructuralResults.
+func (mr *MockReverseClientMockRecorder) GetBatchStructuralResults(request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBatchStructuralResults", reflect.TypeOf((*MockReverseClient)(nil).GetBatchStructuralResults), request)
+}
+
+// GetBatchStructuralResultsWithContext mocks base method.
+func (m *MockReverseClient) GetBatchStructuralResultsWithContext(ctx context.Context, request BatchReverseRequest) ([]StructuralResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBatchStructuralResultsWithContext", ctx, request)
+	ret0, _ := ret[0].([]StructuralResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBatchStructuralResultsWithContext indicates an expected call of GetBatchStructuralResultsWithContext.
+func (mr *MockReverseClientMockRecorder) GetBatchStructuralResultsWithContext(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBatchStructuralResultsWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetBatchStructuralResultsWithContext), ctx, request)
 }
 
 // GetBatchWithContext mocks base method.
@@ -94,7 +125,7 @@ func (m *MockReverseClient) GetBatchWithContext(ctx context.Context, request Bat
 }
 
 // GetBatchWithContext indicates an expected call of GetBatchWithContext.
-func (mr *MockReverseClientMockRecorder) GetBatchWithContext(ctx, request interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetBatchWithContext(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBatchWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetBatchWithContext), ctx, request)
 }
@@ -109,7 +140,7 @@ func (m *MockReverseClient) GetComponents(lat, lon float64, options CallOptions)
 }
 
 // GetComponents indicates an expected call of GetComponents.
-func (mr *MockReverseClientMockRecorder) GetComponents(lat, lon, options interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetComponents(lat, lon, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetComponents", reflect.TypeOf((*MockReverseClient)(nil).GetComponents), lat, lon, options)
 }
@@ -124,7 +155,7 @@ func (m *MockReverseClient) GetComponentsWithContext(ctx context.Context, lat, l
 }
 
 // GetComponentsWithContext indicates an expected call of GetComponentsWithContext.
-func (mr *MockReverseClientMockRecorder) GetComponentsWithContext(ctx, lat, lon, options interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetComponentsWithContext(ctx, lat, lon, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetComponentsWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetComponentsWithContext), ctx, lat, lon, options)
 }
@@ -139,7 +170,7 @@ func (m *MockReverseClient) GetDisplayName(lat, lon float64, options CallOptions
 }
 
 // GetDisplayName indicates an expected call of GetDisplayName.
-func (mr *MockReverseClientMockRecorder) GetDisplayName(lat, lon, options interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetDisplayName(lat, lon, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDisplayName", reflect.TypeOf((*MockReverseClient)(nil).GetDisplayName), lat, lon, options)
 }
@@ -154,7 +185,7 @@ func (m *MockReverseClient) GetDisplayNameWithContext(ctx context.Context, lat, 
 }
 
 // GetDisplayNameWithContext indicates an expected call of GetDisplayNameWithContext.
-func (mr *MockReverseClientMockRecorder) GetDisplayNameWithContext(ctx, lat, lon, options interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetDisplayNameWithContext(ctx, lat, lon, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDisplayNameWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetDisplayNameWithContext), ctx, lat, lon, options)
 }
@@ -169,7 +200,7 @@ func (m *MockReverseClient) GetFrequent(lat, lon float64, options CallOptions) (
 }
 
 // GetFrequent indicates an expected call of GetFrequent.
-func (mr *MockReverseClientMockRecorder) GetFrequent(lat, lon, options interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetFrequent(lat, lon, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFrequent", reflect.TypeOf((*MockReverseClient)(nil).GetFrequent), lat, lon, options)
 }
@@ -184,7 +215,37 @@ func (m *MockReverseClient) GetFrequentWithContext(ctx context.Context, lat, lon
 }
 
 // GetFrequentWithContext indicates an expected call of GetFrequentWithContext.
-func (mr *MockReverseClientMockRecorder) GetFrequentWithContext(ctx, lat, lon, options interface{}) *gomock.Call {
+func (mr *MockReverseClientMockRecorder) GetFrequentWithContext(ctx, lat, lon, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFrequentWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetFrequentWithContext), ctx, lat, lon, options)
+}
+
+// GetStructuralResult mocks base method.
+func (m *MockReverseClient) GetStructuralResult(lat, lon float64, options CallOptions) (*StructuralComponent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStructuralResult", lat, lon, options)
+	ret0, _ := ret[0].(*StructuralComponent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStructuralResult indicates an expected call of GetStructuralResult.
+func (mr *MockReverseClientMockRecorder) GetStructuralResult(lat, lon, options any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructuralResult", reflect.TypeOf((*MockReverseClient)(nil).GetStructuralResult), lat, lon, options)
+}
+
+// GetStructuralResultWithContext mocks base method.
+func (m *MockReverseClient) GetStructuralResultWithContext(ctx context.Context, lat, lon float64, options CallOptions) (*StructuralComponent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStructuralResultWithContext", ctx, lat, lon, options)
+	ret0, _ := ret[0].(*StructuralComponent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStructuralResultWithContext indicates an expected call of GetStructuralResultWithContext.
+func (mr *MockReverseClientMockRecorder) GetStructuralResultWithContext(ctx, lat, lon, options any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructuralResultWithContext", reflect.TypeOf((*MockReverseClient)(nil).GetStructuralResultWithContext), ctx, lat, lon, options)
 }

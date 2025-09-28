@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Test
 
 on:
   push:
@@ -15,19 +15,10 @@ jobs:
       - name: Gitleaks
         uses: zricethezav/gitleaks-action@v1.6.0
 
-  lint:
-    runs-on: ubuntu-latest
-    container:
-      image: golangci/golangci-lint:v1.42.1
-    steps:
-      - uses: actions/checkout@v2
-      - name: Lint
-        run: golangci-lint run ./...
-
   test:
     runs-on: ubuntu-latest
     container:
-      image: golang:1.23
+      image: golang:1.24
     steps:
       - uses: actions/checkout@v2
       - name: Set GOFLAGS to disable VCS

@@ -45,9 +45,10 @@ func (c *Config) setDefaults() error {
 	}
 
 	if c.APIKeyName == "" {
-		if c.APIKeySource == HeaderSource {
+		switch c.APIKeySource {
+		case HeaderSource:
 			c.APIKeyName = DefaultHeaderAPIKeyName
-		} else if c.APIKeySource == QueryParamSource {
+		case QueryParamSource:
 			c.APIKeyName = DefaultQueryParamAPIKeyName
 		}
 	}
@@ -65,11 +66,12 @@ func (c *Config) setDefaults() error {
 // ReadFromEnvironment helps reading a config from Environment variables. you can pass different options to override each field of config.
 // This function returns an error if no APIKey is defined
 // these Environment variables are used to fill a config:
-// 		`SMAPP_API_KEY` for APIKey
-// 		`SMAPP_API_KEY_SOURCE` for APIKeySource
-// 		`SMAPP_API_KEY_NAME` for APIKeyName
-// 		`SMAPP_API_REGION` for Region
-// 		`SMAPP_API_BASE_URL` for APIBaseURL
+//
+//	`SMAPP_API_KEY` for APIKey
+//	`SMAPP_API_KEY_SOURCE` for APIKeySource
+//	`SMAPP_API_KEY_NAME` for APIKeyName
+//	`SMAPP_API_REGION` for Region
+//	`SMAPP_API_BASE_URL` for APIBaseURL
 func ReadFromEnvironment(opts ...Option) (*Config, error) {
 	apiKey := os.Getenv("SMAPP_API_KEY")
 	apiKeySource := APIKeySource(os.Getenv("SMAPP_API_KEY_SOURCE"))
@@ -103,10 +105,11 @@ func ReadFromEnvironment(opts ...Option) (*Config, error) {
 // NewDefaultConfig creates a default config. you can pass different options to override each field of config.
 // This function returns an error if no apiKey is defined
 // these are default values of each config field:
-// 		Region: teh-1
-// 		APIKeySource: header
-//		APIKeyName: X-Monshi-Key
-//		APIBaseURL: http://smapp-api.apps.inter-dc.teh-1.snappcloud.io
+//
+//	Region: teh-1
+//	APIKeySource: header
+//	APIKeyName: X-Monshi-Key
+//	APIBaseURL: http://smapp-api.apps.inter-dc.teh-1.snappcloud.io
 func NewDefaultConfig(apiKey string, opts ...Option) (*Config, error) {
 	if apiKey == "" {
 		return nil, ErrEmptyAPIKey

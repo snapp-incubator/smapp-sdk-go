@@ -90,7 +90,11 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		data.DepartureDateTime = options.DepartureDateTime
 	}
 
-	params.Set(EngineQueryParameter, options.Engine.String())
+	if options.EngineStr != "" {
+		params.Set(EngineQueryParameter, options.EngineStr)
+	} else {
+		params.Set(EngineQueryParameter, options.Engine.String())
+	}
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -101,11 +105,12 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 
 	params.Set(JSONInputQueryParam, string(jsonData))
 
-	if c.cfg.APIKeySource == config.HeaderSource {
+	switch c.cfg.APIKeySource {
+	case config.HeaderSource:
 		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else if c.cfg.APIKeySource == config.QueryParamSource {
+	case config.QueryParamSource:
 		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	} else {
+	default:
 		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
 		reqInitSpan.End()
 		return ETA{}, fmt.Errorf("smapp eta: invalid api key source: %s", string(c.cfg.APIKeySource))
