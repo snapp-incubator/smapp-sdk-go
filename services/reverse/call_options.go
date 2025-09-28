@@ -4,13 +4,15 @@ type ResponseType string
 type Language string
 
 const (
-	Driver      ResponseType = "driver"
-	Passenger   ResponseType = "passenger"
-	Verbose     ResponseType = "verbose"
-	Biker       ResponseType = "biker"
-	Origin      ResponseType = "origin"
-	Destination ResponseType = "destination"
-	Frequent    ResponseType = "frequent"
+	Driver             ResponseType = "driver"
+	Passenger          ResponseType = "passenger"
+	Verbose            ResponseType = "verbose"
+	Biker              ResponseType = "biker"
+	Origin             ResponseType = "origin"
+	Destination        ResponseType = "destination"
+	Frequent           ResponseType = "frequent"
+	Driver_Origin      ResponseType = "driver-origin"
+	Driver_Destination ResponseType = "driver-destination"
 )
 
 const (
@@ -34,6 +36,8 @@ type CallOptions struct {
 	UseLanguage bool
 	// Language of the response
 	Language Language
+	// Normalize specifies if `normalize` query param exists in request.
+	Normalize bool
 	// Headers is a map that contains all custom headers to be sent.
 	Headers map[string]string
 }
@@ -89,6 +93,22 @@ func WithDestinationResponseType() CallOptionSetter {
 	}
 }
 
+// WithDriverDestinationResponseType will set `driver-destination` type for the response
+func WithDriverDestinationResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Driver_Destination
+	}
+}
+
+// WithDriverOriginResponseType will set `driver-origin` type for the response
+func WithDriverOriginResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Driver_Origin
+	}
+}
+
 // WithFarsiLanguage will set the response language to Farsi
 func WithFarsiLanguage() CallOptionSetter {
 	return func(options *CallOptions) {
@@ -121,6 +141,13 @@ func WithKurdishLanguage() CallOptionSetter {
 	}
 }
 
+// WithNormalize sets the normalize option for the response.
+func WithNormalize() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.Normalize = true
+	}
+}
+
 // WithZoomLevel will set the given zoom level for the request.
 func WithZoomLevel(zoomLevel int) CallOptionSetter {
 	return func(options *CallOptions) {
@@ -144,6 +171,7 @@ func NewDefaultCallOptions(opts ...CallOptionSetter) CallOptions {
 		UseZoomLevel:    false,
 		UseResponseType: false,
 		UseLanguage:     false,
+		Normalize:       false,
 		ZoomLevel:       16,
 		ResponseType:    Driver,
 		Language:        Farsi,

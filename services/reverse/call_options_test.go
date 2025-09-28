@@ -72,6 +72,34 @@ func TestWithDestinationResponseType(t *testing.T) {
 	}
 }
 
+func TestWithDriverDestinationResponseType(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver_Destination,
+		Language:     Farsi,
+	}
+
+	WithDriverDestinationResponseType()(&callOptions)
+
+	if callOptions.ResponseType != Driver_Destination {
+		t.Fatalf("ResponseType should be Driver Destination")
+	}
+}
+
+func TestWithDriverOriginResponseType(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver_Origin,
+		Language:     Farsi,
+	}
+
+	WithDriverOriginResponseType()(&callOptions)
+
+	if callOptions.ResponseType != Driver_Origin {
+		t.Fatalf("ResponseType should be Driver Origin")
+	}
+}
+
 func TestWithBikerResponseType(t *testing.T) {
 	callOptions := CallOptions{
 		ZoomLevel:    16,
@@ -176,5 +204,20 @@ func TestNewDefaultCallOptions(t *testing.T) {
 
 	if callOptions.ZoomLevel != 10 {
 		t.Fatalf("ZoomLevel should be 10")
+	}
+}
+
+func TestWithNormalize(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Driver,
+		Language:     Farsi,
+		Normalize:    false,
+	}
+
+	WithNormalize()(&callOptions)
+
+	if !callOptions.Normalize {
+		t.Fatalf("Normalize should be true")
 	}
 }
