@@ -74,6 +74,8 @@ type CallOptions struct {
 	Headers map[string]string
 	// Engine is the value of `engine` query param.
 	Engine EtaEngine
+	// Engine is the value of `engine` in query param as string.
+	EngineStr string
 }
 
 // CallOptionSetter is a function for defining custom call options in a fluent way.
@@ -116,6 +118,12 @@ func WithDepartureDateTime(dateTime string) CallOptionSetter {
 func WithEngine(engine EtaEngine) CallOptionSetter {
 	return func(options *CallOptions) {
 		options.Engine = engine
+	}
+}
+
+func WithEngineStr(engineStr string) CallOptionSetter {
+	return func(options *CallOptions) {
+		options.EngineStr = engineStr
 	}
 }
 

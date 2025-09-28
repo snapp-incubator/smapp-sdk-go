@@ -65,6 +65,8 @@ type CallOptions struct {
 	NoTraffic bool
 	// Engine is the value of `engine` query param.
 	Engine MatrixEngine
+	// Engine is the value of `engine` in query param as string.
+	EngineStr string
 	// Headers is a map that contains all custom headers to be sent.
 	Headers map[string]string
 	// UsePost to use post http call for bigger matrix calls
@@ -110,6 +112,12 @@ func WithTraffic() CallOptionSetter {
 func WithEngine(engine MatrixEngine) CallOptionSetter {
 	return func(options *CallOptions) {
 		options.Engine = engine
+	}
+}
+
+func WithEngineStr(engineStr string) CallOptionSetter {
+	return func(options *CallOptions) {
+		options.EngineStr = engineStr
 	}
 }
 

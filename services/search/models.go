@@ -9,6 +9,13 @@ type City struct {
 		Longitude string `json:"longitude"`
 	} `json:"centroid"`
 	Description string `json:"description"`
+	Metadata    struct {
+		CityDetail struct {
+			CityId     int64 `json:"city_id"`
+			DistrictId int64 `json:"district_id"`
+			HexagonId  int64 `json:"hexagon_id"`
+		} `json:"city_detail"`
+	} `json:"metadata"`
 }
 
 // Result is the struct for search candidate of a place
