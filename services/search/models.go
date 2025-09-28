@@ -2,12 +2,12 @@ package search
 
 // City is the struct for city candidate in city search
 type City struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Cetroid struct {
-		Latitude  float64 `json:"latitude"`
-		Longitude float64 `json:"longitude"`
-	}
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Centroid struct {
+		Latitude  string `json:"latitude"`
+		Longitude string `json:"longitude"`
+	} `json:"centroid"`
 	Description string `json:"description"`
 	Metadata    struct {
 		CityDetail struct {
