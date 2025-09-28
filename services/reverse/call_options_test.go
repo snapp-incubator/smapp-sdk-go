@@ -212,12 +212,12 @@ func TestWithNormalize(t *testing.T) {
 		ZoomLevel:    16,
 		ResponseType: Driver,
 		Language:     Farsi,
-		Normalize:    true,
+		Normalize:    false,
 	}
 
 	WithNormalize()(&callOptions)
 
-	if callOptions.Normalize {
+	if !callOptions.Normalize {
 		t.Fatalf("Normalize should be true")
 	}
 }
