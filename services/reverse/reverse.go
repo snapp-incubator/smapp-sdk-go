@@ -451,8 +451,12 @@ func (c *Client) convertComponentIntoStructureModel(components []Component) *Str
 				response.Locality = component.Name
 			case primary:
 				response.Primary = component.Name
+			case secondaryMost:
+				response.SecondaryMost = component.Name
 			case secondary:
 				response.Secondary = component.Name
+			case residentialMost:
+				response.ResidentialMost = component.Name
 			case residential:
 				response.Residential = component.Name
 			case poi:

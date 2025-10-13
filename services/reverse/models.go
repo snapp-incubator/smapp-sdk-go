@@ -61,19 +61,21 @@ type ResultsWithDisplayName struct {
 }
 
 type StructuralComponent struct {
-	Province      string
-	City          string
-	County        string
-	Town          string
-	Village       string
-	Neighbourhood string
-	Suburb        string
-	Locality      string
-	Primary       string
-	Secondary     string
-	Residential   string
-	ClosedWay     string
-	POI           string
+	Province        string
+	City            string
+	County          string
+	Town            string
+	Village         string
+	Neighbourhood   string
+	Suburb          string
+	Locality        string
+	Primary         string
+	SecondaryMost   string
+	Secondary       string
+	ResidentialMost string
+	Residential     string
+	ClosedWay       string
+	POI             string
 }
 
 func (s StructuralComponent) NewIterator() *StructuralComponentItr {
@@ -109,31 +111,35 @@ type StructuralResult struct {
 }
 
 const (
-	province      = "province"
-	city          = "city"
-	county        = "county"
-	town          = "town"
-	village       = "village"
-	neighbourhood = "neighbourhood"
-	suburb        = "suburb"
-	locality      = "locality"
-	primary       = "primary"
-	secondary     = "secondary"
-	residential   = "residential"
-	poi           = "poi"
+	province        = "province"
+	city            = "city"
+	county          = "county"
+	town            = "town"
+	village         = "village"
+	neighbourhood   = "neighbourhood"
+	suburb          = "suburb"
+	locality        = "locality"
+	primary         = "primary"
+	secondaryMost   = "secondary_Most"
+	secondary       = "secondary"
+	residentialMost = "residential_Most"
+	residential     = "residential"
+	poi             = "poi"
 )
 
 var convertReverseTypes = map[string]struct{}{
-	province:      {},
-	city:          {},
-	county:        {},
-	town:          {},
-	village:       {},
-	neighbourhood: {},
-	suburb:        {},
-	locality:      {},
-	primary:       {},
-	secondary:     {},
-	residential:   {},
-	poi:           {},
+	province:        {},
+	city:            {},
+	county:          {},
+	town:            {},
+	village:         {},
+	neighbourhood:   {},
+	suburb:          {},
+	locality:        {},
+	primary:         {},
+	secondaryMost:   {},
+	secondary:       {},
+	residentialMost: {},
+	residential:     {},
+	poi:             {},
 }
