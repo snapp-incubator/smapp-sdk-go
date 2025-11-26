@@ -6,6 +6,16 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
+// PathStyle determines how the service path/version is combined with the base URL.
+// LegacyPathStyle is the legacy layout: {base}/eta/{version}
+// V1PathStyle is the new layout:     {base}/api/{version}/eta
+type PathStyle int
+
+const (
+	LegacyPathStyle PathStyle = iota
+	V1PathStyle
+)
+
 // ConstructorOption is a function type for customizing constructor behaviour in a fluent way.
 type ConstructorOption func(client *Client)
 
@@ -13,6 +23,15 @@ type ConstructorOption func(client *Client)
 func WithURL(url string) ConstructorOption {
 	return func(client *Client) {
 		client.url = url
+	}
+}
+
+// WithPathStyle will override the default path style used to build the service URL.
+// MonshiPathStyle: {base}/eta/{version}
+// BifrostPathStyle: {base}/api/{version}/eta
+func WithPathStyle(style PathStyle) ConstructorOption {
+	return func(client *Client) {
+		client.pathStyle = style
 	}
 }
 
