@@ -76,3 +76,70 @@ func TestWithClient(t *testing.T) {
 		t.Fatalf("client.httpClient.Timeout should be %d but it is %d", 10, client.httpClient.Timeout)
 	}
 }
+
+func TestWithPathStyleLegacy(t *testing.T) {
+	cfg, err := config.NewDefaultConfig("key")
+	if err != nil {
+		t.Fatalf("could not create default config due to: %s", err.Error())
+	}
+	cfg.APIBaseURL = "https://api.example.com"
+
+	client, err := NewMatrixClient(cfg, V1, time.Second, WithPathStyle(LegacyPathStyle))
+	if err != nil {
+		t.Fatalf("could not create matrix client due to: %s", err.Error())
+	}
+
+	expectedURL := "https://api.example.com/matrix/v1"
+	if client.url != expectedURL {
+		t.Fatalf("client.url should be %s but it is %s", expectedURL, client.url)
+	}
+
+	if client.pathStyle != LegacyPathStyle {
+		t.Fatalf("client.pathStyle should be %d but it is %d", LegacyPathStyle, client.pathStyle)
+	}
+}
+
+func TestWithPathStyleV1(t *testing.T) {
+	cfg, err := config.NewDefaultConfig("key")
+	if err != nil {
+		t.Fatalf("could not create default config due to: %s", err.Error())
+	}
+	cfg.APIBaseURL = "https://api.example.com"
+
+	client, err := NewMatrixClient(cfg, V1, time.Second, WithPathStyle(V1PathStyle))
+	if err != nil {
+		t.Fatalf("could not create matrix client due to: %s", err.Error())
+	}
+
+	expectedURL := "https://api.example.com/api/v1/matrix"
+	if client.url != expectedURL {
+		t.Fatalf("client.url should be %s but it is %s", expectedURL, client.url)
+	}
+
+	if client.pathStyle != V1PathStyle {
+		t.Fatalf("client.pathStyle should be %d but it is %d", V1PathStyle, client.pathStyle)
+	}
+}
+
+func TestDefaultPathStyle(t *testing.T) {
+	cfg, err := config.NewDefaultConfig("key")
+	if err != nil {
+		t.Fatalf("could not create default config due to: %s", err.Error())
+	}
+	cfg.APIBaseURL = "https://api.example.com"
+
+	client, err := NewMatrixClient(cfg, V1, time.Second)
+	if err != nil {
+		t.Fatalf("could not create matrix client due to: %s", err.Error())
+	}
+
+	// Default should be LegacyPathStyle
+	expectedURL := "https://api.example.com/matrix/v1"
+	if client.url != expectedURL {
+		t.Fatalf("client.url should be %s but it is %s", expectedURL, client.url)
+	}
+
+	if client.pathStyle != LegacyPathStyle {
+		t.Fatalf("client.pathStyle should be %d (LegacyPathStyle) but it is %d", LegacyPathStyle, client.pathStyle)
+	}
+}

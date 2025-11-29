@@ -42,6 +42,7 @@ const (
 type Client struct {
 	cfg        *config.Config
 	url        string
+	pathStyle  PathStyle
 	httpClient http.Client
 	tracerName string
 }
@@ -157,8 +158,8 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 // NewETAClient is the constructor of ETA client.
 func NewETAClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
-		cfg: cfg,
-		url: getETADefaultURL(cfg, version),
+		cfg:       cfg,
+		pathStyle: LegacyPathStyle,
 		httpClient: http.Client{
 			Timeout:   timeout,
 			Transport: http.DefaultTransport,
@@ -169,10 +170,23 @@ func NewETAClient(cfg *config.Config, version Version, timeout time.Duration, op
 		opt(client)
 	}
 
+	if client.url == "" {
+		client.url = getETADefaultURL(cfg, version, client.pathStyle)
+	}
+
 	return client, nil
 }
 
-func getETADefaultURL(cfg *config.Config, version Version) string {
+func getETADefaultURL(cfg *config.Config, version Version, style PathStyle) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
-	return fmt.Sprintf("%s/eta/%s", baseURL, version)
+	switch style {
+	case V1PathStyle:
+		// New upstream layout: {base}/api/{version}/eta
+		return fmt.Sprintf("%s/api/%s/eta", baseURL, version)
+	case LegacyPathStyle:
+		fallthrough
+	default:
+		// Legacy layout: {base}/eta/{version}
+		return fmt.Sprintf("%s/eta/%s", baseURL, version)
+	}
 }

@@ -43,6 +43,7 @@ const (
 type Client struct {
 	cfg        *config.Config
 	url        string
+	pathStyle  PathStyle
 	httpClient http.Client
 	tracerName string
 }
@@ -187,8 +188,8 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 // NewMatrixClient is the constructor of Matrix client.
 func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
-		cfg: cfg,
-		url: getMatrixDefaultURL(cfg, version),
+		cfg:       cfg,
+		pathStyle: LegacyPathStyle,
 		httpClient: http.Client{
 			Timeout:   timeout,
 			Transport: http.DefaultTransport,
@@ -199,10 +200,23 @@ func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration,
 		opt(client)
 	}
 
+	if client.url == "" {
+		client.url = getMatrixDefaultURL(cfg, version, client.pathStyle)
+	}
+
 	return client, nil
 }
 
-func getMatrixDefaultURL(cfg *config.Config, version Version) string {
+func getMatrixDefaultURL(cfg *config.Config, version Version, style PathStyle) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
-	return fmt.Sprintf("%s/matrix/%s", baseURL, version)
+	switch style {
+	case V1PathStyle:
+		// New upstream layout: {base}/api/{version}/matrix
+		return fmt.Sprintf("%s/api/%s/matrix", baseURL, version)
+	case LegacyPathStyle:
+		fallthrough
+	default:
+		// Legacy layout: {base}/matrix/{version}
+		return fmt.Sprintf("%s/matrix/%s", baseURL, version)
+	}
 }
