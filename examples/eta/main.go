@@ -2,18 +2,20 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"github.com/snapp-incubator/smapp-sdk-go/services/eta"
-	"time"
 )
 
 func main() {
-	cfg, err := config.NewDefaultConfig("api-key")
+	cfg, err := config.NewDefaultConfig("api-key", 
+		config.WithAPIBaseURL("https://bifrost.apps.private.okd4.teh-2.snappcloud.io"),
+		config.WithAPIKeyName("X-API-Key"))
 	if err != nil {
 		panic(err)
 	}
-	client, err := eta.NewETAClient(cfg, eta.V1, time.Second*10,
-		eta.WithURL("https://bifrost.apps.private.teh-2.snappcloud.io/api/v1/eta"))
+	client, err := eta.NewETAClient(cfg, eta.V2, time.Second*10)
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +33,6 @@ func main() {
 		eta.WithHeaders(map[string]string{
 			"foo": "bar",
 		}),
-		eta.WithNoTraffic(),
 	),
 	)
 	if err != nil {

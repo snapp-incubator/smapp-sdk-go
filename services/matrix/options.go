@@ -26,15 +26,6 @@ func WithURL(url string) ConstructorOption {
 	}
 }
 
-// WithPathStyle will override the default path style used to build the service URL.
-// MonshiPathStyle: {base}/matrix/{version}
-// BifrostPathStyle: {base}/api/{version}/matrix
-func WithPathStyle(style PathStyle) ConstructorOption {
-	return func(client *Client) {
-		client.pathStyle = style
-	}
-}
-
 // WithTransport will override request http client transport object
 func WithTransport(transport *http.Transport) ConstructorOption {
 	return func(client *Client) {

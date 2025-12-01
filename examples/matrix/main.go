@@ -2,18 +2,20 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/snapp-incubator/smapp-sdk-go/config"
 	"github.com/snapp-incubator/smapp-sdk-go/services/matrix"
-	"time"
 )
 
 func main() {
-	cfg, err := config.NewDefaultConfig("api-key")
+	cfg, err := config.NewDefaultConfig("api-key", 
+		config.WithAPIBaseURL("https://bifrost.apps.private.okd4.teh-2.snappcloud.io"),
+		config.WithAPIKeyName("X-API-Key"))
 	if err != nil {
 		panic(err)
 	}
-	client, err := matrix.NewMatrixClient(cfg, matrix.V1, time.Second*10,
-		matrix.WithURL("https://bifrost.apps.private.okd4.teh-1.snappcloud.io/api/v1/matrix"))
+	client, err := matrix.NewMatrixClient(cfg, matrix.V2, time.Second*10)
 	if err != nil {
 		panic(err)
 	}
