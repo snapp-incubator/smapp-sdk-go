@@ -12,11 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/snapp-incubator/smapp-sdk-go/config"
-	"github.com/snapp-incubator/smapp-sdk-go/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+
+	"github.com/snapp-incubator/smapp-sdk-go/config"
+	"github.com/snapp-incubator/smapp-sdk-go/version"
 )
 
 // Interface consists of functions of different functionalities of Matrix service. there are two implementation of this service.
@@ -33,6 +34,7 @@ type Version string
 
 const (
 	V1 Version = "v1"
+	V2 Version = "v2"
 
 	NoTrafficQueryParameter = "no_traffic"
 	EngineQueryParameter    = "engine"
