@@ -45,7 +45,6 @@ const (
 type Client struct {
 	cfg        *config.Config
 	url        string
-	pathStyle  PathStyle
 	httpClient http.Client
 	tracerName string
 }
@@ -191,7 +190,6 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
 		cfg:       cfg,
-		pathStyle: LegacyPathStyle,
 		httpClient: http.Client{
 			Timeout:   timeout,
 			Transport: http.DefaultTransport,
@@ -203,22 +201,19 @@ func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration,
 	}
 
 	if client.url == "" {
-		client.url = getMatrixDefaultURL(cfg, version, client.pathStyle)
+		client.url = getMatrixDefaultURL(cfg, version)
 	}
 
 	return client, nil
 }
 
-func getMatrixDefaultURL(cfg *config.Config, version Version, style PathStyle) string {
+func getMatrixDefaultURL(cfg *config.Config, version Version) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
-	switch style {
-	case V1PathStyle:
-		// New upstream layout: {base}/api/{version}/matrix
-		return fmt.Sprintf("%s/api/%s/matrix", baseURL, version)
-	case LegacyPathStyle:
-		fallthrough
-	default:
-		// Legacy layout: {base}/matrix/{version}
-		return fmt.Sprintf("%s/matrix/%s", baseURL, version)
+	if version != V1{
+		// New upstream layout: {base}/api/{version}/eta
+		return fmt.Sprintf("%s/api/%s/eta", baseURL, version)
+	} else {
+		// Legacy layout: {base}/eta/{version}
+		return fmt.Sprintf("%s/eta/%s", baseURL, version)
 	}
 }
