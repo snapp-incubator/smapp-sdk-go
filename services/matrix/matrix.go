@@ -210,10 +210,10 @@ func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration,
 func getMatrixDefaultURL(cfg *config.Config, version Version) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
 	if version != V1{
-		// New upstream layout: {base}/api/{version}/eta
-		return fmt.Sprintf("%s/api/%s/eta", baseURL, version)
+		// New upstream layout: {base}/api/{version}/matrix
+		return fmt.Sprintf("%s/api/%s/matrix", baseURL, version)
 	} else {
-		// Legacy layout: {base}/eta/{version}
-		return fmt.Sprintf("%s/eta/%s", baseURL, version)
+		// Legacy layout: {base}/matrix/{version}
+		return fmt.Sprintf("%s/matrix/%s", baseURL, version)
 	}
 }
