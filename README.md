@@ -130,7 +130,7 @@ The constructor of Reverse Geocode receives a config, version, timeout and multi
 
 some constructor options are:
 + [WithURL(url string)](#): could be used to override url of the service.
-+ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithTransport(transport http.RoundTripper)](#): could be used to set a new `http.RoundTripper` for http client.
 + [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
@@ -247,7 +247,7 @@ The constructor of Search receives a config, version, timeout and multiple optio
 
 some constructor options are:
 + [WithURL(url string)](#): could be used to override url of the service.
-+ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithTransport(transport http.RoundTripper)](#): could be used to set a new `http.RoundTripper` for http client.
 + [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
@@ -350,7 +350,7 @@ The constructor of area-gateways receives a config, version, timeout and multipl
 
 some constructor options are:
 + [WithURL(url string)](#): could be used to override url of the service.
-+ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithTransport(transport http.RoundTripper)](#): could be used to set a new `http.RoundTripper` for http client.
 + [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
@@ -427,7 +427,7 @@ The constructor of ETA client receives a config, version, timeout and multiple o
 
 some constructor options are:
 + [WithURL(url string)](#): could be used to override url of the service.
-+ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithTransport(transport http.RoundTripper)](#): could be used to set a new `http.RoundTripper` for http client.
 + [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
@@ -532,7 +532,7 @@ The constructor of Matrix client receives a config, version, timeout and multipl
 
 some constructor options are:
 + [WithURL(url string)](#): could be used to override url of the service.
-+ [WithTransport(transport *http.Transport)](#): could be used to set a new `http.Transport` for http client.
++ [WithTransport(transport http.RoundTripper)](#): could be used to set a new `http.RoundTripper` for http client.
 + [WithRequestOpenTelemetryTracing(tracerName string)](#): could be used for activating opentelemetry tracing on client. for more info see [Here](#opentelemetry-tracing)
 
 Example:
