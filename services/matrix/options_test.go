@@ -35,8 +35,12 @@ func TestWithTransport(t *testing.T) {
 		t.Fatalf("could not create search client due to: %s", err.Error())
 	}
 
-	if client.httpClient.Transport.(*http.Transport).MaxIdleConns != 2 {
-		t.Fatalf("client.httpClient.Transport.MaxIdleConns should be %d but it is %d", 2, client.httpClient.Transport.(*http.Transport).MaxIdleConns)
+	tr, ok := client.httpClient.Transport.(*http.Transport)
+	if !ok {
+		t.Fatal("client.httpClient.Transport should be of type *http.Transport")
+	}
+	if tr.MaxIdleConns != 2 {
+		t.Fatalf("client.httpClient.Transport.MaxIdleConns should be %d but it is %d", 2, tr.MaxIdleConns)
 	}
 }
 
