@@ -27,7 +27,7 @@ func WithURL(url string) ConstructorOption {
 }
 
 // WithTransport will override request http client transport object
-func WithTransport(transport *http.Transport) ConstructorOption {
+func WithTransport(transport http.RoundTripper) ConstructorOption {
 	return func(client *Client) {
 		client.httpClient.Transport = transport
 	}
