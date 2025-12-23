@@ -12,6 +12,7 @@ type ETA struct {
 
 // Point is the type for representing a point in a map
 type Point struct {
-	Lat float64 `json:"lat"`
-	Lon float64 `json:"lon"`
+	Lat      float64           `json:"lat"`
+	Lon      float64           `json:"lon"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
