@@ -27,6 +27,8 @@ type Interface interface {
 	GetETA(points []Point, options CallOptions) (ETA, error)
 	// GetETAWithContext s like GetETA, but with context.Context support
 	GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error)
+	// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
+	GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error)
 }
 
 type Version string
@@ -59,12 +61,21 @@ func (c *Client) GetETA(points []Point, options CallOptions) (ETA, error) {
 
 // GetETAWithContext s like GetETA, but with context.Context support
 func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error) {
+	return c.GetETAWithInputMeta(ctx, points, options, nil)
+}
+
+// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
+func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
 	if ctx == nil {
 		return ETA{}, fmt.Errorf("smapp eta: nil context")
 	}
 	// Start of parent span
 	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-eta")
+	spanName := "get-eta"
+	if len(metadata) > 0 {
+		spanName = "get-eta-with-input-meta"
+	}
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, spanName)
 	defer span.End()
 
 	var reqInitSpan trace.Span
@@ -82,11 +93,10 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
 
-	type ReqData struct {
-		Locations         []Point `json:"locations"`
-		DepartureDateTime string  `json:"departure_date_time,omitempty"`
+	data := ETARequest{Locations: points}
+	if len(metadata) > 0 {
+		data.Metadata = metadata
 	}
-	data := ReqData{Locations: points}
 
 	if options.UseDepartureDateTime {
 		data.DepartureDateTime = options.DepartureDateTime
@@ -159,7 +169,7 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 // NewETAClient is the constructor of ETA client.
 func NewETAClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
-		cfg:       cfg,
+		cfg: cfg,
 		httpClient: http.Client{
 			Timeout:   timeout,
 			Transport: http.DefaultTransport,
@@ -179,7 +189,7 @@ func NewETAClient(cfg *config.Config, version Version, timeout time.Duration, op
 
 func getETADefaultURL(cfg *config.Config, version Version) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
-	if version != V1{
+	if version != V1 {
 		// New upstream layout: {base}/api/{version}/eta
 		return fmt.Sprintf("%s/api/%s/eta", baseURL, version)
 	} else {

@@ -28,6 +28,8 @@ type Interface interface {
 	GetMatrix(sources []Point, targets []Point, options CallOptions) (Output, error)
 	// GetMatrixWithContext s like GetMatrix, but with context.Context support
 	GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error)
+	// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
+	GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error)
 }
 
 type Version string
@@ -60,12 +62,21 @@ func (c *Client) GetMatrix(sources []Point, targets []Point, options CallOptions
 
 // GetMatrixWithContext s like GetMatrix, but with context.Context support
 func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error) {
+	return c.GetMatrixWithInputMeta(ctx, sources, targets, options, nil)
+}
+
+// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
+func (c *Client) GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
 	if ctx == nil {
 		return Output{}, fmt.Errorf("smapp matrix: nil context")
 	}
 	// Start of parent span
 	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-matrix")
+	spanName := "get-matrix"
+	if len(metadata) > 0 {
+		spanName = "get-matrix-with-input-meta"
+	}
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, spanName)
 	defer span.End()
 
 	var reqInitSpan trace.Span
@@ -87,13 +98,16 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 	}
 
 	input := Input{Sources: sources, Targets: targets}
+	if len(metadata) > 0 {
+		input.Metadata = metadata
+	}
 	var (
 		req *http.Request
 		err error
 	)
 
 	if options.UsePost {
-		postInput := PostInput{input}
+		postInput := PostInput{Json: input}
 		// ---------- HTTP POST ----------
 		body, err := json.Marshal(postInput)
 		if err != nil {
@@ -189,7 +203,7 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 // NewMatrixClient is the constructor of Matrix client.
 func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration, opts ...ConstructorOption) (*Client, error) {
 	client := &Client{
-		cfg:       cfg,
+		cfg: cfg,
 		httpClient: http.Client{
 			Timeout:   timeout,
 			Transport: http.DefaultTransport,
@@ -209,7 +223,7 @@ func NewMatrixClient(cfg *config.Config, version Version, timeout time.Duration,
 
 func getMatrixDefaultURL(cfg *config.Config, version Version) string {
 	baseURL := strings.TrimRight(cfg.APIBaseURL, "/")
-	if version != V1{
+	if version != V1 {
 		// New upstream layout: {base}/api/{version}/matrix
 		return fmt.Sprintf("%s/api/%s/matrix", baseURL, version)
 	} else {

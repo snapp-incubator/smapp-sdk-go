@@ -2,14 +2,16 @@ package matrix
 
 // Point is the type for representing a point in a map.
 type Point struct {
-	Lat float64 `json:"lat"`
-	Lon float64 `json:"lon"`
+	Lat      float64           `json:"lat"`
+	Lon      float64           `json:"lon"`
+	Metadata map[string]string `json:"m,omitempty"`
 }
 
 // Input is the type for providing data to matrix service.
 type Input struct {
-	Sources []Point `json:"sources"`
-	Targets []Point `json:"targets"`
+	Sources  []Point           `json:"sources"`
+	Targets  []Point           `json:"targets"`
+	Metadata map[string]string `json:"m,omitempty"`
 }
 
 // PostInput is the type for providing data to matrix service using post request.
