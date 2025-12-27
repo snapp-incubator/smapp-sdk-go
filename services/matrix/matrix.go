@@ -28,8 +28,8 @@ type Interface interface {
 	GetMatrix(sources []Point, targets []Point, options CallOptions) (Output, error)
 	// GetMatrixWithContext s like GetMatrix, but with context.Context support
 	GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error)
-	// GetMatrixWithMetadata is like GetMatrixWithContext, but with request-level metadata support
-	GetMatrixWithMetadata(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error)
+	// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
+	GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error)
 }
 
 type Version string
@@ -62,12 +62,21 @@ func (c *Client) GetMatrix(sources []Point, targets []Point, options CallOptions
 
 // GetMatrixWithContext s like GetMatrix, but with context.Context support
 func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error) {
+	return c.getMatrixWithMetadata(ctx, sources, targets, options, nil)
+}
+
+// getMatrixWithMetadata is the internal shared implementation that handles both with and without metadata
+func (c *Client) getMatrixWithMetadata(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
 	if ctx == nil {
 		return Output{}, fmt.Errorf("smapp matrix: nil context")
 	}
 	// Start of parent span
 	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-matrix")
+	spanName := "get-matrix"
+	if metadata != nil && len(metadata) > 0 {
+		spanName = "get-matrix-with-input-meta"
+	}
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, spanName)
 	defer span.End()
 
 	var reqInitSpan trace.Span
@@ -89,134 +98,9 @@ func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targ
 	}
 
 	input := Input{Sources: sources, Targets: targets}
-	var (
-		req *http.Request
-		err error
-	)
-
-	if options.UsePost {
-		postInput := PostInput{input}
-		// ---------- HTTP POST ----------
-		body, err := json.Marshal(postInput)
-		if err != nil {
-			reqInitSpan.RecordError(err)
-			reqInitSpan.End()
-			return Output{}, fmt.Errorf("smapp matrix: could not marshal input data: %w", err)
-		}
-
-		req, err = http.NewRequestWithContext(
-			ctx,
-			http.MethodPost,
-			c.url,
-			bytes.NewReader(body),
-		)
-		if err != nil {
-			reqInitSpan.RecordError(err)
-			reqInitSpan.End()
-			return Output{}, fmt.Errorf("smapp matrix: could not create POST request: %w", err)
-		}
-		req.Header.Set("Content-Type", "application/json")
-
-	} else {
-		// ---------- HTTP GET (legacy) ----------
-		jsonData, err := json.Marshal(input)
-		if err != nil {
-			reqInitSpan.RecordError(err)
-			reqInitSpan.End()
-			return Output{}, fmt.Errorf("smapp matrix: could not marshal input data: %w", err)
-		}
-		params.Set(JSONInputQueryParam, string(jsonData))
-
-		req, err = http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
-		if err != nil {
-			reqInitSpan.RecordError(err)
-			reqInitSpan.End()
-			return Output{}, fmt.Errorf("smapp matrix: could not create GET request: %w", err)
-		}
+	if metadata != nil && len(metadata) > 0 {
+		input.Metadata = metadata
 	}
-
-	// ---- API-key handling ----
-	switch c.cfg.APIKeySource {
-	case config.HeaderSource:
-		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	case config.QueryParamSource:
-		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	default:
-		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
-		reqInitSpan.End()
-		return Output{}, fmt.Errorf("smapp matrix: invalid api key source: %s", c.cfg.APIKeySource)
-	}
-
-	// apply query string (for both GET and POST paths)
-	req.URL.RawQuery = params.Encode()
-
-	// extra headers
-	for k, v := range options.Headers {
-		req.Header.Set(k, v)
-	}
-	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
-
-	reqInitSpan.End()
-
-	// ---- perform request ----
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return Output{}, fmt.Errorf("smapp matrix: request failed: %w", err)
-	}
-
-	var respSpan trace.Span
-	_, respSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
-	defer func() {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		respSpan.SetStatus(codes.Error, "non 200 status code")
-		respSpan.End()
-		return Output{}, fmt.Errorf("smapp matrix: non 200 status: %d", resp.StatusCode)
-	}
-
-	var out Output
-	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
-		respSpan.RecordError(err)
-		respSpan.End()
-		return Output{}, fmt.Errorf("smapp matrix: could not decode response: %w", err)
-	}
-
-	respSpan.End()
-	return out, nil
-}
-
-// GetMatrixWithMetadata is like GetMatrixWithContext, but with request-level metadata support
-func (c *Client) GetMatrixWithMetadata(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
-	if ctx == nil {
-		return Output{}, fmt.Errorf("smapp matrix: nil context")
-	}
-	// Start of parent span
-	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-matrix-with-metadata")
-	defer span.End()
-
-	var reqInitSpan trace.Span
-	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
-
-	if len(sources) == 0 || len(targets) == 0 {
-		return Output{}, fmt.Errorf("smapp matrix: both sources and targets should not be empty")
-	}
-
-	params := url.Values{}
-	if options.UseNoTraffic {
-		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
-	}
-
-	if options.EngineStr != "" {
-		params.Set(EngineQueryParameter, options.EngineStr)
-	} else {
-		params.Set(EngineQueryParameter, options.Engine.String())
-	}
-
-	input := Input{Sources: sources, Targets: targets, Metadata: metadata}
 	var (
 		req *http.Request
 		err error
@@ -314,6 +198,11 @@ func (c *Client) GetMatrixWithMetadata(ctx context.Context, sources []Point, tar
 
 	respSpan.End()
 	return out, nil
+}
+
+// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
+func (c *Client) GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
+	return c.getMatrixWithMetadata(ctx, sources, targets, options, metadata)
 }
 
 // NewMatrixClient is the constructor of Matrix client.

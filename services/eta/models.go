@@ -14,5 +14,5 @@ type ETA struct {
 type Point struct {
 	Lat      float64           `json:"lat"`
 	Lon      float64           `json:"lon"`
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"m,omitempty"`
 }

@@ -27,8 +27,8 @@ type Interface interface {
 	GetETA(points []Point, options CallOptions) (ETA, error)
 	// GetETAWithContext s like GetETA, but with context.Context support
 	GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error)
-	// GetETAWithMetadata is like GetETAWithContext, but with request-level metadata support
-	GetETAWithMetadata(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error)
+	// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
+	GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error)
 }
 
 type Version string
@@ -41,6 +41,13 @@ const (
 	JSONInputQueryParam     = "json"
 	EngineQueryParameter    = "engine"
 )
+
+// ReqData is the request data structure for ETA service
+type ReqData struct {
+	Locations         []Point           `json:"locations"`
+	DepartureDateTime string            `json:"departure_date_time,omitempty"`
+	Metadata          map[string]string `json:"m,omitempty"`
+}
 
 // Client is the main implementation of Interface for area-gateways service
 type Client struct {
@@ -61,12 +68,21 @@ func (c *Client) GetETA(points []Point, options CallOptions) (ETA, error) {
 
 // GetETAWithContext s like GetETA, but with context.Context support
 func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error) {
+	return c.getETAWithMetadata(ctx, points, options, nil)
+}
+
+// getETAWithMetadata is the internal shared implementation that handles both with and without metadata
+func (c *Client) getETAWithMetadata(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
 	if ctx == nil {
 		return ETA{}, fmt.Errorf("smapp eta: nil context")
 	}
 	// Start of parent span
 	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-eta")
+	spanName := "get-eta"
+	if metadata != nil && len(metadata) > 0 {
+		spanName = "get-eta-with-input-meta"
+	}
+	ctx, span = otel.Tracer(c.tracerName).Start(ctx, spanName)
 	defer span.End()
 
 	var reqInitSpan trace.Span
@@ -84,11 +100,10 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
 
-	type ReqData struct {
-		Locations         []Point           `json:"locations"`
-		DepartureDateTime string            `json:"departure_date_time,omitempty"`
-	}
 	data := ReqData{Locations: points}
+	if metadata != nil && len(metadata) > 0 {
+		data.Metadata = metadata
+	}
 
 	if options.UseDepartureDateTime {
 		data.DepartureDateTime = options.DepartureDateTime
@@ -158,104 +173,9 @@ func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options 
 	return ETA{}, fmt.Errorf("smapp eta: non 200 status: %d", response.StatusCode)
 }
 
-// GetETAWithMetadata is like GetETAWithContext, but with request-level metadata support
-func (c *Client) GetETAWithMetadata(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
-	if ctx == nil {
-		return ETA{}, fmt.Errorf("smapp eta: nil context")
-	}
-	// Start of parent span
-	var span trace.Span
-	ctx, span = otel.Tracer(c.tracerName).Start(ctx, "get-eta-with-metadata")
-	defer span.End()
-
-	var reqInitSpan trace.Span
-	ctx, reqInitSpan = otel.Tracer(c.tracerName).Start(ctx, "request-initialization")
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url, nil)
-	if err != nil {
-		reqInitSpan.RecordError(err)
-		reqInitSpan.End()
-		return ETA{}, fmt.Errorf("smapp eta: could not create request. err: %s", err.Error())
-	}
-
-	params := url.Values{}
-	if options.UseNoTraffic {
-		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
-	}
-
-	type ReqData struct {
-		Locations         []Point           `json:"locations"`
-		DepartureDateTime string            `json:"departure_date_time,omitempty"`
-		Metadata          map[string]string `json:"metadata,omitempty"`
-	}
-	data := ReqData{Locations: points, Metadata: metadata}
-
-	if options.UseDepartureDateTime {
-		data.DepartureDateTime = options.DepartureDateTime
-	}
-
-	if options.EngineStr != "" {
-		params.Set(EngineQueryParameter, options.EngineStr)
-	} else {
-		params.Set(EngineQueryParameter, options.Engine.String())
-	}
-
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		reqInitSpan.RecordError(err)
-		reqInitSpan.End()
-		return ETA{}, fmt.Errorf("smapp eta: could not marshal input data")
-	}
-
-	params.Set(JSONInputQueryParam, string(jsonData))
-
-	switch c.cfg.APIKeySource {
-	case config.HeaderSource:
-		req.Header.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	case config.QueryParamSource:
-		params.Set(c.cfg.APIKeyName, c.cfg.APIKey)
-	default:
-		reqInitSpan.SetStatus(codes.Error, "invalid api key source")
-		reqInitSpan.End()
-		return ETA{}, fmt.Errorf("smapp eta: invalid api key source: %s", string(c.cfg.APIKeySource))
-	}
-
-	for key, val := range options.Headers {
-		req.Header.Set(key, val)
-	}
-
-	req.Header.Set(version.UserAgentHeader, version.GetUserAgent())
-
-	req.URL.RawQuery = params.Encode()
-	reqInitSpan.End()
-
-	response, err := c.httpClient.Do(req)
-	if err != nil {
-		return ETA{}, fmt.Errorf("smapp eta: could not make a request due to this error: %s", err.Error())
-	}
-
-	var responseSpan trace.Span
-	_, responseSpan = otel.Tracer(c.tracerName).Start(ctx, "response-deserialization")
-
-	defer func() {
-		_, _ = io.Copy(io.Discard, response.Body)
-		_ = response.Body.Close()
-	}()
-
-	if response.StatusCode == http.StatusOK {
-		var result ETA
-		err := json.NewDecoder(response.Body).Decode(&result)
-		if err != nil {
-			responseSpan.RecordError(err)
-			responseSpan.End()
-			return ETA{}, fmt.Errorf("smapp eta: could not serialize response due to: %s", err.Error())
-		}
-		responseSpan.End()
-		return result, nil
-	}
-	responseSpan.SetStatus(codes.Error, "non 200 status code")
-	responseSpan.End()
-	return ETA{}, fmt.Errorf("smapp eta: non 200 status: %d", response.StatusCode)
+// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
+func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
+	return c.getETAWithMetadata(ctx, points, options, metadata)
 }
 
 // NewETAClient is the constructor of ETA client.
