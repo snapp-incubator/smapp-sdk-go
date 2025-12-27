@@ -26,7 +26,7 @@ type Interface interface {
 	// GetMatrix will receive a list of points as sources and a list of points as targets and returns a matrix of eta predictions from all sources to all targets.
 	// Will return error if sources or targets are empty.
 	GetMatrix(sources []Point, targets []Point, options CallOptions) (Output, error)
-	// GetMatrixWithContext is like GetMatrix, but with context.Context support
+	// GetMatrixWithContext s like GetMatrix, but with context.Context support
 	GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error)
 	// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
 	GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error)
@@ -60,7 +60,7 @@ func (c *Client) GetMatrix(sources []Point, targets []Point, options CallOptions
 	return c.GetMatrixWithContext(context.Background(), sources, targets, options)
 }
 
-// GetMatrixWithContext is like GetMatrix, but with context.Context support
+// GetMatrixWithContext s like GetMatrix, but with context.Context support
 func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error) {
 	return c.GetMatrixWithInputMeta(ctx, sources, targets, options, nil)
 }
@@ -73,7 +73,7 @@ func (c *Client) GetMatrixWithInputMeta(ctx context.Context, sources []Point, ta
 	// Start of parent span
 	var span trace.Span
 	spanName := "get-matrix"
-	if metadata != nil && len(metadata) > 0 {
+	if len(metadata) > 0 {
 		spanName = "get-matrix-with-input-meta"
 	}
 	ctx, span = otel.Tracer(c.tracerName).Start(ctx, spanName)
@@ -98,7 +98,7 @@ func (c *Client) GetMatrixWithInputMeta(ctx context.Context, sources []Point, ta
 	}
 
 	input := Input{Sources: sources, Targets: targets}
-	if metadata != nil && len(metadata) > 0 {
+	if len(metadata) > 0 {
 		input.Metadata = metadata
 	}
 	var (

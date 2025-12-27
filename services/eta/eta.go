@@ -25,7 +25,7 @@ type Interface interface {
 	// GetETA will receive a list of point with minimum length of 2 and returns ETA.
 	// Will return error if less than 2 points are passed.
 	GetETA(points []Point, options CallOptions) (ETA, error)
-	// GetETAWithContext is like GetETA, but with context.Context support
+	// GetETAWithContext s like GetETA, but with context.Context support
 	GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error)
 	// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
 	GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error)
@@ -59,7 +59,7 @@ func (c *Client) GetETA(points []Point, options CallOptions) (ETA, error) {
 	return c.GetETAWithContext(context.Background(), points, options)
 }
 
-// GetETAWithContext is like GetETA, but with context.Context support
+// GetETAWithContext s like GetETA, but with context.Context support
 func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error) {
 	return c.GetETAWithInputMeta(ctx, points, options, nil)
 }
@@ -72,7 +72,7 @@ func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, option
 	// Start of parent span
 	var span trace.Span
 	spanName := "get-eta"
-	if metadata != nil && len(metadata) > 0 {
+	if len(metadata) > 0 {
 		spanName = "get-eta-with-input-meta"
 	}
 	ctx, span = otel.Tracer(c.tracerName).Start(ctx, spanName)
@@ -94,7 +94,7 @@ func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, option
 	}
 
 	data := ETARequest{Locations: points}
-	if metadata != nil && len(metadata) > 0 {
+	if len(metadata) > 0 {
 		data.Metadata = metadata
 	}
 
