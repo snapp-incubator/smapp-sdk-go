@@ -26,7 +26,7 @@ type Interface interface {
 	// GetMatrix will receive a list of points as sources and a list of points as targets and returns a matrix of eta predictions from all sources to all targets.
 	// Will return error if sources or targets are empty.
 	GetMatrix(sources []Point, targets []Point, options CallOptions) (Output, error)
-	// GetMatrixWithContext s like GetMatrix, but with context.Context support
+	// GetMatrixWithContext is like GetMatrix, but with context.Context support
 	GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error)
 	// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
 	GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error)
@@ -60,13 +60,13 @@ func (c *Client) GetMatrix(sources []Point, targets []Point, options CallOptions
 	return c.GetMatrixWithContext(context.Background(), sources, targets, options)
 }
 
-// GetMatrixWithContext s like GetMatrix, but with context.Context support
+// GetMatrixWithContext is like GetMatrix, but with context.Context support
 func (c *Client) GetMatrixWithContext(ctx context.Context, sources []Point, targets []Point, options CallOptions) (Output, error) {
-	return c.getMatrixWithMetadata(ctx, sources, targets, options, nil)
+	return c.GetMatrixWithInputMeta(ctx, sources, targets, options, nil)
 }
 
-// getMatrixWithMetadata is the internal shared implementation that handles both with and without metadata
-func (c *Client) getMatrixWithMetadata(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
+// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
+func (c *Client) GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
 	if ctx == nil {
 		return Output{}, fmt.Errorf("smapp matrix: nil context")
 	}
@@ -198,11 +198,6 @@ func (c *Client) getMatrixWithMetadata(ctx context.Context, sources []Point, tar
 
 	respSpan.End()
 	return out, nil
-}
-
-// GetMatrixWithInputMeta is like GetMatrixWithContext, but with request-level metadata support
-func (c *Client) GetMatrixWithInputMeta(ctx context.Context, sources []Point, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
-	return c.getMatrixWithMetadata(ctx, sources, targets, options, metadata)
 }
 
 // NewMatrixClient is the constructor of Matrix client.

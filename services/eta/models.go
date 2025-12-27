@@ -16,3 +16,10 @@ type Point struct {
 	Lon      float64           `json:"lon"`
 	Metadata map[string]string `json:"m,omitempty"`
 }
+
+// ETARequest is the request data structure for ETA service
+type ETARequest struct {
+	Locations         []Point           `json:"locations"`
+	DepartureDateTime string            `json:"departure_date_time,omitempty"`
+	Metadata          map[string]string `json:"m,omitempty"`
+}

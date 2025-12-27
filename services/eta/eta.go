@@ -25,7 +25,7 @@ type Interface interface {
 	// GetETA will receive a list of point with minimum length of 2 and returns ETA.
 	// Will return error if less than 2 points are passed.
 	GetETA(points []Point, options CallOptions) (ETA, error)
-	// GetETAWithContext s like GetETA, but with context.Context support
+	// GetETAWithContext is like GetETA, but with context.Context support
 	GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error)
 	// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
 	GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error)
@@ -41,13 +41,6 @@ const (
 	JSONInputQueryParam     = "json"
 	EngineQueryParameter    = "engine"
 )
-
-// ReqData is the request data structure for ETA service
-type ReqData struct {
-	Locations         []Point           `json:"locations"`
-	DepartureDateTime string            `json:"departure_date_time,omitempty"`
-	Metadata          map[string]string `json:"m,omitempty"`
-}
 
 // Client is the main implementation of Interface for area-gateways service
 type Client struct {
@@ -66,13 +59,13 @@ func (c *Client) GetETA(points []Point, options CallOptions) (ETA, error) {
 	return c.GetETAWithContext(context.Background(), points, options)
 }
 
-// GetETAWithContext s like GetETA, but with context.Context support
+// GetETAWithContext is like GetETA, but with context.Context support
 func (c *Client) GetETAWithContext(ctx context.Context, points []Point, options CallOptions) (ETA, error) {
-	return c.getETAWithMetadata(ctx, points, options, nil)
+	return c.GetETAWithInputMeta(ctx, points, options, nil)
 }
 
-// getETAWithMetadata is the internal shared implementation that handles both with and without metadata
-func (c *Client) getETAWithMetadata(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
+// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
+func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
 	if ctx == nil {
 		return ETA{}, fmt.Errorf("smapp eta: nil context")
 	}
@@ -100,7 +93,7 @@ func (c *Client) getETAWithMetadata(ctx context.Context, points []Point, options
 		params.Set(NoTrafficQueryParameter, strconv.FormatBool(options.NoTraffic))
 	}
 
-	data := ReqData{Locations: points}
+	data := ETARequest{Locations: points}
 	if metadata != nil && len(metadata) > 0 {
 		data.Metadata = metadata
 	}
@@ -171,11 +164,6 @@ func (c *Client) getETAWithMetadata(ctx context.Context, points []Point, options
 	responseSpan.SetStatus(codes.Error, "non 200 status code")
 	responseSpan.End()
 	return ETA{}, fmt.Errorf("smapp eta: non 200 status: %d", response.StatusCode)
-}
-
-// GetETAWithInputMeta is like GetETAWithContext, but with request-level metadata support
-func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
-	return c.getETAWithMetadata(ctx, points, options, metadata)
 }
 
 // NewETAClient is the constructor of ETA client.
