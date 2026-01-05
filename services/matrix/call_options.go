@@ -20,6 +20,9 @@ const (
 	MatrixEngineGiraffe
 	MatrixEngineFood
 	MatrixEngineIntercity
+
+	MatrixEngineOfferingScoringOnlyEta
+	MatrixEngineOfferingPreciseEtaDistance
 )
 
 // String casts the engine enum to its string value.
@@ -53,6 +56,11 @@ func (engine MatrixEngine) String() string {
 		return "food"
 	case MatrixEngineIntercity:
 		return "intercity"
+
+	case MatrixEngineOfferingScoringOnlyEta:
+		return "offering-scoring-only-eta"
+	case MatrixEngineOfferingPreciseEtaDistance:
+		return "offering-precise-eta-distance"
 	}
 	return "v1"
 }
