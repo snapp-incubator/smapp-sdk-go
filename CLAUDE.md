@@ -25,7 +25,8 @@ No Makefile — use `go` CLI directly.
 
 ## Architecture
 
-Go SDK for Snapp mapping services. Five service clients under `services/`, shared config under `config/`.
+
+Go SDK for Snapp mapping services. Six service clients under `services/`, shared config under `config/`.
 
 ### Service Clients
 
@@ -36,6 +37,13 @@ Go SDK for Snapp mapping services. Five service clients under `services/`, share
 | `services/area-gateways` | Geographic area polygons and gateways |
 | `services/eta` | Estimated time of arrival between points |
 | `services/matrix` | Distance/time matrix for source→target pairs |
+| `services/smappshot` | HMAC-SHA256 signed URLs for ride/preview map photos |
+
+### smappshot Exception
+
+`smappshot` does **not** follow the standard service pattern — it is a pure URL builder with no HTTP calls, no `Client`, no `Interface`, no mock.
+Uses `NewRideRequestBuilder(baseURL, signingConfig, version).WithX().Build()` → `(string, error)`.
+Tests use builders exclusively; never construct request structs directly.
 
 ### Consistent Service Pattern
 
@@ -64,6 +72,10 @@ Regions: `teh-1` (default), `teh-2`.
 ### Version
 
 `version/version.go` — single constant, used as `User-Agent: smapp-sdk-go/{Version}`.
+
+## Go Version
+
+`go 1.26` — golangci-lint v2.1.x requires Go 1.26. Keep `go.mod` and both workflow files (`golangci-lint.yml`, `test.yml`) in sync.
 
 ## Adding a New Service
 
