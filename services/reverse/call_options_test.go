@@ -86,6 +86,20 @@ func TestWithDriverDestinationResponseType(t *testing.T) {
 	}
 }
 
+func TestWithPassengerRoutingResponseType(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Passenger_Routing,
+		Language:     Farsi,
+	}
+
+	WithPassengerRoutingResponseType()(&callOptions)
+
+	if callOptions.ResponseType != Passenger_Routing {
+		t.Fatalf("ResponseType should be Passenger Routing")
+	}
+}
+
 func TestWithDriverOriginResponseType(t *testing.T) {
 	callOptions := CallOptions{
 		ZoomLevel:    16,
