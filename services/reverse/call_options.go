@@ -13,6 +13,7 @@ const (
 	Frequent           ResponseType = "frequent"
 	Driver_Origin      ResponseType = "driver-origin"
 	Driver_Destination ResponseType = "driver-destination"
+	Passenger_Routing  ResponseType = "passenger-routing"
 )
 
 const (
@@ -50,6 +51,14 @@ func WithDriverResponseType() CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseResponseType = true
 		options.ResponseType = Driver
+	}
+}
+
+// WithPassengerRoutingResponseType will set `passenger-routing` type for the response
+func WithPassengerRoutingResponseType() CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = Passenger_Routing
 	}
 }
 
