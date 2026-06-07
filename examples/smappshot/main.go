@@ -9,17 +9,15 @@ import (
 )
 
 func main() {
-	cfg := smappshot.SigningConfig{
-		Secret:         "my-secret", // replace with real secret
-		ExpiryDuration: 10 * time.Minute,
-	}
+	secret := "my-secret" // replace with real secret
 
-	rideURL, err := smappshot.NewRideRequestBuilder("https://smappshot.snappmaps.ir", cfg, smappshot.V1).
+	rideURL, err := smappshot.NewRideRequestBuilder("https://smappshot.snappmaps.ir", secret, smappshot.V1).
 		WithOrigin(smappshot.Location{Lon: 51.338, Lat: 35.699}).
 		WithDestinations([]smappshot.Location{
 			{Lon: 51.400, Lat: 35.720},
 		}).
 		WithLanguage(smappshot.LanguageFarsi).
+		WithExpiry(10 * time.Minute).
 		Build()
 	if err != nil {
 		log.Fatal(err)
@@ -28,10 +26,11 @@ func main() {
 	fmt.Println(rideURL)
 	fmt.Println()
 
-	previewURL, err := smappshot.NewPreviewRequestBuilder("https://smappshot.snappmaps.ir", cfg, smappshot.V1).
+	previewURL, err := smappshot.NewPreviewRequestBuilder("https://smappshot.snappmaps.ir", secret, smappshot.V1).
 		WithCenter(smappshot.Location{Lon: 51.338, Lat: 35.699}).
 		WithZoom(14).
 		WithLanguage(smappshot.LanguageFarsi).
+		WithExpiry(10 * time.Minute).
 		Build()
 	if err != nil {
 		log.Fatal(err)

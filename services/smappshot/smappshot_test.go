@@ -12,31 +12,12 @@ const (
 	testSecret  = "test-secret-key"
 )
 
-func testSigningConfig() SigningConfig {
-	return SigningConfig{
-		Secret:         testSecret,
-		ExpiryDuration: time.Hour,
-	}
-}
-
-func parseSigned(t *testing.T, rawURL string) (path string, params url.Values, sig string) {
-	t.Helper()
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		t.Fatalf("invalid URL %q: %v", rawURL, err)
-	}
-	q := u.Query()
-	sig = q.Get("sig")
-	q.Del("sig")
-	return u.Path, q, sig
-}
-
 // ---------------------------------------------------------------------------
 // RideRequestBuilder
 // ---------------------------------------------------------------------------
 
 func TestRideRequestBuilder_HereMode(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V2).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V2).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		WithLanguage(LanguageEnglish).
 		Build()
@@ -60,7 +41,7 @@ func TestRideRequestBuilder_HereMode(t *testing.T) {
 }
 
 func TestRideRequestBuilder_RouteMode(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V2).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V2).
 		WithOrigin(Location{Lon: 51.338, Lat: 35.699}).
 		WithDestinations([]Location{
 			{Lon: 51.400, Lat: 35.720},
@@ -84,7 +65,7 @@ func TestRideRequestBuilder_RouteMode(t *testing.T) {
 }
 
 func TestRideRequestBuilder_DefaultDimensions(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -100,7 +81,7 @@ func TestRideRequestBuilder_DefaultDimensions(t *testing.T) {
 }
 
 func TestRideRequestBuilder_CustomDimensions(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		WithWidth(800).
 		WithHeight(600).
@@ -118,7 +99,7 @@ func TestRideRequestBuilder_CustomDimensions(t *testing.T) {
 }
 
 func TestRideRequestBuilder_DefaultLanguage(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -131,7 +112,7 @@ func TestRideRequestBuilder_DefaultLanguage(t *testing.T) {
 }
 
 func TestRideRequestBuilder_TenantParam(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		WithTenant("baly-iq").
 		Build()
@@ -145,7 +126,7 @@ func TestRideRequestBuilder_TenantParam(t *testing.T) {
 }
 
 func TestRideRequestBuilder_SignatureVerification(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -170,7 +151,7 @@ func TestRideRequestBuilder_SignatureVerification(t *testing.T) {
 }
 
 func TestRideRequestBuilder_BaseURLInResult(t *testing.T) {
-	rawURL, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -181,12 +162,26 @@ func TestRideRequestBuilder_BaseURLInResult(t *testing.T) {
 	}
 }
 
+func TestRideRequestBuilder_CustomExpiry(t *testing.T) {
+	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
+		WithHere(Location{Lon: 51.338, Lat: 35.699}).
+		WithExpiry(30 * time.Minute).
+		Build()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	_, params, _ := parseSigned(t, rawURL)
+	if params.Get("expires") == "" {
+		t.Error("expires param missing")
+	}
+}
+
 // ---------------------------------------------------------------------------
 // RideRequestBuilder validation errors
 // ---------------------------------------------------------------------------
 
 func TestRideRequestBuilder_ErrorMissingVersion(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), "").
+	_, err := NewRideRequestBuilder(testBaseURL, testSecret, "").
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err == nil {
@@ -195,7 +190,7 @@ func TestRideRequestBuilder_ErrorMissingVersion(t *testing.T) {
 }
 
 func TestRideRequestBuilder_ErrorMissingSecret(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, SigningConfig{ExpiryDuration: time.Hour}, V1).
+	_, err := NewRideRequestBuilder(testBaseURL, "", V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err == nil {
@@ -204,8 +199,9 @@ func TestRideRequestBuilder_ErrorMissingSecret(t *testing.T) {
 }
 
 func TestRideRequestBuilder_ErrorZeroExpiry(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, SigningConfig{Secret: "s"}, V1).
+	_, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
+		WithExpiry(0).
 		Build()
 	if err == nil {
 		t.Fatal("expected error for zero expiry duration")
@@ -213,7 +209,7 @@ func TestRideRequestBuilder_ErrorZeroExpiry(t *testing.T) {
 }
 
 func TestRideRequestBuilder_ErrorMissingOrigin(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	_, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithDestinations([]Location{{Lon: 51.410, Lat: 35.730}}).
 		Build()
 	if err == nil {
@@ -222,7 +218,7 @@ func TestRideRequestBuilder_ErrorMissingOrigin(t *testing.T) {
 }
 
 func TestRideRequestBuilder_ErrorMissingDestinations(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	_, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithOrigin(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err == nil {
@@ -231,7 +227,7 @@ func TestRideRequestBuilder_ErrorMissingDestinations(t *testing.T) {
 }
 
 func TestRideRequestBuilder_ErrorInvalidLanguage(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	_, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		WithLanguage("zz").
 		Build()
@@ -241,7 +237,7 @@ func TestRideRequestBuilder_ErrorInvalidLanguage(t *testing.T) {
 }
 
 func TestRideRequestBuilder_ErrorInvalidMarkerType(t *testing.T) {
-	_, err := NewRideRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	_, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
 		WithMarkerType(99).
 		Build()
@@ -255,7 +251,7 @@ func TestRideRequestBuilder_ErrorInvalidMarkerType(t *testing.T) {
 // ---------------------------------------------------------------------------
 
 func TestPreviewRequestBuilder_Success(t *testing.T) {
-	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V2).
+	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V2).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -275,7 +271,7 @@ func TestPreviewRequestBuilder_Success(t *testing.T) {
 }
 
 func TestPreviewRequestBuilder_DefaultZoom(t *testing.T) {
-	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -288,7 +284,7 @@ func TestPreviewRequestBuilder_DefaultZoom(t *testing.T) {
 }
 
 func TestPreviewRequestBuilder_CustomZoom(t *testing.T) {
-	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		WithZoom(16).
 		Build()
@@ -302,7 +298,7 @@ func TestPreviewRequestBuilder_CustomZoom(t *testing.T) {
 }
 
 func TestPreviewRequestBuilder_TenantParam(t *testing.T) {
-	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		WithTenant("baly-lbn").
 		Build()
@@ -316,7 +312,7 @@ func TestPreviewRequestBuilder_TenantParam(t *testing.T) {
 }
 
 func TestPreviewRequestBuilder_SignatureVerification(t *testing.T) {
-	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err != nil {
@@ -340,12 +336,26 @@ func TestPreviewRequestBuilder_SignatureVerification(t *testing.T) {
 	}
 }
 
+func TestPreviewRequestBuilder_CustomExpiry(t *testing.T) {
+	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
+		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
+		WithExpiry(5 * time.Minute).
+		Build()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	_, params, _ := parseSigned(t, rawURL)
+	if params.Get("expires") == "" {
+		t.Error("expires param missing")
+	}
+}
+
 // ---------------------------------------------------------------------------
 // PreviewRequestBuilder validation errors
 // ---------------------------------------------------------------------------
 
 func TestPreviewRequestBuilder_ErrorMissingVersion(t *testing.T) {
-	_, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), "").
+	_, err := NewPreviewRequestBuilder(testBaseURL, testSecret, "").
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		Build()
 	if err == nil {
@@ -354,14 +364,14 @@ func TestPreviewRequestBuilder_ErrorMissingVersion(t *testing.T) {
 }
 
 func TestPreviewRequestBuilder_ErrorMissingCenter(t *testing.T) {
-	_, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V1).Build()
+	_, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).Build()
 	if err == nil {
 		t.Fatal("expected error for missing center")
 	}
 }
 
 func TestPreviewRequestBuilder_ErrorInvalidLanguage(t *testing.T) {
-	_, err := NewPreviewRequestBuilder(testBaseURL, testSigningConfig(), V1).
+	_, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
 		WithLanguage("xx").
 		Build()
@@ -379,4 +389,20 @@ func TestFormatLocation(t *testing.T) {
 	if got != "51.338,35.699" {
 		t.Errorf("formatLocation = %q, want 51.338,35.699", got)
 	}
+}
+
+// ---------------------------------------------------------------------------
+// helpers
+// ---------------------------------------------------------------------------
+
+func parseSigned(t *testing.T, rawURL string) (path string, params url.Values, sig string) {
+	t.Helper()
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		t.Fatalf("invalid URL %q: %v", rawURL, err)
+	}
+	q := u.Query()
+	sig = q.Get("sig")
+	q.Del("sig")
+	return u.Path, q, sig
 }
