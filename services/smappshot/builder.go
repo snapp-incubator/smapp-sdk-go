@@ -12,36 +12,40 @@ import (
 	"time"
 )
 
+const defaultExpiryDuration = 10 * time.Minute
+
 // RideRequestBuilder builds and signs a URL for the /api/{version}/photo/ride endpoint.
 // Either WithHere (single-point mode) or WithOrigin+WithDestinations (route mode) must be called.
 //
 // Usage:
 //
-//	url, err := smappshot.NewRideRequestBuilder(baseURL, signingConfig, smappshot.V1).
+//	url, err := smappshot.NewRideRequestBuilder(baseURL, secret, smappshot.V1).
 //	    WithOrigin(smappshot.Location{Lon: 51.338, Lat: 35.699}).
 //	    WithDestinations([]smappshot.Location{{Lon: 51.400, Lat: 35.720}}).
 //	    Build()
 type RideRequestBuilder struct {
-	baseURL       string
-	signingConfig SigningConfig
-	version       Version
-	width         int
-	height        int
-	here          *Location
-	origin        *Location
-	destinations  []Location
-	language      Language
-	style         string
-	markerType    MarkerType
-	tenant        string
+	baseURL        string
+	secret         string
+	expiryDuration time.Duration
+	version        Version
+	width          int
+	height         int
+	here           *Location
+	origin         *Location
+	destinations   []Location
+	language       Language
+	style          string
+	markerType     MarkerType
+	tenant         string
 }
 
 // NewRideRequestBuilder creates a builder for the ride photo URL.
-func NewRideRequestBuilder(baseURL string, signingConfig SigningConfig, version Version) *RideRequestBuilder {
+func NewRideRequestBuilder(baseURL string, secret string, version Version) *RideRequestBuilder {
 	return &RideRequestBuilder{
-		baseURL:       strings.TrimRight(baseURL, "/"),
-		signingConfig: signingConfig,
-		version:       version,
+		baseURL:        strings.TrimRight(baseURL, "/"),
+		secret:         secret,
+		expiryDuration: defaultExpiryDuration,
+		version:        version,
 	}
 }
 
@@ -52,6 +56,12 @@ func (b *RideRequestBuilder) WithWidth(w int) *RideRequestBuilder {
 
 func (b *RideRequestBuilder) WithHeight(h int) *RideRequestBuilder {
 	b.height = h
+	return b
+}
+
+// WithExpiry sets how long the signed URL remains valid. Default is 10 minutes.
+func (b *RideRequestBuilder) WithExpiry(d time.Duration) *RideRequestBuilder {
+	b.expiryDuration = d
 	return b
 }
 
@@ -130,12 +140,18 @@ func (b *RideRequestBuilder) Build() (string, error) {
 		params.Set("tenant", b.tenant)
 	}
 
-	return signURL(b.baseURL, fmt.Sprintf("/api/%s/photo/ride", b.version), b.signingConfig, params)
+	return signURL(b.baseURL, fmt.Sprintf("/api/%s/photo/ride", b.version), b.secret, b.expiryDuration, params)
 }
 
 func (b *RideRequestBuilder) validate() error {
-	if err := validateSigningConfig(b.baseURL, b.signingConfig); err != nil {
-		return err
+	if b.baseURL == "" {
+		return fmt.Errorf("smapp smappshot: baseURL is required")
+	}
+	if b.secret == "" {
+		return fmt.Errorf("smapp smappshot: signing secret is required")
+	}
+	if b.expiryDuration <= 0 {
+		return fmt.Errorf("smapp smappshot: expiry duration must be positive")
 	}
 	if b.version == "" {
 		return fmt.Errorf("smapp smappshot: version is required")
@@ -164,29 +180,31 @@ func (b *RideRequestBuilder) validate() error {
 //
 // Usage:
 //
-//	url, err := smappshot.NewPreviewRequestBuilder(baseURL, signingConfig, smappshot.V1).
+//	url, err := smappshot.NewPreviewRequestBuilder(baseURL, secret, smappshot.V1).
 //	    WithCenter(smappshot.Location{Lon: 51.338, Lat: 35.699}).
 //	    WithZoom(14).
 //	    Build()
 type PreviewRequestBuilder struct {
-	baseURL       string
-	signingConfig SigningConfig
-	version       Version
-	width         int
-	height        int
-	center        *Location
-	zoom          int
-	language      Language
-	style         string
-	tenant        string
+	baseURL        string
+	secret         string
+	expiryDuration time.Duration
+	version        Version
+	width          int
+	height         int
+	center         *Location
+	zoom           int
+	language       Language
+	style          string
+	tenant         string
 }
 
 // NewPreviewRequestBuilder creates a builder for the preview photo URL.
-func NewPreviewRequestBuilder(baseURL string, signingConfig SigningConfig, version Version) *PreviewRequestBuilder {
+func NewPreviewRequestBuilder(baseURL string, secret string, version Version) *PreviewRequestBuilder {
 	return &PreviewRequestBuilder{
-		baseURL:       strings.TrimRight(baseURL, "/"),
-		signingConfig: signingConfig,
-		version:       version,
+		baseURL:        strings.TrimRight(baseURL, "/"),
+		secret:         secret,
+		expiryDuration: defaultExpiryDuration,
+		version:        version,
 	}
 }
 
@@ -197,6 +215,12 @@ func (b *PreviewRequestBuilder) WithWidth(w int) *PreviewRequestBuilder {
 
 func (b *PreviewRequestBuilder) WithHeight(h int) *PreviewRequestBuilder {
 	b.height = h
+	return b
+}
+
+// WithExpiry sets how long the signed URL remains valid. Default is 10 minutes.
+func (b *PreviewRequestBuilder) WithExpiry(d time.Duration) *PreviewRequestBuilder {
+	b.expiryDuration = d
 	return b
 }
 
@@ -246,12 +270,18 @@ func (b *PreviewRequestBuilder) Build() (string, error) {
 		params.Set("tenant", b.tenant)
 	}
 
-	return signURL(b.baseURL, fmt.Sprintf("/api/%s/photo/preview", b.version), b.signingConfig, params)
+	return signURL(b.baseURL, fmt.Sprintf("/api/%s/photo/preview", b.version), b.secret, b.expiryDuration, params)
 }
 
 func (b *PreviewRequestBuilder) validate() error {
-	if err := validateSigningConfig(b.baseURL, b.signingConfig); err != nil {
-		return err
+	if b.baseURL == "" {
+		return fmt.Errorf("smapp smappshot: baseURL is required")
+	}
+	if b.secret == "" {
+		return fmt.Errorf("smapp smappshot: signing secret is required")
+	}
+	if b.expiryDuration <= 0 {
+		return fmt.Errorf("smapp smappshot: expiry duration must be positive")
 	}
 	if b.version == "" {
 		return fmt.Errorf("smapp smappshot: version is required")
@@ -268,16 +298,14 @@ func (b *PreviewRequestBuilder) validate() error {
 }
 
 // signURL computes HMAC-SHA256 sig and returns the full signed URL.
-// A copy of params is made so the caller's url.Values is not modified.
-func signURL(baseURL, path string, cfg SigningConfig, params url.Values) (string, error) {
-	// Shallow copy: inner []string slices are shared, but we only Set new keys so this is safe.
+func signURL(baseURL, path, secret string, expiry time.Duration, params url.Values) (string, error) {
 	p := make(url.Values, len(params)+1)
 	for k, v := range params {
 		p[k] = v
 	}
-	p.Set("expires", strconv.FormatInt(time.Now().UTC().Add(cfg.ExpiryDuration).Unix(), 10))
+	p.Set("expires", strconv.FormatInt(time.Now().UTC().Add(expiry).Unix(), 10))
 
-	sig, err := computeSignature(cfg.Secret, path, p)
+	sig, err := computeSignature(secret, path, p)
 	if err != nil {
 		return "", fmt.Errorf("smapp smappshot: signing failed: %w", err)
 	}
@@ -327,20 +355,6 @@ func validateLanguage(lang Language) error {
 	return fmt.Errorf("smapp smappshot: language must be one of fa, en, ar, ku, got %q", string(lang))
 }
 
-func validateSigningConfig(baseURL string, cfg SigningConfig) error {
-	if baseURL == "" {
-		return fmt.Errorf("smapp smappshot: baseURL is required")
-	}
-	if cfg.Secret == "" {
-		return fmt.Errorf("smapp smappshot: signing secret is required")
-	}
-	if cfg.ExpiryDuration <= 0 {
-		return fmt.Errorf("smapp smappshot: expiry duration must be positive")
-	}
-	return nil
-}
-
-// defaultInt returns fallback when val is 0 (zero treated as "not set").
 func defaultInt(val, fallback int) int {
 	if val == 0 {
 		return fallback

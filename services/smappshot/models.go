@@ -1,7 +1,5 @@
 package smappshot
 
-import "time"
-
 // Version represents the SmappShot API version.
 type Version string
 
@@ -32,10 +30,4 @@ const (
 type Location struct {
 	Lon float64 // longitude
 	Lat float64 // latitude
-}
-
-// SigningConfig holds HMAC-SHA256 URL signing parameters.
-type SigningConfig struct {
-	Secret         string
-	ExpiryDuration time.Duration
 }
