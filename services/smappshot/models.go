@@ -26,6 +26,14 @@ const (
 	MarkerTypeLocationShare MarkerType = 1
 )
 
+// Tenant identifies the deployment target for multi-tenant SmappShot instances.
+type Tenant string
+
+const (
+	TenantBalyIQ  Tenant = "baly-iq"
+	TenantBalyLBN Tenant = "baly-lbn"
+)
+
 // Location is a geographic coordinate. Longitude comes first, matching the SmappShot wire format.
 type Location struct {
 	Lon float64 // longitude

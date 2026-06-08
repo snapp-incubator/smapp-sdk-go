@@ -114,7 +114,7 @@ func TestRideRequestBuilder_DefaultLanguage(t *testing.T) {
 func TestRideRequestBuilder_TenantParam(t *testing.T) {
 	rawURL, err := NewRideRequestBuilder(testBaseURL, testSecret, V1).
 		WithHere(Location{Lon: 51.338, Lat: 35.699}).
-		WithTenant("baly-iq").
+		WithTenant(TenantBalyIQ).
 		Build()
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -300,7 +300,7 @@ func TestPreviewRequestBuilder_CustomZoom(t *testing.T) {
 func TestPreviewRequestBuilder_TenantParam(t *testing.T) {
 	rawURL, err := NewPreviewRequestBuilder(testBaseURL, testSecret, V1).
 		WithCenter(Location{Lon: 51.338, Lat: 35.699}).
-		WithTenant("baly-lbn").
+		WithTenant(TenantBalyLBN).
 		Build()
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

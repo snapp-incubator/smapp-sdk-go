@@ -1,12 +1,8 @@
 package smappshot
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -30,13 +26,13 @@ type RideRequestBuilder struct {
 	version        Version
 	width          int
 	height         int
+	language       Language
+	style          string
+	tenant         Tenant
 	here           *Location
 	origin         *Location
 	destinations   []Location
-	language       Language
-	style          string
 	markerType     MarkerType
-	tenant         string
 }
 
 // NewRideRequestBuilder creates a builder for the ride photo URL.
@@ -65,6 +61,21 @@ func (b *RideRequestBuilder) WithExpiry(d time.Duration) *RideRequestBuilder {
 	return b
 }
 
+func (b *RideRequestBuilder) WithLanguage(lang Language) *RideRequestBuilder {
+	b.language = lang
+	return b
+}
+
+func (b *RideRequestBuilder) WithStyle(style string) *RideRequestBuilder {
+	b.style = style
+	return b
+}
+
+func (b *RideRequestBuilder) WithTenant(tenant Tenant) *RideRequestBuilder {
+	b.tenant = tenant
+	return b
+}
+
 // WithHere sets single-point mode. Clears Origin and Destinations.
 func (b *RideRequestBuilder) WithHere(loc Location) *RideRequestBuilder {
 	b.here = &loc
@@ -87,23 +98,8 @@ func (b *RideRequestBuilder) WithDestinations(dests []Location) *RideRequestBuil
 	return b
 }
 
-func (b *RideRequestBuilder) WithLanguage(lang Language) *RideRequestBuilder {
-	b.language = lang
-	return b
-}
-
-func (b *RideRequestBuilder) WithStyle(style string) *RideRequestBuilder {
-	b.style = style
-	return b
-}
-
 func (b *RideRequestBuilder) WithMarkerType(mt MarkerType) *RideRequestBuilder {
 	b.markerType = mt
-	return b
-}
-
-func (b *RideRequestBuilder) WithTenant(tenant string) *RideRequestBuilder {
-	b.tenant = tenant
 	return b
 }
 
@@ -137,7 +133,7 @@ func (b *RideRequestBuilder) Build() (string, error) {
 	params.Set("marker_type", strconv.Itoa(int(b.markerType)))
 
 	if b.tenant != "" {
-		params.Set("tenant", b.tenant)
+		params.Set("tenant", string(b.tenant))
 	}
 
 	return signURL(b.baseURL, fmt.Sprintf("/api/%s/photo/ride", b.version), b.secret, b.expiryDuration, params)
@@ -156,6 +152,11 @@ func (b *RideRequestBuilder) validate() error {
 	if b.version == "" {
 		return fmt.Errorf("smapp smappshot: version is required")
 	}
+	if b.language != "" {
+		if err := validateLanguage(b.language); err != nil {
+			return err
+		}
+	}
 	if b.here == nil {
 		if b.origin == nil {
 			return fmt.Errorf("smapp smappshot: origin is required when here is not set")
@@ -164,12 +165,6 @@ func (b *RideRequestBuilder) validate() error {
 			return fmt.Errorf("smapp smappshot: at least one destination is required when here is not set")
 		}
 	}
-	if b.language != "" {
-		if err := validateLanguage(b.language); err != nil {
-			return err
-		}
-	}
-	// MarkerTypeRideHistory=0 is the zero value, so an unset MarkerType is valid by default.
 	if b.markerType != MarkerTypeRideHistory && b.markerType != MarkerTypeLocationShare {
 		return fmt.Errorf("smapp smappshot: marker_type must be 0 or 1, got %d", int(b.markerType))
 	}
@@ -191,11 +186,11 @@ type PreviewRequestBuilder struct {
 	version        Version
 	width          int
 	height         int
-	center         *Location
-	zoom           int
 	language       Language
 	style          string
-	tenant         string
+	tenant         Tenant
+	center         *Location
+	zoom           int
 }
 
 // NewPreviewRequestBuilder creates a builder for the preview photo URL.
@@ -224,16 +219,6 @@ func (b *PreviewRequestBuilder) WithExpiry(d time.Duration) *PreviewRequestBuild
 	return b
 }
 
-func (b *PreviewRequestBuilder) WithCenter(loc Location) *PreviewRequestBuilder {
-	b.center = &loc
-	return b
-}
-
-func (b *PreviewRequestBuilder) WithZoom(zoom int) *PreviewRequestBuilder {
-	b.zoom = zoom
-	return b
-}
-
 func (b *PreviewRequestBuilder) WithLanguage(lang Language) *PreviewRequestBuilder {
 	b.language = lang
 	return b
@@ -244,8 +229,18 @@ func (b *PreviewRequestBuilder) WithStyle(style string) *PreviewRequestBuilder {
 	return b
 }
 
-func (b *PreviewRequestBuilder) WithTenant(tenant string) *PreviewRequestBuilder {
+func (b *PreviewRequestBuilder) WithTenant(tenant Tenant) *PreviewRequestBuilder {
 	b.tenant = tenant
+	return b
+}
+
+func (b *PreviewRequestBuilder) WithCenter(loc Location) *PreviewRequestBuilder {
+	b.center = &loc
+	return b
+}
+
+func (b *PreviewRequestBuilder) WithZoom(zoom int) *PreviewRequestBuilder {
+	b.zoom = zoom
 	return b
 }
 
@@ -267,7 +262,7 @@ func (b *PreviewRequestBuilder) Build() (string, error) {
 	}
 
 	if b.tenant != "" {
-		params.Set("tenant", b.tenant)
+		params.Set("tenant", string(b.tenant))
 	}
 
 	return signURL(b.baseURL, fmt.Sprintf("/api/%s/photo/preview", b.version), b.secret, b.expiryDuration, params)
@@ -286,85 +281,13 @@ func (b *PreviewRequestBuilder) validate() error {
 	if b.version == "" {
 		return fmt.Errorf("smapp smappshot: version is required")
 	}
-	if b.center == nil {
-		return fmt.Errorf("smapp smappshot: center is required")
-	}
 	if b.language != "" {
 		if err := validateLanguage(b.language); err != nil {
 			return err
 		}
 	}
+	if b.center == nil {
+		return fmt.Errorf("smapp smappshot: center is required")
+	}
 	return nil
-}
-
-// signURL computes HMAC-SHA256 sig and returns the full signed URL.
-func signURL(baseURL, path, secret string, expiry time.Duration, params url.Values) (string, error) {
-	p := make(url.Values, len(params)+1)
-	for k, v := range params {
-		p[k] = v
-	}
-	p.Set("expires", strconv.FormatInt(time.Now().UTC().Add(expiry).Unix(), 10))
-
-	sig, err := computeSignature(secret, path, p)
-	if err != nil {
-		return "", fmt.Errorf("smapp smappshot: signing failed: %w", err)
-	}
-
-	return baseURL + path + "?" + encodeParamsSorted(p) + "&sig=" + sig, nil
-}
-
-// computeSignature returns hex(HMAC-SHA256(secret, "GET\n{path}\n{sorted-params}")).
-func computeSignature(secret, path string, params url.Values) (string, error) {
-	message := "GET\n" + path + "\n" + encodeParamsSorted(params)
-	mac := hmac.New(sha256.New, []byte(secret))
-	if _, err := mac.Write([]byte(message)); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(mac.Sum(nil)), nil
-}
-
-// encodeParamsSorted sorts keys case-insensitively and percent-encodes key=value pairs.
-// sig must be excluded before calling.
-func encodeParamsSorted(params url.Values) string {
-	keys := make([]string, 0, len(params))
-	for k := range params {
-		keys = append(keys, k)
-	}
-	sort.Slice(keys, func(i, j int) bool {
-		return strings.ToLower(keys[i]) < strings.ToLower(keys[j])
-	})
-	parts := make([]string, 0, len(keys))
-	for _, k := range keys {
-		for _, v := range params[k] {
-			parts = append(parts, url.QueryEscape(k)+"="+url.QueryEscape(v))
-		}
-	}
-	return strings.Join(parts, "&")
-}
-
-// formatLocation serializes a Location as "{lon},{lat}".
-func formatLocation(loc Location) string {
-	return strconv.FormatFloat(loc.Lon, 'f', -1, 64) + "," + strconv.FormatFloat(loc.Lat, 'f', -1, 64)
-}
-
-func validateLanguage(lang Language) error {
-	switch lang {
-	case LanguageFarsi, LanguageEnglish, LanguageArabic, LanguageKurdish:
-		return nil
-	}
-	return fmt.Errorf("smapp smappshot: language must be one of fa, en, ar, ku, got %q", string(lang))
-}
-
-func defaultInt(val, fallback int) int {
-	if val == 0 {
-		return fallback
-	}
-	return val
-}
-
-func defaultLanguage(lang Language) Language {
-	if lang == "" {
-		return LanguageFarsi
-	}
-	return lang
 }
