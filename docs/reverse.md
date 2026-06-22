@@ -77,6 +77,7 @@ Create with `reverse.NewDefaultCallOptions()`.
 | `WithOriginResponseType()` | Response type for origin points |
 | `WithDestinationResponseType()` | Response type for destination points |
 | `WithIraqResponseType()` | Response type for Iraq (Baly only) |
+| `WithFrequentV2ResponseType()` | Response type for frequent-v2 (returns strategy field) |
 | `WithHeaders(map[string]string)` | Custom request headers |
 
 ```go
