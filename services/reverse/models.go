@@ -2,13 +2,25 @@ package reverse
 
 import "reflect"
 
+// FrequentStrategy is the type that specifies the strategy of a frequent/frequent-v2 type request.
+type FrequentStrategy string
+
 // Component is the struct containing data about a single component of an address.
 type Component struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 }
 
-// FrequentAddress is the struct containing data on a frequent type request.
+const (
+	PopularPOI               FrequentStrategy = "popular-poi"
+	NearbyJunction           FrequentStrategy = "nearBy-junction"
+	PrimaryStreetResidential FrequentStrategy = "Primary-street-residential"
+	SmallJunction            FrequentStrategy = "small-junction"
+	StreetNeighborhood       FrequentStrategy = "street-neighborhood"
+	NoStrategy 				 FrequentStrategy = ""
+)
+
+// FrequentAddress is the struct containing data on a frequent/frequent-v2 type request.
 type FrequentAddress struct {
 	Address          string `json:"address"`
 	EnglishAddress   string `json:"address_en"`
@@ -16,6 +28,7 @@ type FrequentAddress struct {
 	EnglishShortname string `json:"shortname_en"`
 	KurdishAddress   string `json:"address_ckb"`
 	KurdishShortname string `json:"shortname_ckb"`
+	Strategy         FrequentStrategy `json:"strategy"`
 }
 
 // Request is the struct containing data on reverse request params

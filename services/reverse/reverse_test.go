@@ -425,7 +425,7 @@ func TestClient_GetDisplayNameWithContext(t *testing.T) {
 func TestClient_GetFrequent(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(`{"address":"استان تهران، شهرستان تهران، تهران","address_en":"Tehran Province, Tehran County, Tehran","shortname":"تهران","shortname_en":"Tehran","address_ckb":"استان کردستان، شهرستان سنندج","shortname_ckb":"سنندج"}`))
+			_, _ = w.Write([]byte(`{"address":"استان تهران، شهرستان تهران، تهران","address_en":"Tehran Province, Tehran County, Tehran","shortname":"تهران","shortname_en":"Tehran","address_ckb":"استان کردستان، شهرستان سنندج","shortname_ckb":"سنندج","strategy":""}`))
 		}))
 
 		cfg, err := config.NewDefaultConfig("key")
@@ -441,6 +441,7 @@ func TestClient_GetFrequent(t *testing.T) {
 			WithHeaders(map[string]string{
 				"foo": "bar",
 			}),
+			WithFrequentResponseVersion(Frequent_V2),
 		))
 		if err != nil {
 			t.Fatalf("could not get components: %s", err.Error())
@@ -453,6 +454,86 @@ func TestClient_GetFrequent(t *testing.T) {
 		}
 		if result.KurdishAddress != "استان کردستان، شهرستان سنندج" {
 			t.Fatalf("invalid_kurdish_address")
+		}
+		if result.Strategy != NoStrategy {
+			t.Fatalf("invalid_strategy")
+		}
+	})
+	t.Run("valid", func(t *testing.T) {
+		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`{"address":"تهران","address_en":"Tehran","shortname":"تهران","shortname_en":"Tehran","address_ckb":"سنندج","shortname_ckb":"سنندج","strategy":"popular-poi"}`))
+		}))
+		cfg, err := config.NewDefaultConfig("key")
+		if err != nil {
+			t.Fatalf("could not create default config due to: %s", err.Error())
+		}
+		client, err := NewReverseClient(cfg, V1, time.Second, WithURL(sv.URL))
+		if err != nil {
+			t.Fatalf("could not create reverse client due to: %s", err.Error())
+		}
+		result, err := client.GetFrequent(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(10),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
+			WithFrequentResponseVersion(Frequent_V2),
+		))
+		if err != nil {
+			t.Fatalf("could not get components: %s", err.Error())
+		}
+		if result.Strategy != PopularPOI {
+			t.Fatalf("invalid_strategy")
+		}
+	})
+	t.Run("invalid_response_version", func(t *testing.T) {
+		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`{"address":"تهران","address_en":"Tehran","shortname":"تهران","shortname_en":"Tehran","address_ckb":"سنندج","shortname_ckb":"سنندج","strategy":"popular-poi"}`))
+		}))
+		cfg, err := config.NewDefaultConfig("key")
+		if err != nil {
+			t.Fatalf("could not create default config due to: %s", err.Error())
+		}
+		client, err := NewReverseClient(cfg, V1, time.Second, WithURL(sv.URL))
+		if err != nil {
+			t.Fatalf("could not create reverse client due to: %s", err.Error())
+		}
+		_, err = client.GetFrequent(35.77331417156089, 51.41831696033478, NewDefaultCallOptions(
+			WithZoomLevel(10),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
+			WithFrequentResponseVersion(Driver),
+		))
+		if err == nil {
+			t.Fatalf("could not get components: %s", err.Error())
+		}
+	})
+	t.Run("not_provided_response_version", func(t *testing.T) {
+		sv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`{"address":"تهران","address_en":"Tehran","shortname":"تهران","shortname_en":"Tehran","address_ckb":"سنندج","shortname_ckb":"سنندج","strategy":"popular-poi"}`))
+		}))
+		cfg, err := config.NewDefaultConfig("key")
+		if err != nil {
+			t.Fatalf("could not create default config due to: %s", err.Error())
+		}
+		client, err := NewReverseClient(cfg, V1, time.Second, WithURL(sv.URL))
+		if err != nil {
+			t.Fatalf("could not create reverse client due to: %s", err.Error())
+		}
+		opts := NewDefaultCallOptions(
+			WithZoomLevel(10),
+			WithHeaders(map[string]string{
+				"foo": "bar",
+			}),
+		)
+		opts.UseResponseType = false
+		_, err = client.GetFrequent(
+			35.77331417156089,
+			51.41831696033478,
+			opts,
+		)
+		if err == nil {
+			t.Fatalf("could not get components: %s", err.Error())
 		}
 	})
 	t.Run("invalid_response", func(t *testing.T) {
@@ -573,6 +654,7 @@ func TestClient_GetFrequentWithContext(t *testing.T) {
 			WithHeaders(map[string]string{
 				"foo": "bar",
 			}),
+			WithFrequentResponseVersion(Frequent_V2),
 		))
 		if err == nil {
 			t.Fatalf("there should be an error when creating request")
