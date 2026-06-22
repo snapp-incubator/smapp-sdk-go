@@ -100,6 +100,24 @@ func TestWithPassengerRoutingResponseType(t *testing.T) {
 	}
 }
 
+func TestWithFrequentResponseVersion(t *testing.T) {
+	callOptions := CallOptions{
+		ZoomLevel:    16,
+		ResponseType: Frequent_V2,
+		Language:     Farsi,
+	}
+
+	WithFrequentResponseVersion(Frequent_V2)(&callOptions)
+
+	if callOptions.UseResponseType != true {
+		t.Fatalf("UseResponseType should be true")
+	}
+
+	if callOptions.ResponseType != Frequent_V2 {
+		t.Fatalf("ResponseType should be Frequent V2")
+	}
+}
+
 func TestWithDriverOriginResponseType(t *testing.T) {
 	callOptions := CallOptions{
 		ZoomLevel:    16,

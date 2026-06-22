@@ -304,6 +304,15 @@ func (c *Client) GetFrequent(lat, lon float64, options CallOptions) (FrequentAdd
 	return c.GetFrequentWithContext(context.Background(), lat, lon, options)
 }
 
+func (r ResponseType) IsValidFrequentType() bool {
+	switch r {
+	case Frequent, Frequent_V2:
+		return true
+	default:
+		return false
+	}
+}
+
 // GetFrequentWithContext is like GetFrequent, but with context.Context support
 func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, options CallOptions) (FrequentAddress, error) {
 	if ctx == nil {
@@ -337,7 +346,25 @@ func (c *Client) GetFrequentWithContext(ctx context.Context, lat, lon float64, o
 		params.Set(Normalize, "true")
 	}
 
-	params.Set(Type, string(Frequent))
+	// ResponseType and UseResponseType must either both be set or both be unset.
+	if options.UseResponseType != (options.ResponseType != "") {
+		return FrequentAddress{}, fmt.Errorf(
+			"smapp reverse geo-code: ResponseType and UseResponseType must be used together",
+		)
+	}
+
+	if options.UseResponseType {
+		if !options.ResponseType.IsValidFrequentType() {
+			return FrequentAddress{}, fmt.Errorf(
+				"smapp reverse geo-code: invalid frequent response type: %s",
+				options.ResponseType,
+			)
+		}
+
+		params.Set(Type, string(options.ResponseType))
+	} else {
+		params.Set(Type, string(Frequent))
+	}
 
 	switch c.cfg.APIKeySource {
 	case config.HeaderSource:
