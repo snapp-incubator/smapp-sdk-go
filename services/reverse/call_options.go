@@ -11,6 +11,7 @@ const (
 	Origin             ResponseType = "origin"
 	Destination        ResponseType = "destination"
 	Frequent           ResponseType = "frequent"
+	Frequent_V2        ResponseType = "frequent-v2"
 	Driver_Origin      ResponseType = "driver-origin"
 	Driver_Destination ResponseType = "driver-destination"
 	Passenger_Routing  ResponseType = "passenger-routing"
@@ -115,6 +116,13 @@ func WithDriverOriginResponseType() CallOptionSetter {
 	return func(options *CallOptions) {
 		options.UseResponseType = true
 		options.ResponseType = Driver_Origin
+	}
+}
+
+func WithFrequentResponseVersion(resType ResponseType) CallOptionSetter {
+	return func(options *CallOptions) {
+		options.UseResponseType = true
+		options.ResponseType = resType
 	}
 }
 
