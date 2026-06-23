@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.26
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stamp version into source
+        run: |
+          sed -i 's/var Version = ".*"/var Version = "${{ github.ref_name }}"/' version/version.go
+
+      - name: Run tests
+        run: |
+          GOFLAGS=-buildvcs=false go test -race $(go list ./... | grep -v /vendor/) -v
+
+      - name: Commit stamped version and move tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version/version.go
+          git commit -m "chore: stamp version ${{ github.ref_name }}"
+          git push origin HEAD:main
+          git tag -f ${{ github.ref_name }} HEAD
+          git push -f origin ${{ github.ref_name }}
