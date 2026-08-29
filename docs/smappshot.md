@@ -2,7 +2,7 @@
 
 SmappShot generates **signed static map image URLs** (PNG). No HTTP client is created — the builders produce a URL you pass directly to an `<img>` tag or a `curl` call. Signing is mandatory for Baly deployments.
 
-Base URL for Baly production: `https://staticmap-signed.baly.app`
+Base URL for Baly production: `https://staticmaps-signed.baly.app`
 
 Import: `github.com/snapp-incubator/smapp-sdk-go/services/smappshot`
 
@@ -28,7 +28,7 @@ func main() {
 	const secret = "your-signing-secret"
 
 	// Route mode — Baghdad, Iraq
-	rideURL, err := smappshot.NewRideRequestBuilder("https://staticmap-signed.baly.app", secret, smappshot.V2).
+	rideURL, err := smappshot.NewRideRequestBuilder("https://staticmaps-signed.baly.app", secret, smappshot.V2).
 		WithOrigin(smappshot.Location{Lat: 33.3152, Lon: 44.3661}).
 		WithDestinations([]smappshot.Location{
 			{Lat: 33.3600, Lon: 44.4000},
@@ -49,7 +49,7 @@ func main() {
 Renders a plain map tile (no markers) centered on a location.
 
 ```go
-previewURL, err := smappshot.NewPreviewRequestBuilder("https://staticmap-signed.baly.app", secret, smappshot.V2).
+previewURL, err := smappshot.NewPreviewRequestBuilder("https://staticmaps-signed.baly.app", secret, smappshot.V2).
 	WithCenter(smappshot.Location{Lat: 33.8938, Lon: 35.5018}).
 	WithZoom(14).
 	WithLanguage(smappshot.LanguageEnglish).
