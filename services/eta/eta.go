@@ -69,6 +69,9 @@ func (c *Client) GetETAWithInputMeta(ctx context.Context, points []Point, option
 	if ctx == nil {
 		return ETA{}, fmt.Errorf("smapp eta: nil context")
 	}
+	if len(points) < 2 {
+		return ETA{}, fmt.Errorf("smapp eta: at least two points are required")
+	}
 	// Start of parent span
 	var span trace.Span
 	spanName := "get-eta"
