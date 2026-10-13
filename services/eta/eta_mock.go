@@ -69,3 +69,18 @@ func (mr *MockETAClientMockRecorder) GetETAWithContext(ctx, points, options any)
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetETAWithContext", reflect.TypeOf((*MockETAClient)(nil).GetETAWithContext), ctx, points, options)
 }
+
+// GetETAWithInputMeta mocks base method.
+func (m *MockETAClient) GetETAWithInputMeta(ctx context.Context, points []Point, options CallOptions, metadata map[string]string) (ETA, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetETAWithInputMeta", ctx, points, options, metadata)
+	ret0, _ := ret[0].(ETA)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetETAWithInputMeta indicates an expected call of GetETAWithInputMeta.
+func (mr *MockETAClientMockRecorder) GetETAWithInputMeta(ctx, points, options, metadata any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetETAWithInputMeta", reflect.TypeOf((*MockETAClient)(nil).GetETAWithInputMeta), ctx, points, options, metadata)
+}

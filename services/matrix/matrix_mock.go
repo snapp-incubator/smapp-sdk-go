@@ -69,3 +69,18 @@ func (mr *MockMatrixClientMockRecorder) GetMatrixWithContext(ctx, sources, targe
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatrixWithContext", reflect.TypeOf((*MockMatrixClient)(nil).GetMatrixWithContext), ctx, sources, targets, options)
 }
+
+// GetMatrixWithInputMeta mocks base method.
+func (m *MockMatrixClient) GetMatrixWithInputMeta(ctx context.Context, sources, targets []Point, options CallOptions, metadata map[string]string) (Output, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMatrixWithInputMeta", ctx, sources, targets, options, metadata)
+	ret0, _ := ret[0].(Output)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMatrixWithInputMeta indicates an expected call of GetMatrixWithInputMeta.
+func (mr *MockMatrixClientMockRecorder) GetMatrixWithInputMeta(ctx, sources, targets, options, metadata any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatrixWithInputMeta", reflect.TypeOf((*MockMatrixClient)(nil).GetMatrixWithInputMeta), ctx, sources, targets, options, metadata)
+}

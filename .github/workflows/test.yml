@@ -11,7 +11,7 @@ jobs:
   gitleaks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Gitleaks
         uses: zricethezav/gitleaks-action@v1.6.0
 
@@ -20,7 +20,7 @@ jobs:
     container:
       image: golang:1.26
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Set GOFLAGS to disable VCS
         run: echo "GOFLAGS=-buildvcs=false" >> $GITHUB_ENV
       - name: Enable Go modules
